@@ -1,0 +1,7 @@
+"chedarabox"
+{
+	"base"		"sandbox"
+	"title"		"Homicide: Union"
+	"maps"		""
+	"menusystem"	"1"
+}
