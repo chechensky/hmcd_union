@@ -17,24 +17,29 @@ function player.GetListByName(name)
 	return list
 end
 
-function BloodParticle(ply, position_effect)
-	game.AddParticles("particles/huy.pcf")
+function BloodSpray(ply, position_effect, scale)
 	local pos = ply:GetPos()
+
+    local effectData = EffectData()
+    effectData:SetOrigin(position_effect or pos)
+	effectData:SetAngles(Angle(0,0,0))
+    effectData:SetScale(scale or 3)
+	effectData:SetColor(0)
+	effectData:SetFlags(1)
+    util.Effect("bloodspray", effectData)
+end
+
+function BloodParticle(ply)
+	local pos = ply:GetPos()
+	local fallbackPos = pos - Vector(0, 0, 75)
     local tr = util.TraceLine({
         start = pos,
         endpos = pos - Vector(0, 5, 30),
         filter = target
     })
 
-    local effectData = EffectData()
-    effectData:SetOrigin(position_effect or pos)
-    effectData:SetScale(1)
-    util.Effect("Huy", effectData)
-
-    if tr.Hit then
-    end
+	util.Decal("Blood", tr.HitPos + tr.HitNormal, tr.HitPos - tr.HitNormal)
 end
-
 -- команды
 
 concommand.Add("checha_getflexname", function(ply,cmd,args)
@@ -45,6 +50,21 @@ end)
 concommand.Add("checha_getflexid", function(ply,cmd,args)
 	local huyply = args[1] and player.GetListByName(args[1])[1] or ply
 	print(huyply:GetFlexIDByName(args[2] or 0, args[3] or ""))
+end)
+
+concommand.Add("checha_modelfix", function(ply)
+	ply:SetModel("models/player/corpse1.mdl")
+end)
+
+concommand.Add("checha_steamid", function(ply,cmd,args)
+	local huyply = args[1] and player.GetListByName(args[1])[1] or ply
+	print("SteamID", huyply:SteamID())
+	print("SteamID64", huyply:SteamID64())
+end)
+
+gameevent.Listen( "player_connect" )
+hook.Add("player_connect", "WhiteList", function( data )
+	print(data.name .. data.networkid)
 end)
 
 concommand.Add("checha_setflexweight", function(ply,cmd,args)
@@ -67,12 +87,20 @@ concommand.Add("checha_ijnts",function(ply)
 	ply.Blood = ply.Blood - 300
 end)
 
-concommand.Add("organisminfo", function(ply)
-    print("Pain", ply.pain)
-    print("Blood", ply.Blood)
-    print("Stamina", ply.stamina['leg'] .. " " .. ply.stamina['arm'])
-	print("Bones", table.ToString(ply.Bones))
-	print("Organs", table.ToString(ply.Hit))
+concommand.Add("checha_attachments", function(ply)
+	print(table.ToString(ply:GetViewModel():GetAttachments()))
+	print("---------------")
+	print(table.ToString(ply:GetActiveWeapon():GetAttachments()))
+end)
+
+concommand.Add("organisminfo", function(ply,cmd,args)
+	local huyply = args[1] and player.GetListByName(args[1])[1] or ply
+    print("Pain", huyply.pain)
+    print("Blood", huyply.Blood)
+    print("Stamina", huyply.stamina['leg'] .. " " .. huyply:GetNWFloat("Stamina_Arm"))
+	print("Bones", table.ToString(huyply.Bones))
+	print("Organs", table.ToString(huyply.Hit))
+	print("Pulse", huyply.pulse)
 end)
 
 -- хуки
@@ -82,7 +110,9 @@ hook.Add("PlayerPostThink", "SynchVar", function(ply)
     if ply.stamina['arm'] != ply:GetNWFloat("StaminaArm", 50) then ply:SetNWFloat("StaminaArm", ply.stamina['arm']) end
 
     if ply.Blood != ply:GetNWFloat("Blood", 5000) then ply:SetNWFloat("Blood", ply.Blood) end
-    if ply.pain != ply:GetNWFloat("Pain", 0) then ply:SetNWFloat("Pain", ply.pain) end
+    if ply.pain != ply:GetNWFloat("pain", 0) then ply:SetNWFloat("Pain", ply.pain) end
+
+	if ply.Role != ply:GetNWString("Role", "") then ply:SetNWString("Role", ply.Role) end
 
     if ply.Bones["RightArm"] != ply:GetNWFloat("RightArm", 1) then ply:SetNWFloat("RightArm", ply.Bones["RightArm"]) end
     if ply.Bones["LeftArm"] != ply:GetNWFloat("LeftArm", 1) then ply:SetNWFloat("LeftArm", ply.Bones["LeftArm"]) end

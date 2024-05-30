@@ -61,8 +61,8 @@ surface.CreateFont("FontRadialMenu",{
 	font = "Coolvetica Rg",
 	size = 26,
 	weight = 1100,
-	outline = false,
-	shadow = true
+	antialias = true,
+	italic = false
 })
 
 surface.CreateFont("FontLarge",{
@@ -125,8 +125,9 @@ hook.Add("DrawDeathNotice","NoDrawDeathNotificate",function() return false end)
 function GM:RenderAccessories(ply)
 	local Mod=ply:GetModel()
 	if ply.Accessory == nil or !ply.Accessory then return end
-	if((ply.Accessory)and not(ply.Accessory=="none")and not((ply.HeadArmor)and(ply.HeadArmor=="ACH")and(AccessoryList[ply.Accessory][5])))then
-		local AccInfo=AccessoryList[ply.Accessory]
+	if((ply.Accessory)and not(ply.Accessory=="none")and not((ply.HeadArmor)and(ply.HeadArmor=="ACH")and(AccessoryListWithoutEmpty[ply.Accessory][5])))then
+		local AccInfo=AccessoryListWithoutEmpty[ply.Accessory]
+		if AccInfo[1] == nil or AccInfo[1] == "" then return end
 		if(ply.AccessoryModel)then
 			local PosInfo=nil
 			if(ply.ModelSex=="male")then PosInfo=AccInfo[3] elseif(ply.ModelSex=="female")then PosInfo=AccInfo[4] end
@@ -159,7 +160,7 @@ function GM:RenderAccessories(ply)
 end
 
 function GM:PostPlayerDraw(ply)
-	if !AccessoryList[ply.Accessory] then return end
+	if !AccessoryListWithoutEmpty[ply.Accessory] then return end
 	if ply:Alive() then
 		self:RenderAccessories(ply)
 	end

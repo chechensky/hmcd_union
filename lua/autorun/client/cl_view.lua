@@ -61,7 +61,7 @@ local function ImersiveCam(ply,pos,ang,fov)
 	local lply = LocalPlayer()
 	local ragdoll = lply:GetNWEntity("Ragdoll")
 	if !ply:Alive() and IsValid(ragdoll) then
-		ragdoll:ManipulateBoneScale(6,vecZero)
+		ragdoll:ManipulateBoneScale(6,Vector(1,1,1))
 		local att = ragdoll:GetAttachment(ragdoll:LookupAttachment("eyes"))
 		local eyeAngs = lply:EyeAngles()
 		LerpEyeRagdoll = LerpAngleFT(30,LerpEyeRagdoll,LerpAngle(1,eyeAngs,att.Ang))
@@ -69,25 +69,22 @@ local function ImersiveCam(ply,pos,ang,fov)
 		local view = {
 			origin = att.Pos,
 			angles = LerpEyeRagdoll,
-			fov = 110,
-			drawviewer = true
+			znear = 1,
+			zfar = 26000
 		}
 		return view
 	elseif ply:Alive() and ply:GetNWBool("fake") and IsValid(ragdoll) then
 		ragdoll:ManipulateBoneScale(6,vecZero)
-		local att = ragdoll:GetAttachment(ragdoll:LookupAttachment("eyes"))
-		local eyeAngs = lply:EyeAngles()
-		LerpEyeRagdoll = LerpAngleFT(30,LerpEyeRagdoll,LerpAngle(0.3,eyeAngs,att.Ang))
-		local rhand = ragdoll:GetAttachment(ragdoll:LookupAttachment("anim_attachment_rh"))
-		local lhand = ragdoll:GetAttachment(ragdoll:LookupAttachment("anim_attachment_lh"))
+		local PosAng = ragdoll:GetAttachment(ragdoll:LookupAttachment("eyes"))
+		LerpEyeRagdoll = LerpAngleFT(1,LerpEyeRagdoll,LerpAngle(0.5,lply:EyeAngles(),PosAng.Ang))
 		LerpEyeRagdoll[3] = LerpEyeRagdoll[3]
-		local view = {
-			origin = att.Pos,
-			angles = LerpEyeRagdoll,
-			fov = 110,
-			drawviewer = true
+		local camfake = {
+			origin = PosAng.Pos - Vector(2,0,0),
+			angles = PosAng.Ang,
+			znear = 1,
+			zfar = 26000
 		}
-		return view
+		return camfake
 	end
 	if !ply:Alive() then return end
 end

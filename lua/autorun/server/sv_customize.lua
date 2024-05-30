@@ -39,8 +39,8 @@ local function ManualIdentity(ply, name, args)
 	ply.CustomAccessory = Accs
 	ply.CustomName = Vosemnot
 	ply.Rost = Rost
-	local cl_playermodel, playerModel = ply:GetInfo("cl_playermodel"), table.Random(PlayerModelInfoTable)
-	for key, maudhayle in pairs(PlayerModelInfoTable) do
+	local cl_playermodel, playerModel = ply:GetInfo("cl_playermodel"), table.Random(PlayerModels)
+	for key, maudhayle in pairs(PlayerModels) do
 		if maudhayle.model == ply.CustomModel then
 			playerModel = maudhayle
 			break

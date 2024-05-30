@@ -1,6 +1,47 @@
 local PANEL = {}
 local PlayerVoicePanels = {}
 
+function PANEL:SetPLY_VoiceParameters(state)
+	local col = self.ply:GetPlayerColor()
+	local color = Color(col.x * 255, col.y * 255, col.z * 255)
+	self.Color = color
+	self.LabelName:SetText(self.ply:GetNWString("Character_Name"))
+	self.LabelName:SetTextColor(color)
+	self.ColorBlock:SetVisible(true)
+	self.Avatar:SetVisible(false)
+end
+
+function PANEL:GetPLY_VoiceParameters(state)
+	if IsValid(self.ply) then
+		local newBystanderState = false
+		local client = LocalPlayer()
+		if !IsValid(client) then
+			newBystanderState = true
+		else
+			if client:Team() == 2 && client:Alive() then
+				newBystanderState = true
+			else
+				if self.ply:Team() == 2 && self.ply:Alive() then
+					newBystanderState = true
+				end
+			end
+		end
+
+		if self.Bystander != newBystanderState then
+			self:SetPLY_VoiceParameters(newBystanderState)
+		end
+		if newBystanderState then
+			local col = self.ply:GetPlayerColor()
+			if col != self.PrevColor then
+				local color = Color(col.x * 255, col.y * 255, col.z * 255)
+				self.Color = color
+				self.LabelName:SetTextColor(color)
+			end
+			self.PrevColor = col
+		end
+	end
+end
+
 function PANEL:Init()
 
 	self.LabelName = vgui.Create( "DLabel", self )
@@ -37,63 +78,13 @@ function PANEL:Setup( ply )
 
 	self.ply = ply
 
-	self:CheckBystanderState()	
+	self:GetPLY_VoiceParameters()	
 
 	self.Avatar:SetPlayer( ply )
 	self.ColorBlock.Player = ply
 	
 	self:InvalidateLayout()
 
-end
-
-function PANEL:CheckBystanderState(state)
-	if IsValid(self.ply) then
-		local newBystanderState = false
-		local client = LocalPlayer()
-		if !IsValid(client) then
-			newBystanderState = true
-		else
-			if client:Team() == 2 && client:Alive() then
-				newBystanderState = true
-			else
-				if self.ply:Team() == 2 && self.ply:Alive() then
-					newBystanderState = true
-				end
-			end
-		end
-
-		if self.Bystander != newBystanderState then
-			self:SetBystanderState(newBystanderState)
-		end
-		if newBystanderState then
-			local col = self.ply:GetPlayerColor()
-			if col != self.PrevColor then
-				local color = Color(col.x * 255, col.y * 255, col.z * 255)
-				self.Color = color
-				self.LabelName:SetTextColor(color)
-			end
-			self.PrevColor = col
-		end
-	end
-end
-
-function PANEL:SetBystanderState(state)
-	local col = self.ply:GetPlayerColor()
-	local color = Color(col.x * 255, col.y * 255, col.z * 255)
-	self.Color = color
-
-	self.Bystander = state
-	if state then
-		self.LabelName:SetText(self.ply:GetNWString("Character_Name"))
-		self.LabelName:SetTextColor(color)
-		self.ColorBlock:SetVisible(true)
-		self.Avatar:SetVisible(false)
-	else	
-		self.LabelName:SetTextColor(color_white)
-		self.LabelName:SetText( self.ply:Nick() )
-		self.ColorBlock:SetVisible(false)
-		self.Avatar:SetVisible(true)
-	end
 end
 
 function PANEL:Paint( w, h )
@@ -104,7 +95,7 @@ function PANEL:Paint( w, h )
 end
 
 function PANEL:Think( )
-	self:CheckBystanderState()
+	self:GetPLY_VoiceParameters()
 
 	if ( self.fadeAnim ) then
 		self.fadeAnim:Run()

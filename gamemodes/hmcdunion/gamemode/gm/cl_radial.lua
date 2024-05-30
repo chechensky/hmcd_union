@@ -1,8 +1,25 @@
+surface.CreateFont( "Radial_QM" , {
+	font = "coolvetica",
+	size = math.ceil(ScrW() / 38),
+	weight = 500,
+	antialias = true,
+	italic = false
+})
+
+surface.CreateFont( "RadialSmall_QM" , {
+	font = "coolvetica",
+	size = math.ceil(ScrW() / 80),
+	weight = 100,
+	antialias = true,
+	italic = false
+})
+
 local ments
 local radialOpen = false
 local prevSelected, prevSelectedVertex
 function GM:OpenRadialMenu(elements)
 	if not LocalPlayer():Alive() then return end
+	if PhraseOpen then return end
 	radialOpen = true
 	LocalPlayer():SetNWBool("radialopen", true)
 	gui.EnableScreenClicker(true)
@@ -54,24 +71,24 @@ end
 
 local function getSelected()
 	local mx, my = gui.MousePos()
-	local sw, sh = ScrW(), ScrH()
+	local sw,sh = ScrW(), ScrH()
 	local total = #ments
-	local w = math.min(sw * 0.45, sh * 0.33)
+	local w = math.min(sw * 0.45, sh * 0.45)
+	local h = w
 	local sx, sy = sw / 2, sh / 2
-	local x2, y2 = mx - sx, my - sy
+	local x2,y2 = mx - sx, my - sy
 	local ang = 0
 	local dis = math.sqrt(x2 ^ 2 + y2 ^ 2)
 	if dis / w <= 1 then
-		if y2 <= 0 and x2 <= 0 then
+		if y2 <= 0 && x2 <= 0 then
 			ang = math.acos(x2 / dis)
-		elseif x2 > 0 and y2 <= 0 then
+		elseif x2 > 0 && y2 <= 0 then
 			ang = -math.asin(y2 / dis)
-		elseif x2 <= 0 and y2 > 0 then
+		elseif x2 <= 0 && y2 > 0 then
 			ang = math.asin(y2 / dis) + math.pi
 		else
 			ang = math.pi * 2 - math.acos(x2 / dis)
 		end
-
 		return math.floor((1 - (ang - math.pi / 2 - math.pi / total) / (math.pi * 2) % 1) * total) + 1
 	end
 end
@@ -93,8 +110,8 @@ function GM:RadialMousePressed(code, vec)
 		local selected = getSelected()
 		if selected and selected > 0 and code == MOUSE_LEFT then
 			if selected and ments[selected] then
-				if ments[selected].Code == "menuammo" then
-					RunConsoleCommand("menu_ammo")
+				if ments[selected].Code == "hmcd_ammo" then
+					RunConsoleCommand("open_ammo_drop_menu")
 				elseif ments[selected].Code == "unloadwep" then
 					local lply = LocalPlayer()
         			local wep = lply:GetActiveWeapon()
@@ -106,7 +123,17 @@ function GM:RadialMousePressed(code, vec)
 					lply:ConCommand("say *drop")
 				elseif ments[selected].Code == "phrase" then
 					local lply = LocalPlayer()
-					lply:ConCommand("random_phrase")
+					lply:ConCommand("+phrase")
+				elseif ments[selected].Code == "laser" then
+					local lply = LocalPlayer()
+					if !lply:GetActiveWeapon():GetNWBool("LaserStatus", false) then
+						lply:GetActiveWeapon():SetNWBool("LaserStatus", true)
+						lply:EmitSound("att/laser_on.ogg", 75,100,1,CHAN_AUTO)
+					else
+						lply:GetActiveWeapon():SetNWBool("LaserStatus", false)
+						lply:ViewPunch(Angle(20,0,0))
+						lply:EmitSound("att/laser_off.ogg", 75,100,1,CHAN_AUTO)
+					end
 				end
 			end
 		end
@@ -114,6 +141,8 @@ function GM:RadialMousePressed(code, vec)
 		self:CloseRadialMenu()
 	end
 end
+
+
 
 local elements
 local function addElement(transCode, code)
@@ -126,13 +155,15 @@ end
 concommand.Add(
 	"+menu_context",
 	function(client, com, args, full)
+		if client:GetNWBool("Phraseopen") then return end
 		if client:Alive() then
 			local Wep = client:GetActiveWeapon()
 			elements = {}
-			addElement("Ammo Menu","menuammo")
-			addElement("RandomPhrase","phrase")
+			addElement("Ammo Menu","hmcd_ammo")
+			addElement("Phrase_Category","phrase")
 			if IsValid(Wep) then
 				if Wep:GetClass() ~= "wep_jack_hmcd_hands" then addElement("Drop", "drop") end
+				if Wep:GetNWBool("Laser", false) then addElement("LaserOn","laser") end
         		if Wep:Clip1() > 0 then
 					addElement("UnloadWep", "unloadwep")
 				end
@@ -150,118 +181,90 @@ concommand.Add(
 )
 
 local tex = surface.GetTextureID("VGUI/white.vmt")
-local function drawShadow(n, f, x, y, color, pos)
-	draw.DrawText(n, f, x + 1, y + 1, color_black, pos)
-	draw.DrawText(n, f, x, y, color, pos)
+local function drawShadow(n,f,x,y,color,pos)
+	draw.DrawText(n,f,x + 1,y + 1,color_black,pos)
+	draw.DrawText(n,f,x,y,color,pos)
 end
-
-local function DrawCenteredText(text, font, x, y, color, outlineColor)
-    surface.SetFont(font)
-    local textWidth, textHeight = surface.GetTextSize(text)
-    surface.SetTextColor(outlineColor.r, outlineColor.g, outlineColor.b, outlineColor.a)
-    surface.SetTextPos(x - textWidth / 2, y - textHeight / 2)
-    surface.SetDrawColor(outlineColor.r, outlineColor.g, outlineColor.b, outlineColor.a)
-    surface.DrawText(text)
-
-    surface.SetTextColor(color.r, color.g, color.b, color.a)
-    surface.SetTextPos(x - textWidth / 2 + 1, y - textHeight / 2 + 1)
-    surface.DrawText(text)
-end
-
-local function DrawAmmoIcon(material, x, y, widght, height)
-	surface.SetDrawColor( 255, 255, 255, 255 )
-	surface.SetMaterial( material )
-    surface.DrawTexturedRect( x, y, widght, height)
+local function drawTextShadow(t,f,x,y,c,px,py)
+	draw.SimpleText(t,f,x + 1,y + 1,Color(0,0,0,c.a),px,py)
+	draw.SimpleText(t,f,x - 1,y - 1,Color(255,255,255,math.Clamp(c.a*.25,0,255)),px,py)
+	draw.SimpleText(t,f,x,y,c,px,py)
 end
 
 local circleVertex
-local fontHeight = draw.GetFontHeight("FontRadialMenu")
+local fontHeight = draw.GetFontHeight("Radial_QM")
 function GM:DrawRadialMenu()
 	if radialOpen then
-		local sw, sh = ScrW(), ScrH()
+		local sw,sh = ScrW(), ScrH()
 		local total = #ments
-		local w = math.min(sw * 0.45, sh * 0.33)
+		local w = math.min(sw * 0.45, sh * 0.45)
 		local h = w
 		local sx, sy = sw / 2, sh / 2
+
 		local selected = getSelected() or -1
-		if not circleVertex then
+
+
+		if !circleVertex then
 			circleVertex = {}
 			local max = 50
 			for i = 0, max do
 				local vx, vy = math.cos((math.pi * 2) * i / max), math.sin((math.pi * 2) * i / max)
-				table.insert(
-					circleVertex,
-					{
-						x = sx + w * 1 * vx,
-						y = sy + h * 1 * vy
-					}
-				)
+
+				table.insert(circleVertex, {x = sx + w* 1 * vx, y= sy + h* 1 * vy})
 			end
 		end
 
 		surface.SetTexture(tex)
 		local defaultTextCol = color_white
-		if selected <= 0 or selected ~= selected then
-			surface.SetDrawColor(20, 20, 20, 180)
+		if selected <= 0 || selected ~= selected then
+			surface.SetDrawColor(20,20,20,180)
 		else
-			surface.SetDrawColor(20, 20, 20, 120)
-			defaultTextCol = Color(150, 150, 150)
+			surface.SetDrawColor(20,20,20,120)
+			defaultTextCol = Color(150,150,150)
 		end
-
 		surface.DrawPoly(circleVertex)
+
 		local add = math.pi * 1.5 + math.pi / total
 		local add2 = math.pi * 1.5 - math.pi / total
-		for k, ment in pairs(ments) do
-			local x, y = math.cos((k - 1) / total * math.pi * 2 + math.pi * 1.5), math.sin((k - 1) / total * math.pi * 2 + math.pi * 1.5)
+
+		for k,ment in pairs(ments) do
+			local x,y = math.cos((k - 1) / total * math.pi * 2 + math.pi * 1.5), math.sin((k - 1) / total * math.pi * 2 + math.pi * 1.5)
+
 			local lx, ly = math.cos((k - 1) / total * math.pi * 2 + add), math.sin((k - 1) / total * math.pi * 2 + add)
+
 			local textCol = defaultTextCol
+			if(ment.Code=="villain")then
+				textCol=Color(200,10,10,150)
+			elseif(ment.Code=="hero") or (ment.Code=="police")then
+				textCol=Color(20,200,255,150)
+			end
 			if selected == k then
 				local vertexes = prevSelectedVertex -- uhh, you mean VERTICES? Dumbass.
-				if prevSelected ~= selected then
+
+				if prevSelected != selected then
 					prevSelected = selected
 					vertexes = {}
 					prevSelectedVertex = vertexes
 					local lx2, ly2 = math.cos((k - 1) / total * math.pi * 2 + add2), math.sin((k - 1) / total * math.pi * 2 + add2)
-					table.insert(
-						vertexes,
-						{
-							x = sx,
-							y = sy
-						}
-					)
 
-					table.insert(
-						vertexes,
-						{
-							x = sx + w * 1 * lx2,
-							y = sy + h * 1 * ly2
-						}
-					)
+					table.insert(vertexes, {x = sx, y = sy})
+
+					table.insert(vertexes, {x = sx + w* 1 * lx2, y= sy + h* 1 * ly2})
 
 					local max = math.floor(50 / total)
 					for i = 0, max do
 						local addv = (add - add2) * i / max + add2
 						local vx, vy = math.cos((k - 1) / total * math.pi * 2 + addv), math.sin((k - 1) / total * math.pi * 2 + addv)
-						table.insert(
-							vertexes,
-							{
-								x = sx + w * 1 * vx,
-								y = sy + h * 1 * vy
-							}
-						)
+
+						table.insert(vertexes, {x = sx + w* 1 * vx, y= sy + h* 1 * vy})
 					end
 
-					table.insert(
-						vertexes,
-						{
-							x = sx + w * 1 * lx,
-							y = sy + h * 1 * ly
-						}
-					)
+					table.insert(vertexes, {x = sx + w* 1 * lx, y= sy + h* 1 * ly})
+
 				end
 
 				surface.SetTexture(tex)
-				surface.SetDrawColor(129, 129, 129, 120)
+				surface.SetDrawColor(20,120,255,120)
 				if ment.Code == "happy" then
 					surface.SetDrawColor(255, 20, 20, 120)
 				elseif ment.Code == "burp" then
@@ -280,22 +283,27 @@ function GM:DrawRadialMenu()
 
 			if ment.TransCode == "Ammo Menu" then
 				Main = "Ammo Menu"
-				Sub = ""
+				Sub = "open ammo menu"
 			elseif ment.TransCode == "UnloadWep" then
 				Main = "Unload Ammo"
-				Sub = ""
+				Sub = "unload weapon in your hands"
 			elseif ment.TransCode == "Drop" then
 				Main = "Drop Weapon"
-				Sub = ""
-			elseif ment.TransCode == "RandomPhrase" then
-				Main = "Random Phrase"
-				Sub = ""
+				Sub = "drop weapon in your hands"
+			elseif ment.TransCode == "Phrase_Category" then
+				Main = "Phrase"
+				Sub = "open phrases category"
+			elseif ment.TransCode == "LaserOn" then
+				Main = "Laser"
+				Sub = (ply:GetActiveWeapon():GetNWBool("LaserStatus") and "Disable") or "Enable"
 			else
     			Main = "?"
     			Sub = "?"
 			end
-
-			drawShadow(Main, "FontRadialMenu", sx + w * 0.6 * x, sy + h * 0.6 * y - 10, textCol, 1)
+			drawShadow(ply:GetNWString("Character_Name") or "Bystander", "GM", w/2.7, h/8.5, Color(255,255,255,255), 1)
+			drawShadow(ply:GetNWString("Role") or "Bystander", "GM", w/3, h/5, Color(ply:GetNWInt("RoleColor_R"),ply:GetNWInt("RoleColor_G"),ply:GetNWInt("RoleColor_B"),255), 1)
+			drawShadow(Main, "Radial_QM", sx + w * 0.6 * x, sy + h * 0.6 * y - fontHeight / 3,textCol, 1)
+			drawShadow(Sub, "RadialSmall_QM", sx + w * 0.6 * x, sy + h * 0.6 * y + fontHeight / 2, textCol, 1)
 		end
 	end
 end

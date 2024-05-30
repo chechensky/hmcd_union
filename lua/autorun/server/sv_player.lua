@@ -146,8 +146,34 @@ end
 
 hook.Add("PlayerSay", "DropWeapon", function(ply,text)
 	if string.lower(text) == "*drop" then
-		ply:DropWeapon()
-		return ""
+        if !ply.fake then
+            ply:DropWeapon()
+            return ""
+        else
+            if IsValid(ply.wep) then
+                if IsValid(ply.WepCons) then
+                    ply.WepCons:Remove()
+                    ply.WepCons=nil
+                end
+                if IsValid(ply.WepCons2) then
+                    ply.WepCons2:Remove()
+                    ply.WepCons2=nil
+                end
+                ply.wep.canpickup=true
+                ply.wep:SetOwner()
+                ply.wep.curweapon=ply.curweapon
+                ply.Info.Weapons[ply.Info.ActiveWeapon].Clip1 = ply.wep.Clip
+                ply:StripWeapon(ply.Info.ActiveWeapon)
+                ply.Info.Weapons[ply.Info.ActiveWeapon]=nil
+				ply.wep:Remove()
+                ply.wep=nil
+                ply.Info.ActiveWeapon=nil
+                ply.Info.ActiveWeapon2=nil
+                ply:SetActiveWeapon(nil)
+                ply.FakeShooting=false
+            end
+            return ""
+        end
 	end
 end)
 
@@ -165,11 +191,14 @@ end)
 local util_PCM = util.PrecacheModel
 
 hook.Add("Identity", "IDGive", function(ply)
-	local cl_playermodel, playerModel = ply:GetInfo("cl_playermodel"), table.Random(PlayerModelInfoTable)
+
+	timer.Simple(.2, function()
+
+	local cl_playermodel, playerModel = ply:GetInfo("cl_playermodel"), table.Random(PlayerModels)
 	cl_playermodel = playerModel.model
 	local modelname = player_manager.TranslatePlayerModel(cl_playermodel)
 	if ply.CustomModel then
-		for key, maudhayle in pairs(PlayerModelInfoTable) do
+		for key, maudhayle in pairs(PlayerModels) do
 			if maudhayle.model == ply.CustomModel then
 				playerModel = maudhayle
 				break
@@ -193,6 +222,8 @@ hook.Add("Identity", "IDGive", function(ply)
 	ply:GenerateAccessories()
 	ply:GenerateName()
 	ply:ManipulateBonePosition(ply:LookupBone("ValveBiped.Bip01_Spine2"), Vector((ply.Rost) or 0,0,0))
+
+	end)
 end)
 
 hook.Add("Vars Player", "VarsS", function(ply)
@@ -203,6 +234,9 @@ hook.Add("Vars Player", "VarsS", function(ply)
 		ply:Give("wep_jack_hmcd_hands") 
 	end)
 
+	if !ply.LifeID then ply.LifeID = 0 end
+	ply.LifeID = ply.LifeID + 1
+
 	---------------------------------
 
 	-- Anatomy
@@ -210,8 +244,8 @@ hook.Add("Vars Player", "VarsS", function(ply)
 	-- Base Vars
 
 	ply.Blood = 5200
+	ply:SetNWFloat("Stamina_Arm", 50)
 	ply.stamina = {
-		['arm']=50,
 		['leg']=50
 	}
 	ply.dmginfo = {
@@ -230,10 +264,13 @@ hook.Add("Vars Player", "VarsS", function(ply)
 	ply.holdbreath = false
 	ply.sprint = false
 
+	ply.stamina_sound = false
+
 	ply.pulse = 70
 	ply.bullet_force = 0
 
 	ply.adrenaline = 0
+	ply.adrenaline_use = 0
 
 	ply.msgLeftArm = 0
 	ply.msgRightArm = 0
@@ -242,14 +279,12 @@ hook.Add("Vars Player", "VarsS", function(ply)
 
 	-- THink wokrs
 
-	ply.PainThink = 0
 	ply.pulseStart = 0
 	ply.bloodNext = 0
 
 	-- Anatomy Vars
 
 	ply.Hit = {
-		['brain']=false,
 		['lungs']=false,
 		['liver']=false,
 		['stomach']=false,
@@ -291,17 +326,9 @@ hook.Add("PlayerTick", "Glaza", function (ply)
 end)
 
 hook.Add( "PlayerFootstep", "CustomFootstep", function( ply, pos, foot, sound, volume, rf )
-	ply:ViewPunch(Angle(0,0,(ply:KeyDown(IN_MOVERIGHT) and 0.4) or (ply:KeyDown(IN_MOVELEFT) and -0.4) or 0))
-
-	if foot == 0 then
-		ply:ViewPunch(Angle( (ply.Bones["LeftLeg"] < 1 and 1.5) or 0.7,0,(ply:KeyDown(IN_MOVERIGHT) and 0.4) or (ply:KeyDown(IN_MOVELEFT) and -0.4) or 0))
-	else
-		ply:ViewPunch(Angle( (ply.Bones["RightLeg"] < 1 and -1) or -0.5,0,(ply:KeyDown(IN_MOVERIGHT) and 0.4) or (ply:KeyDown(IN_MOVELEFT) and -0.4) or 0)) 
-	end
-
-	if foot == 0 and ply:IsSprinting() then
-		ply:ViewPunch(Angle( (ply.Bones["LeftLeg"] < 1 and 2) or 0.4,0,(ply:KeyDown(IN_MOVERIGHT) and 0.4) or (ply:KeyDown(IN_MOVELEFT) and -0.4) or 0))
-	elseif foot == 1 and ply:IsSprinting() then
-		ply:ViewPunch(Angle( (ply.Bones["RightLeg"] < 1 and 1.5) or -0.2,0,(ply:KeyDown(IN_MOVERIGHT) and 0.4) or (ply:KeyDown(IN_MOVELEFT) and -0.4) or 0))
+	if ply:IsSprinting() and foot == 0 then
+		ply:ViewPunch(Angle((ply.Bones["LeftLeg"] < 1 and 3) or 1,0,0))
+	elseif ply:IsSprinting() and foot == 1 then
+		ply:ViewPunch(Angle((ply.Bones["RightLeg"] < 1 and 3) or 1,0,0))
 	end
 end)

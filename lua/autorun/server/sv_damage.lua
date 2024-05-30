@@ -1,5 +1,4 @@
 print("no empty")
-
 -- damage ??
 
 local filterEnt
@@ -46,9 +45,9 @@ hook.Add("EntityTakeDamage","ragdamage",function(ent,dmginfo)
 
 	if rag and dmginfo:IsDamageType(DMG_CRUSH) and att and att:IsRagdoll() then
 		dmginfo:SetDamage(0)
-
 		return true
 	end
+    
 	local physics_bone = GetPhysicsBoneDamageInfo(ent,dmginfo)
 	local hitgroup
 	local isfall
@@ -97,33 +96,36 @@ end)
 --------------------------------------------------------
 
 -- damage you base
-
 hook.Add("HOOK_UNION_Damage","Hit",function(ply,hitgroup,dmginfo,rag)
     local ent = rag or ply
     local inf = dmginfo:GetInflictor()
-    print(rag)
+    print("ammo", dmginfo:GetAmmoType())
+
+    dmg_d = dmginfo:GetDamage()
+    if dmginfo:IsDamageType(DMG_BULLET+DMG_BUCKSHOT+DMG_SNIPER) then
+        dmg_d = dmg_d * 3.5
+        ply.Bleed = ply.Bleed + math.random(5, 10)
+    elseif dmginfo:IsDamageType(DMG_SLASH+DMG_CLUB+DMG_BLAST+DMG_CRUSH) then
+        dmg_d = dmg_d * 1.2
+    end
+
+    local force_hit = dmg_d / math.random(2.1, 3.2)
+    ply.bullet_force = ply.bullet_force + force_hit
+    ply.pain = ply.pain + force_hit
+
     if dmginfo:IsDamageType(DMG_SLASH+DMG_BULLET+DMG_BUCKSHOT+DMG_SNIPER) then
         for i = 1, 5 do
-            --на месте этой строки была фича на прописку эффектов крови(ent:GetPos() + VectorRand(-5,5),VectorRand(-15,15))
         end
     end
-    if hitgroup == HITGROUP_HEAD then
 
-        if
-            dmginfo:GetDamageType() == DMG_CRUSH and
-            dmginfo:GetDamage() >= 6 and
-            ent:GetVelocity():Length() > 800
-        then
-            ply:ChatPrint("Your Neck is broken")
-            ent:EmitSound("neck_snap_01.wav",511,100,1,CHAN_ITEM)
-            dmginfo:ScaleDamage(300)
-            if ply:Alive() then
-                Faking(ply)
-            end
-            return
-        end
+    if hitgroup == HITGROUP_HEAD and dmginfo:GetDamageType() == DMG_CRUSH and dmginfo:GetDamage() >= 6 and ent:GetVelocity():Length() > 200 then
+        ply:ChatPrint("Your neck is broken")
+        ent:EmitSound("neck_snap_01.wav",511,100,1,CHAN_ITEM)
+        ply:Kill()
+        return
     end
-    if dmginfo:GetDamage() >= 50 or (dmginfo:GetDamageType() == DMG_CRUSH and dmginfo:GetDamage() >= 6 and ent:GetVelocity():Length() > 700) then
+
+    if dmginfo:GetDamage() >= 50 or (dmginfo:GetDamageType() == DMG_CRUSH and dmginfo:GetDamage() >= 20 and ent:GetVelocity():Length() > 700) then
         local brokenLeftLeg = hitgroup == HITGROUP_LEFTLEG
         local brokenRightLeg = hitgroup == HITGROUP_RIGHTLEG
         local brokenLeftArm = hitgroup == HITGROUP_LEFTARM
@@ -131,24 +133,24 @@ hook.Add("HOOK_UNION_Damage","Hit",function(ply,hitgroup,dmginfo,rag)
 
         local sub = dmginfo:GetDamage() / 120
         if brokenLeftArm and ply.Bones['LeftArm']>=1 then
-            ply:ChatPrint("Your Left Arm is broken")
+            ply:ChatPrint("Your left arm is broken")
+            ply.pain = ply.pain + 120
             ply.Bones['LeftArm'] = ply.Bones['LeftArm'] - sub
-            if ply.ModelSex == "male" then sound.Play("vo/npc/male01/myarm02.wav", ent:GetPos(), 75, 100) else sound.Play("vo/npc/female01/myarm02.wav", ent:GetPos(), 75, 100) end
-            ent:EmitSound("neck_snap_01.wav",70,65,0.4,CHAN_ITEM)
+            ent:EmitSound("npc/barnacle/neck_snap2.wav",70,65,0.4,CHAN_ITEM)
         end
 
         if brokenRightArm and ply.Bones['RightArm']>=1 then
-            ply:ChatPrint("Your Right Arm is broken")
+            ply:ChatPrint("Your right arm is broken")
+            ply.pain = ply.pain + 120
             ply.Bones['RightArm'] = ply.Bones['RightArm'] - sub
-            if ply.ModelSex == "male" then sound.Play("vo/npc/male01/myarm01.wav", ent:GetPos(), 75, 100) else sound.Play("vo/npc/female01/myarm01.wav", ent:GetPos(), 75, 100) end
-            ent:EmitSound("neck_snap_01.wav",70,65,0.4,CHAN_ITEM)
+            ent:EmitSound("npc/barnacle/neck_snap1.wav",70,65,0.4,CHAN_ITEM)
         end
 
         if brokenLeftLeg and ply.Bones['LeftLeg']>=1 then
-            ply:ChatPrint("Your Left Leg is broken")
+            ply:ChatPrint("Your left leg is broken")
+            ply.pain = ply.pain + 120
             ply.Bones['LeftLeg'] = ply.Bones['LeftLeg'] - sub
-            ent:EmitSound("neck_snap_01.wav",70,65,0.4,CHAN_ITEM)
-            if ply.ModelSex == "male" then sound.Play("vo/npc/male01/myleg01.wav", ent:GetPos(), 75, 100) else sound.Play("vo/npc/female01/myleg01.wav", ent:GetPos(), 75, 100) end
+            ent:EmitSound("npc/barnacle/neck_snap1.wav",70,65,0.4,CHAN_ITEM)
             
             if ply.Bones['LeftLeg'] < 1 and !ply.fake then
                 Faking(ply)
@@ -156,10 +158,10 @@ hook.Add("HOOK_UNION_Damage","Hit",function(ply,hitgroup,dmginfo,rag)
         end
 
         if brokenRightLeg and ply.Bones['RightLeg']>=1 then
-            ply:ChatPrint("Your Right Leg is broken")
+            ply:ChatPrint("Your right leg is broken")
+            ply.pain = ply.pain + 120
             ply.Bones['RightLeg'] = ply.Bones['RightLeg'] - sub
-            ent:EmitSound("neck_snap_01.wav",70,65,0.4,CHAN_ITEM)
-            if ply.ModelSex == "male" then sound.Play("vo/npc/male01/myleg02.wav", ent:GetPos(), 75, 100) else sound.Play("vo/npc/female01/myleg02.wav", ent:GetPos(), 75, 100) end
+            ent:EmitSound("npc/barnacle/neck_snap1.wav",70,65,0.4,CHAN_ITEM)
             
             if ply.Bones['RightLeg'] < 1 and !ply.fake then
                 Faking(ply)
@@ -178,143 +180,140 @@ hook.Add("HOOK_UNION_Damage","Hit",function(ply,hitgroup,dmginfo,rag)
 
         local dmgpos = dmginfo:GetDamagePosition()
 
+        local pos,ang = ent:GetBonePosition(ent:LookupBone('ValveBiped.Bip01_Head1'))
+        local brain = util.IntersectRayWithOBB(dmgpos,penetration,pos,ang,Vector(3,-3,-2),Vector(6,1,2))
+        local jaw = util.IntersectRayWithOBB(dmgpos,penetration,pos,ang,Vector(-1,-5,-3),Vector(2,1,3))
+        local neckartery_1 = util.IntersectRayWithOBB(dmgpos,penetration, pos, ang, Vector(-3,-2,-2), Vector(0,-1,-1))
+        local neckartery_2 = util.IntersectRayWithOBB(dmgpos,penetration, pos, ang, Vector(-3,-2,1), Vector(0,-1,2))
+
+        local pos,ang = ent:GetBonePosition(ent:LookupBone('ValveBiped.Bip01_Spine'))
+        local intestines = util.IntersectRayWithOBB(dmgpos,penetration, pos, ang, Vector(-4,-1,-6),Vector(1,5,6))
+
+        local pos,ang = ent:GetBonePosition(ent:LookupBone('ValveBiped.Bip01_Spine1'))
+
+        local matrix = ent:GetBoneMatrix(ent:LookupBone('ValveBiped.Bip01_Spine1'))
+        local ang_spine_matrix = matrix:GetAngles()
+        local pos_spine_matrix = ent:GetBonePosition(ent:LookupBone('ValveBiped.Bip01_Spine1'))
+
+        local liver = util.IntersectRayWithOBB(dmgpos,penetration, pos, ang, Vector(-4,-1,-6),Vector(2,5,-1))
+        local stomach = util.IntersectRayWithOBB(dmgpos,penetration, pos, ang, Vector(-4,-1,-1),Vector(2,5,6))
+        local spine = util.IntersectRayWithOBB(dmgpos,penetration, pos_spine_matrix, ang_spine_matrix, Vector(-8,-3,-1),Vector(2,-2,1))
+
         local pos,ang = ent:GetBonePosition(ent:LookupBone('ValveBiped.Bip01_Spine2'))
-        local huy = util.IntersectRayWithOBB(dmgpos,penetration,pos,ang,Vector(-1,0,-6),Vector(10,6,6))
-        
-        if huy then
+        local lung = util.IntersectRayWithOBB(dmgpos,penetration,pos,ang,Vector(-1,0,-6),Vector(10,6,6))
+        local heart = util.IntersectRayWithOBB(dmgpos,penetration, pos, ang, Vector(1,0,-1),Vector(5,4,3))
+
+        local pos,ang = ent:GetBonePosition(ent:LookupBone('ValveBiped.Bip01_L_Forearm'))
+        local left_hand_artery = util.IntersectRayWithOBB(dmgpos,penetration, pos, ang, Vector(-5,-1,-2), Vector(10,0,-1))
+
+        local pos,ang = ent:GetBonePosition(ent:LookupBone('ValveBiped.Bip01_R_Forearm'))
+        local right_hand_artery = util.IntersectRayWithOBB(dmgpos,penetration, pos, ang, Vector(-5,-2,1), Vector(10,0,2))
+
+        local pos,ang = ent:GetBonePosition(ent:LookupBone('ValveBiped.Bip01_L_Calf'))
+        local left_leg_artery = util.IntersectRayWithOBB(dmgpos,penetration, pos, ang, Vector(-5,-1,-2), Vector(10,0,-1))
+
+        local pos,ang = ent:GetBonePosition(ent:LookupBone('ValveBiped.Bip01_R_Calf'))
+        local right_leg_artery = util.IntersectRayWithOBB(dmgpos,penetration, pos, ang, Vector(-5,-2,1), Vector(10,0,2))
+
+        if lung then
             if !ply.Hit['lungs'] then
                 ply.Hit['lungs'] = true
             end
         end
 
-        if brainluti then
+        if brain then
             if dmginfo:IsDamageType(DMG_BULLET) and not inf.RubberBullets then
-                ply.Hit["brain"] = true
+                ply:Kill()
             end
         end
 
-        local pos,ang = ent:GetBonePosition(ent:LookupBone('ValveBiped.Bip01_Head1'))
-        local huy = util.IntersectRayWithOBB(dmgpos,penetration,pos,ang,Vector(-1,-5,-3),Vector(2,1,3))
-
-        if huy then
+        if jaw then
             if ply.Bones['Jaw']>0 and dmginfo:IsDamageType(DMG_BULLET+DMG_CLUB) and not inf.RubberBullets then
-                ply.Bones['Jaw']=ply.Bones['Jaw']-math.Rand(0.3,1)
+                ply.Bones['Jaw']=ply.Bones['Jaw']-(dmginfo:GetDamage()/100)
                 if ply.Bones['Jaw'] <= 0.6 then
+                    ply:ChatPrint("Your jaw has been dislocated")
+                    ply.pain = ply.pain + 150
                     if !ply.fake then
                         Faking(ply)
                     end
                 end
                 if ply.Bones['Jaw'] <= 0.4 then
+                    ply:ChatPrint("Your jaw is broken")
                     ply.mutejaw = true
                 end
             end
         end
 
-        --brain
-        local pos,ang = ent:GetBonePosition(ent:LookupBone('ValveBiped.Bip01_Spine1'))
-        local huy = util.IntersectRayWithOBB(dmgpos,penetration, pos, ang, Vector(-4,-1,-6),Vector(2,5,-1))
-
-        if huy then --ply:ChatPrint("You were hit in the liver.")
+        if liver then
             if ply.Hit['liver']!=true and !dmginfo:IsDamageType(DMG_CLUB) then
                 ply.Hit['liver'] = true
             end
         end
-        --liver
-
-        local pos,ang = ent:GetBonePosition(ent:LookupBone('ValveBiped.Bip01_Spine1'))
-        local huy = util.IntersectRayWithOBB(dmgpos,penetration, pos, ang, Vector(-4,-1,-1),Vector(2,5,6))
         
-        if huy then --ply:ChatPrint("You were hit in the stomach.")
+        if stomach then
             if ply.Hit['stomach'] != true and !dmginfo:IsDamageType(DMG_CLUB) then
                 ply.Hit['stomach'] = true
             end
         end
-        --stomach
-
-        local pos,ang = ent:GetBonePosition(ent:LookupBone('ValveBiped.Bip01_Spine'))
-        local huy = util.IntersectRayWithOBB(dmgpos,penetration, pos, ang, Vector(-4,-1,-6),Vector(1,5,6))
         
-        if huy then --ply:ChatPrint("You were hit in the intestines.")
+        if intestines then
             if ply.Hit['intestines']!=true and !dmginfo:IsDamageType(DMG_CLUB) then
                 ply.Hit['intestines'] = true
             end
         end
-
-        local pos,ang = ent:GetBonePosition(ent:LookupBone('ValveBiped.Bip01_Spine2'))
-        local huy = util.IntersectRayWithOBB(dmgpos,penetration, pos, ang, Vector(1,0,-1),Vector(5,4,3))
         
-        if huy then --ply:ChatPrint("You were hit in the heart.")
+        if heart then
             if !ply.Hit['heart'] and !dmginfo:IsDamageType(DMG_CLUB) then
                 ply.Hit['heart'] = true
             end
         end
-        --heart
-        if IsValid(dmginfo:GetAttacker()) and dmginfo:IsDamageType(DMG_BULLET+DMG_SLASH+DMG_BLAST+DMG_ENERGYBEAM+DMG_NEVERGIB+DMG_ALWAYSGIB+DMG_PLASMA+DMG_AIRBOAT+DMG_SNIPER+DMG_BUCKSHOT) then 
-            local pos,ang = ent:GetBonePosition(ent:LookupBone('ValveBiped.Bip01_Head1'))
-            local huy = util.IntersectRayWithOBB(dmgpos,penetration, pos, ang, Vector(-3,-2,-2), Vector(0,-1,-1))
-            local huy2 = util.IntersectRayWithOBB(dmgpos,penetration, pos, ang, Vector(-3,-2,1), Vector(0,-1,2))
 
-            if huy or huy2 then --ply:ChatPrint("You were hit in the artery.")
+        if IsValid(dmginfo:GetAttacker()) and dmginfo:IsDamageType(DMG_BULLET+DMG_SLASH+DMG_BLAST+DMG_ENERGYBEAM+DMG_NEVERGIB+DMG_ALWAYSGIB+DMG_PLASMA+DMG_AIRBOAT+DMG_SNIPER+DMG_BUCKSHOT) then 
+            if neckartery_1 or neckartery_2 then
                 if !ply.Hit['neck_artery'] and !dmginfo:IsDamageType(DMG_CLUB) then
                     ply.Hit['neck_artery']=true
                     sound.Play("bleeding/arteryhit.wav",ent:GetPos(),75,100)
                 end
             end
 
-            local pos,ang = ent:GetBonePosition(ent:LookupBone('ValveBiped.Bip01_L_Forearm'))
-            local handart = util.IntersectRayWithOBB(dmgpos,penetration, pos, ang, Vector(-5,-1,-2), Vector(10,0,-1))
-            if handart and !dmginfo:IsDamageType(DMG_CLUB) then
+            if left_hand_artery and !dmginfo:IsDamageType(DMG_CLUB) then
                 if !ply.Hit["lh_artery"] then
                     ply.Hit["lh_artery"] = true
                     sound.Play("bleeding/arteryhit.wav",ent:GetPos(),75,100)
                 end
             end
 
-            local pos,ang = ent:GetBonePosition(ent:LookupBone('ValveBiped.Bip01_R_Forearm'))
-            local handartr = util.IntersectRayWithOBB(dmgpos,penetration, pos, ang, Vector(-5,-2,1), Vector(10,0,2))
-            if handartr and !dmginfo:IsDamageType(DMG_CLUB) then
+            if right_hand_artery and !dmginfo:IsDamageType(DMG_CLUB) then
                 if !ply.Hit["rh_artery"] then
                     ply.Hit["rh_artery"] = true
                     sound.Play("bleeding/arteryhit.wav",ent:GetPos(),75,100)
                 end
             end
 
-            local pos,ang = ent:GetBonePosition(ent:LookupBone('ValveBiped.Bip01_L_Calf'))
-            local legcalf = util.IntersectRayWithOBB(dmgpos,penetration, pos, ang, Vector(-5,-1,-2), Vector(10,0,-1))
-            if legcalf then
+            if left_leg_artery then
                 if !ply.Hit["ll_artery"] then
                     ply.Hit["ll_artery"] = true
                     sound.Play("bleeding/arteryhit.wav",ent:GetPos(),75,100)
                 end
             end
 
-            local pos,ang = ent:GetBonePosition(ent:LookupBone('ValveBiped.Bip01_R_Calf'))
-            local rightcalf = util.IntersectRayWithOBB(dmgpos,penetration, pos, ang, Vector(-5,-2,1), Vector(10,0,2))
-            if rightcalf then
+            if right_leg_artery then
                 if !ply.Hit["rl_artery"] then
                     ply.Hit["rl_artery"] = true
                     sound.Play("bleeding/arteryhit.wav",ent:GetPos(),75,100)
                 end
             end
         end
-        --coronary artery
-        local matrix = ent:GetBoneMatrix(ent:LookupBone('ValveBiped.Bip01_Spine4'))
-        local ang = matrix:GetAngles()
-        local pos = ent:GetBonePosition(ent:LookupBone('ValveBiped.Bip01_Spine4'))
-        -- up spine
-        local huy = util.IntersectRayWithOBB(dmgpos,penetration, pos, ang, Vector(-8,-1,-1),Vector(2,0,1))
-        local matrix = ent:GetBoneMatrix(ent:LookupBone('ValveBiped.Bip01_Spine1'))
-        local ang = matrix:GetAngles()
-        local pos = ent:GetBonePosition(ent:LookupBone('ValveBiped.Bip01_Spine1'))
-        local huy2 = util.IntersectRayWithOBB(dmgpos,penetration, pos, ang, Vector(-8,-3,-1),Vector(2,-2,1))
-        if (huy2) and !ply.Hit['spine'] and !dmginfo:IsDamageType(DMG_CLUB) then
+
+        if (spine) and !ply.Hit['spine'] and dmginfo:IsDamageType(DMG_BULLET+DMG_CRUSH) then
             ply.Hit['spine']=true
             timer.Simple(0.01,function()
                 if !ply.fake then
                     Faking(ply)
                 end
             end)
-            ply:ChatPrint("Your Spine is broken")
+            ply:ChatPrint("Your spine is broken")
+            ply.pain = ply.pain + 300
             ent:EmitSound("neck_snap_01.wav",70,125,0.7,CHAN_ITEM)
         end
     end
@@ -328,31 +327,18 @@ end)
 
 -------------------------------------------------------------------------------
 
-hook.Add("ScalePlayerDamage", "PainWork", function(ply,hit,dmg)
-    dmg_d = dmg:GetDamage()
-    if dmg:IsDamageType(DMG_BULLET+DMG_BUCKSHOT+DMG_SNIPER) then
-        dmg_d = dmg_d * 5
-    elseif dmg:IsDamageType(DMG_SLASH+DMG_CLUB+DMG_BLAST+DMG_CRUSH) then
-        dmg_d = dmg_d * 3
-    end
-
-    local force_hit = dmg:GetDamage() / math.random(2.1, 3.2)
-    ply.bullet_force = ply.bullet_force + force_hit
-    ply.pain = ply.pain + force_hit
-
-
+hook.Add("ScalePlayerDamage","FallPain", function(ply,hit,dmg)
     if hit == HITGROUP_LEFTLEG or hit == HITGROUP_RIGHTLEG then
         if ply.bullet_force > 20 or ply.pain > 100 then
             if !ply.fake then
-                timer.Simple(.1,function() Faking(ply) end)
+                Faking(ply)
             end
         end
     end
-
     if hit == HITGROUP_STOMACH or hit == HITGROUP_CHEST then
         if ply.bullet_force > 14 or ply.pain > 120 then
             if !ply.fake then
-                timer.Simple(.1,function() Faking(ply) end)
+                Faking(ply)
             end
         end
     end
@@ -360,17 +346,36 @@ end)
 
 local hook_run = hook.Run
 
-timer.Create("PlayerTimerCall",1,0,function()
+timer.Create("MinusOrganismInt",3,0,function()
     for _, ply in player.Iterator() do
-        hook_run("PlayerTimer", ply)
+        hook_run("OrganismVars", ply)
     end
 end)
 
-hook.Add("PlayerTimer", "MinusInts", function(ply)
+timer.Create("PlusStamina",1.5,0,function()
+    for _, ply in player.Iterator() do
+        hook_run("StaminaVars", ply)
+    end
+end)
+
+hook.Add("OrganismVars", "MinusOrganismInt", function(ply)
+    if ply.pain < 0 then ply.pain = 0 end
     if ply.pain > 0 then
-        ply.pain = ply.pain - ply.bullet_force / 1.2
+        ply.pain = ply.pain - ply.bullet_force / 5
     end
     if ply.bullet_force > 0 then
         ply.bullet_force = ply.bullet_force - 3
+    end
+end)
+
+hook.Add("StaminaVars", "PlusStamina", function(ply)
+    if ply.stamina['leg'] > 50 then ply.stamina['leg'] = 50 end
+    if ply:GetNWFloat("Stamina_Arm", 50) > 50 then ply:SetNWFloat("Stamina_Arm", 50) end
+
+    if ply.stamina['leg'] < 50 and !ply:IsSprinting() then
+        ply.stamina['leg'] = ply.stamina['leg'] + 1.3
+    end
+    if ply:GetNWFloat("Stamina_Arm", 50) < 50 then
+        ply:SetNWFloat("Stamina_Arm", ply:GetNWInt("Stamina_Arm") + 1.1)
     end
 end)

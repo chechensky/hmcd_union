@@ -8,6 +8,7 @@ local healthCol = Color(120,255,20)
 function GM:HUDPaint()
 	local client = LocalPlayer()
 	self:DrawGameHUD(client)
+	self:DrawPhraseMenu()
 	self:DrawRadialMenu()
 end
 
@@ -32,12 +33,14 @@ function GM:DrawGameHUD(ply)
 	if IsValid(tr.Entity) and tr.HitPos:Distance(tr.StartPos) < 60 then
 		if tr.Entity:IsPlayer() or tr.Entity:IsRagdoll() then
 			self.LastLooked = (tr.Entity:IsRagdoll()) and RagdollOwner(tr.Entity) or tr.Entity
+			self.LastLookedType = (tr.Entity:IsRagdoll()) and "Ragdoll" or "Other"
 			self.LookedFade = CurTime()
 		end
 	end
-	if IsValid(self.LastLooked) and self.LookedFade + 1 > CurTime() and self.LastLooked != LocalPlayer() then
-		local name = (tr.Entity:IsRagdoll()) and tr.Entity:GetNWString("Nickname") or self.LastLooked:GetNWString("Character_Name")
-		local col = self.LastLooked:GetPlayerColor() or Vector()
+	if IsValid(self.LastLooked) and self.LookedFade + 1 > CurTime() and self.LastLooked != LocalPlayer() and LocalPlayer():Alive() then
+		local type_look = self.LastLookedType
+		local name = (type_look == "Ragdoll") and tr.Entity:GetNWString("Character_Name") or self.LastLooked:GetNWString("Character_Name")
+		local col = (type_look == "Ragdoll") and tr.Entity:GetNWVector("plycolor") or self.LastLooked:GetPlayerColor() or Vector()
 		col = Color(col.x * 255, col.y * 255, col.z * 255)
 		col.a = (1 - (CurTime() - self.LookedFade) / 1) * 255
 		drawTextShadow(name, "FontTargetP", ScrW() / 2, ScrH() / 2 + 80, col, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
@@ -48,10 +51,11 @@ function GM:DrawGameHUD(ply)
 		["357"]=surface.GetTextureID("vgui/hud/hmcd_round_38"),
 		["AlyxGun"]=surface.GetTextureID("vgui/hud/hmcd_round_22"),
 		["Buckshot"]=surface.GetTextureID("vgui/hud/hmcd_round_12"),
-		["AR2"]=surface.GetTextureID("vgui/hud/hmcd_round_792"),
-		["SMG1"]=surface.GetTextureID("vgui/hud/hmcd_round_556"),
+		["AR2"]=surface.GetTextureID("vgui/hud/hmcd_round_4630"),
+		["SMG1"]=surface.GetTextureID("vgui/hud/hmcd_round_76239"),
 		["XBowBolt"]=surface.GetTextureID("vgui/hud/hmcd_round_arrow"),
-		["AirboatGun"]=surface.GetTextureID("vgui/hud/hmcd_nail")
+		["AirboatGun"]=surface.GetTextureID("vgui/hud/hmcd_nail"),
+		["RPG_Round"]=surface.GetTextureID("vgui/hud/hmcd_round_76239")
 	}
 
 	if ply.AmmoShow and ply.AmmoShow>CurTime() and ply:GetActiveWeapon().AmmoType != nil then
@@ -94,20 +98,47 @@ function GM:GUIMousePressed(code, vector)
 	--
 end
 
+local WHOTBackTab={
+	["$pp_colour_addr"]=0,
+	["$pp_colour_addg"]=0,
+	["$pp_colour_addb"]=0,
+	["$pp_colour_brightness"]=-.05,
+	["$pp_colour_contrast"]=1,
+	["$pp_colour_colour"]=0,
+	["$pp_colour_mulr"]=0,
+	["$pp_colour_mulg"]=0,
+	["$pp_colour_mulb"]=0
+}
+local RedVision={
+	["$pp_colour_addr"]=0,
+	["$pp_colour_addg"]=0,
+	["$pp_colour_addb"]=0,
+	["$pp_colour_brightness"]=0,
+	["$pp_colour_contrast"]=1,
+	["$pp_colour_colour"]=1,
+	["$pp_colour_mulr"]=0,
+	["$pp_colour_mulg"]=0,
+	["$pp_colour_mulb"]=0
+}
+
+function GM:GUIMousePressed(code, vector)
+	return self:PhraseMousePressed(code,vector)
+end
+
 function GM:OpenAmmoDropMenu()
-	local Ply,AmmoType,AmmoAmt=LocalPlayer(),"Pistol",1
-	local ammos = LocalPlayer():GetAmmo()
-	for key,name in pairs(ammos)do
+	local Ply,AmmoType,AmmoAmt,Ammos=LocalPlayer(),"Pistol",1,{}
+
+	for key,name in pairs(HMCD_AmmoNames)do
 		local Amownt=Ply:GetAmmoCount(key)
 		if(Amownt>0)then Ammos[key]=Amownt end
 	end
 	
-	if(#table.GetKeys(ammos)<=0)then
+	if(#table.GetKeys(Ammos)<=0)then
 		Ply:ChatPrint("You have no ammo!")
 		return
 	end
 	
-	AmmoType=table.GetKeys(ammos)[1]
+	AmmoType=table.GetKeys(Ammos)[1]
 	AmmoAmt=Ammos[AmmoType]
 
 	local DermaPanel=vgui.Create("DFrame")
@@ -119,6 +150,7 @@ function GM:OpenAmmoDropMenu()
 	DermaPanel:ShowCloseButton(true)
 	DermaPanel:MakePopup()
 	DermaPanel:Center()
+	DermaPanel:Close()
 
 	local MainPanel=vgui.Create("DPanel",DermaPanel)
 	MainPanel:SetPos(5,25)
@@ -151,8 +183,8 @@ function GM:OpenAmmoDropMenu()
 	local AmmoList=vgui.Create("DListView",MainPanel)
 	AmmoList:SetMultiSelect(false)
 	AmmoList:AddColumn("Type")
-	for key,amm in pairs(ammos)do
-		AmmoList:AddLine(ammos[key]).Type=key
+	for key,amm in pairs(Ammos)do
+		AmmoList:AddLine(HMCD_AmmoNames[key]).Type=key
 	end
 	AmmoList:SetPos(5,5)
 	AmmoList:SetSize(280,150)
@@ -175,29 +207,129 @@ function GM:OpenAmmoDropMenu()
 	end
 end
 
-local WHOTBackTab={
-	["$pp_colour_addr"]=0,
-	["$pp_colour_addg"]=0,
-	["$pp_colour_addb"]=0,
-	["$pp_colour_brightness"]=-.05,
-	["$pp_colour_contrast"]=1,
-	["$pp_colour_colour"]=0,
-	["$pp_colour_mulr"]=0,
-	["$pp_colour_mulg"]=0,
-	["$pp_colour_mulb"]=0
-}
-local RedVision={
-	["$pp_colour_addr"]=0,
-	["$pp_colour_addg"]=0,
-	["$pp_colour_addb"]=0,
-	["$pp_colour_brightness"]=0,
-	["$pp_colour_contrast"]=1,
-	["$pp_colour_colour"]=1,
-	["$pp_colour_mulr"]=0,
-	["$pp_colour_mulg"]=0,
-	["$pp_colour_mulb"]=0
-}
+concommand.Add("open_ammo_drop_menu", function()
+    GAMEMODE:OpenAmmoDropMenu()
+end)
 
-function GM:GUIMousePressed(code, vector)
-	return self:RadialMousePressed(code,vector)
+function GM:OpenEquipmentDropMenu()
+	local ply,eqType=LocalPlayer(),""
+	if(table.Count(ply.Equipment)<=0)then
+		ply:ChatPrint("You have no equipment!")
+		return
+	end
+	local size=ScrW()/8.5
+	local DermaPanel=vgui.Create("DFrame")
+	DermaPanel:SetSize(size,size)
+	DermaPanel:SetTitle("Drop Equipment")
+	DermaPanel:SetVisible(true)
+	DermaPanel:SetDraggable(true)
+	DermaPanel:ShowCloseButton(true)
+	DermaPanel:MakePopup()
+	DermaPanel:Center()
+
+	local MainPanel=vgui.Create("DPanel",DermaPanel)
+	MainPanel:SetPos(5,25)
+	MainPanel:SetSize(size*0.96,size*0.9)
+	MainPanel.Paint=function()
+		surface.SetDrawColor(0,20,40,255)
+		surface.DrawRect(0,0,MainPanel:GetWide(),MainPanel:GetTall())
+	end
+
+	local amtselect=vgui.Create("DNumSlider",MainPanel)
+
+	local EquipmentList=vgui.Create("DListView",MainPanel)
+	EquipmentList:SetMultiSelect(false)
+	EquipmentList:AddColumn("Type")
+	for key,amm in pairs(ply.Equipment)do
+		EquipmentList:AddLine(key).Type=table.KeyFromValue(HMCD_EquipmentNames,key)
+	end
+	EquipmentList:SetPos(5,5)
+	EquipmentList:SetSize(size*0.93,size*0.5)
+	EquipmentList.OnRowSelected=function(panel,ind,row)
+		eqType=row.Type
+	end
+	EquipmentList:SelectFirstItem()
+
+	local gobutton=vgui.Create("Button",MainPanel)
+	gobutton:SetSize(size*0.9,size*0.15)
+	gobutton:SetPos(size/30,size*0.73)
+	gobutton:SetText("Drop")
+	gobutton:SetVisible(true)
+	gobutton.DoClick=function()
+		DermaPanel:Close()
+		ply.Equipment[HMCD_EquipmentNames[eqType]]=nil
+		RunConsoleCommand("hmcd_dropequipment",eqType)
+	end
+end
+
+function GM:OpenAttachmentMenu()
+	local ply,Wep,attType=LocalPlayer(),LocalPlayer():GetActiveWeapon(),0
+	local List={}
+	if IsValid(Wep) then
+		local atts={}
+		if Wep.Attachments and Wep.Attachments["Owner"] then
+			for attachment,info in pairs(Wep.Attachments["Owner"]) do
+				if info.num then
+					if(Wep:GetNWBool(attachment)) and not(ply.Equipment[HMCD_EquipmentNames[info.num]]) then
+						table.insert(List,info.num)
+					end
+					table.insert(atts,info.num)
+				end
+			end
+		end
+		if ply.Equipment then
+			for i,attachment in pairs(atts) do
+				if(ply.Equipment[HMCD_EquipmentNames[attachment]])then
+					table.insert(List,attachment)
+				end
+			end
+		end	
+	end
+	if(#List<=0)then
+		ply:ChatPrint("You have no attachments!")
+		return
+	end
+	local size=ScrW()/8.5
+
+	local DermaPanel=vgui.Create("DFrame")
+	DermaPanel:SetPos(40,80)
+	DermaPanel:SetSize(size,size)
+	DermaPanel:SetTitle("Customize your weapon")
+	DermaPanel:SetVisible(true)
+	DermaPanel:SetDraggable(true)
+	DermaPanel:ShowCloseButton(true)
+	DermaPanel:MakePopup()
+	DermaPanel:Center()
+
+	local MainPanel=vgui.Create("DPanel",DermaPanel)
+	MainPanel:SetPos(5,25)
+	MainPanel:SetSize(size*0.96,size*0.9)
+	MainPanel.Paint=function()
+		surface.SetDrawColor(0,20,40,255)
+		surface.DrawRect(0,0,MainPanel:GetWide(),MainPanel:GetTall()+3)
+	end
+
+	local amtselect=vgui.Create("DNumSlider",MainPanel)
+
+	local AttachmentList=vgui.Create("DListView",MainPanel)
+	AttachmentList:SetMultiSelect(false)
+	AttachmentList:AddColumn("Type")
+	for i,att in pairs(List)do
+		AttachmentList:AddLine(HMCD_EquipmentNames[List[i]]).Type=att
+	end
+	AttachmentList:SetPos(5,5)
+	AttachmentList:SetSize(size*0.93,size*0.5)
+	AttachmentList.OnRowSelected=function(panel,ind,row)
+		attType=row.Type
+	end
+	AttachmentList:SelectFirstItem()
+	local gobutton=vgui.Create("Button",MainPanel)
+	gobutton:SetSize(size*0.9,size*0.15)
+	gobutton:SetPos(size/30,size*0.73)
+	gobutton:SetText("Attach")
+	gobutton:SetVisible(true)
+	gobutton.DoClick=function()
+		DermaPanel:Close()
+		RunConsoleCommand("hmcd_attachrequest",attType)
+	end
 end

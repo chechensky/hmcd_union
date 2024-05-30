@@ -1,71 +1,135 @@
-game.AddDecal("ChBlood1", "decals/checha/ch_blood1")
-game.AddDecal("ChBlood2", "decals/checha/ch_blood2")
-game.AddDecal("ChBlood3", "decals/checha/ch_blood3")
-game.AddDecal("ChBlood4", "decals/checha/ch_blood4")
-
-game.AddDecal("ArBlood1", "decals/checha/ar_blood1")
-game.AddDecal("ArBlood2", "decals/checha/ar_blood2")
-game.AddDecal("ArBlood3", "decals/checha/ar_blood3")
-game.AddDecal("ArBlood4", "decals/checha/ar_blood4")
-game.AddDecal("ArBlood5", "decals/checha/ar_blood5")
-
-local bloodpaint = {
-	"ChBlood1",
-	"ChBlood2",
-	"ChBlood3",
-	"ChBlood4"
-}
-
 Guns = {
-	"wep_jack_hmcd_glock17",
-	"wep_jack_hmcd_suppressed",
+	"wep_jack_hmcd_assaultrifle",
 	"wep_jack_hmcd_smallpistol",
+	"wep_jack_hmcd_akm",
+	"wep_jack_hmcd_suppressed",
 	"wep_jack_hmcd_revolver",
 	"wep_jack_hmcd_cz75a",
-	"wep_jack_hmcd_akm",
-	"wep_jack_hmcd_sr25",
+	"wep_jack_hmcd_crossbow",
+	"wep_jack_hmcd_mp7",
+	"wep_jack_hmcd_rifle",
+	"wep_jack_hmcd_mp5",
+	"wep_jack_hmcd_m249",
+	"wep_jack_hmcd_combinesniper",
 	"wep_jack_hmcd_ar2",
-	"wep_jack_hmcd_combinesniper"
+	"wep_jack_hmcd_ptrd",
+	"wep_jack_hmcd_remington",
+	"wep_jack_hmcd_shotgun",
+	"wep_jack_hmcd_spas",
+	"wep_jack_hmcd_sr25",
+	"wep_jack_hmcd_dbarrel",
+	"wep_jack_hmcd_glock17",
+	"wep_jack_hmcd_usp",
 }
-bullets = {
-}
-cir = {
-}
+
 TwoHandedOrNo = {
-	["wep_jack_hmcd_glock17"]=false,
-	["wep_jack_hmcd_suppressed"]=false,
+	["wep_jack_hmcd_assaultrifle"]=true,
 	["wep_jack_hmcd_smallpistol"]=false,
+	["wep_jack_hmcd_akm"]=true,
+	["wep_jack_hmcd_suppressed"]=false,
 	["wep_jack_hmcd_revolver"]=false,
 	["wep_jack_hmcd_cz75a"]=false,
-	["wep_jack_hmcd_akm"]=true,
-	["wep_jack_hmcd_sr25"]=true,
+	["wep_jack_hmcd_crossbow"]=true,
+	["wep_jack_hmcd_mp7"]=true,
+	["wep_jack_hmcd_rifle"]=true,
+	["wep_jack_hmcd_mp5"]=true,
+	["wep_jack_hmcd_m249"]=true,
+	["wep_jack_hmcd_combinesniper"]=true,
 	["wep_jack_hmcd_ar2"]=true,
-	["wep_jack_hmcd_combinesniper"]=true
-
+	["wep_jack_hmcd_ptrd"]=true,
+	["wep_jack_hmcd_remington"]=true,
+	["wep_jack_hmcd_shotgun"]=true,
+	["wep_jack_hmcd_spas"]=true,
+	["wep_jack_hmcd_sr25"]=true,
+	["wep_jack_hmcd_dbarrel"]=true,
+	["wep_jack_hmcd_glock17"]=false,
+	["wep_jack_hmcd_usp"]=false,
 }
 
-Vectors = {
-	["wep_jack_hmcd_glock17"]=Vector(0,-0.5,-1),
-	["wep_jack_hmcd_suppressed"]=Vector(3,-1.5,-1),
-	["wep_jack_hmcd_smallpistol"]=Vector(0,-.5,1.5),
+local Vectors = {
+	["wep_jack_hmcd_assaultrifle"]=Vector(13,-1.8,3),
+	["wep_jack_hmcd_akm"]=Vector(13,-1.8,3),
+	["wep_jack_hmcd_crossbow"]=Vector(0,1,-1),
+	["wep_jack_hmcd_mp7"]=Vector(4,-1.8,-1.5),
+	["wep_jack_hmcd_rifle"]=Vector(0,-1.5,-2),
+	["wep_jack_hmcd_mp5"]=Vector(5,-1.8,-1),
+	["wep_jack_hmcd_m249"]=Vector(5.5,-1.8,-2),
+	["wep_jack_hmcd_combinesniper"]=Vector(15,-1.8,-2),
+	["wep_jack_hmcd_ar2"]=Vector(5.5,-1.8,-2),
+	["wep_jack_hmcd_ptrd"]=Vector(4,-1.8,-2),
+	["wep_jack_hmcd_remington"]=Vector(5,-1.3,-4),
+	["wep_jack_hmcd_shotgun"]=Vector(0,-1.3,1),
+	["wep_jack_hmcd_spas"]=Vector(6,-1,-2.8),
+	["wep_jack_hmcd_sr25"]=Vector(5,-1,-1),
+	["wep_jack_hmcd_dbarrel"]=Vector(1.5,-1,-1),
+	["wep_jack_hmcd_glock17"]=Vector(3.5,-1,-2),
+	
+	["wep_jack_hmcd_suppressed"]=Vector(6,-1.5,-1),
+	["wep_jack_hmcd_smallpistol"]=Vector(0,-.5,0),
 	["wep_jack_hmcd_revolver"]=Vector(-2,-1,1.5),
 	["wep_jack_hmcd_cz75a"]=Vector(12,-1,4),
-	["wep_jack_hmcd_akm"]=Vector(4.5,-2,0),
-	["wep_jack_hmcd_sr25"]=Vector(4.5,-2,0),
-	["wep_jack_hmcd_combinesniper"]=Vector(15,-1.8,-2),
-	["wep_jack_hmcd_ar2"]=Vector(16,-2,2)
+	["wep_jack_hmcd_akm"]=Vector(13,-1.8,3),
+	["wep_jack_hmcd_usp"]=Vector(6,-1.5,-1)
 }
 
-AnglesYO = {
-	["wep_jack_hmcd_ar2"]=Angle(20,-180,180)
+local Vectors2 = {
+	["wep_jack_hmcd_assaultrifle"]=Vector(15,-3.8,-4),
+	["wep_jack_hmcd_akm"]=Vector(15,-3.8,-4),
+	["wep_jack_hmcd_crossbow"]=Vector(18,-3.8,-2),
+	["wep_jack_hmcd_mp7"]=Vector(5,-3.8,-2),
+	["wep_jack_hmcd_rifle"]=Vector(18,-3.8,-2),
+	["wep_jack_hmcd_mp5"]=Vector(12,-2.8,-3.5),
+	["wep_jack_hmcd_m249"]=Vector(10,-3.8,-1),
+	["wep_jack_hmcd_combinesniper"]=Vector(10,-3.8,-1),
+	["wep_jack_hmcd_ar2"]=Vector(10,-3.8,-1),
+	["wep_jack_hmcd_ptrd"]=Vector(13,-4.5,-5.5),
+	["wep_jack_hmcd_remington"]=Vector(14,-3.8,-3),
+	["wep_jack_hmcd_shotgun"]=Vector(18,-3,-1.5),
+	["wep_jack_hmcd_spas"]=Vector(13,-4,-2),
+	["wep_jack_hmcd_sr25"]=Vector(13,-4,-4),
+	["wep_jack_hmcd_dbarrel"]=Vector(10,-3.9,-2)
 }
 
-Vectors2 = {
-	["wep_jack_hmcd_akm"]=Vector(9,-3,0),
-	["wep_jack_hmcd_sr25"]=Vector(6,-3,0),
-	["wep_jack_hmcd_ar2"]=Vector(12,-2,2),
-	["wep_jack_hmcd_combinesniper"]=Vector(10,-3.8,-1)
+local bullets = {
+	["wep_jack_hmcd_remington"] = 0.08,
+	["wep_jack_hmcd_shotgun"] = 0.08,
+	["wep_jack_hmcd_spas"] = 0.08,
+	["wep_jack_hmcd_dbarrel"] = 0.1
 }
+
+local cir = {
+	["wep_jack_hmcd_remington"] = 8,
+	["wep_jack_hmcd_shotgun"] = 8,
+	["wep_jack_hmcd_spas"] = 12,
+	["wep_jack_hmcd_dbarrel"] = 12
+}
+
+-- checha tables
+
+local Angle_Normalize = {
+	["wep_jack_hmcd_ar2"]=Angle(0,180,180),
+	["wep_jack_hmcd_usp"]=Angle(0,-10,-180),
+	["wep_jack_hmcd_glock17"]=Angle(0,-10,-180)
+}
+
+-- в первом векторе обязательнор нахуй поставить - в начале, мне лень было кодить там что бы автоматом - ставился
+local RecoilVector1 = {
+	["wep_jack_hmcd_akm"]=-150,
+	["wep_jack_hmcd_glock17"]=-35,
+	["wep_jack_hmcd_smallpistol"]=-25
+}
+local RecoilVector2 = {
+	["wep_jack_hmcd_akm"]=150,
+	["wep_jack_hmcd_glock17"]=35,
+	["wep_jack_hmcd_smallpistol"]=25
+}
+local RecoilUp = {
+	["wep_jack_hmcd_akm"]=100,
+	["wep_jack_hmcd_glock17"]=10,
+	["wep_jack_hmcd_smallpistol"]=15
+}
+
+local W_Models = {}
 
 vecZero = Vector(0,0,0)
 
@@ -79,7 +143,7 @@ function SpawnWeapon(ply,clip1)
 		if IsValid(rag) then
 			ply.FakeShooting=true
 			ply.wep = ents.Create("prop_physics")
-			ply.wep:SetModel(weapons.Get(ply.curweapon).WorldModel or nil)
+			ply.wep:SetModel(weapons.Get(ply.curweapon).WorldModel or W_Models[ply.curweapon] or nil)
 			ply.wep:SetOwner(ply)
 			local vec1=rag:GetPhysicsObjectNum(rag:TranslateBoneToPhysBone(rag:LookupBone( "ValveBiped.Bip01_R_Hand" ))):GetPos()
 			local vec2 = vecZero
@@ -88,12 +152,13 @@ function SpawnWeapon(ply,clip1)
 			vec2:Rotate(rag:GetPhysicsObjectNum(rag:TranslateBoneToPhysBone(rag:LookupBone( "ValveBiped.Bip01_R_Hand" ))):GetAngles())
 			ply.wep:SetPos(vec1+vec2)
 
-			ply.wep:SetAngles(rag:GetPhysicsObjectNum(rag:TranslateBoneToPhysBone(rag:LookupBone( "ValveBiped.Bip01_R_Hand" ))):GetAngles()-(AnglesYO[ply.curweapon] or Angle(0,0,-180)))
+			ply.wep:SetAngles(rag:GetPhysicsObjectNum(rag:TranslateBoneToPhysBone(rag:LookupBone( "ValveBiped.Bip01_R_Hand" ))):GetAngles()-(Angle_Normalize[ply.curweapon] or Angle(0,0,-180)))
 
 			ply.wep:SetCollisionGroup(COLLISION_GROUP_WEAPON)
 			ply.wep:Spawn()
 			ply:SetNWEntity("wep",ply.wep)
 			ply.wep:GetPhysicsObject():SetMass(0)
+			local weapon = ply:GetActiveWeapon()
 
 			CheckAmmo(ply, ply.wep)
 			if !IsValid(ply.WepCons) then
@@ -226,10 +291,10 @@ end
 function ReloadSound(wep)
     local ply = wep:GetOwner()
 	local weptable = weapons.Get(wep.curweapon)
-    timer.Create(ply:EntIndex().."snd"..wep:EntIndex(),1 or 0.1,1,function()
+    timer.Create(ply:EntIndex().."snd"..wep:EntIndex(),weptable.ReloadTime,1,function()
         if wep:IsValid() then
 			wep:GetPhysicsObject():ApplyForceCenter(wep:GetAngles():Up()*100+wep:GetAngles():Forward()*-200)
-            wep:EmitSound(weptable.ReloadSound["Both"], 55, 100, 1, CHAN_AUTO)
+            wep:EmitSound(weptable.ReloadSound, 55, 100, 1, CHAN_AUTO)
         end
     end)
 end
@@ -285,7 +350,6 @@ function FireShot(wep)
 	local ply = wep:GetOwner()
 	local info = ply.Info
 	-- knife
-
 	if ply.wepmelee == true or string.find(wep.curweapon, "knife") or wep.curweapon == "wep_jack_gmod_knife" then
 		if CurTime() < lastAttackTime + attackDelay then return end
 			local tr = util.TraceLine({
@@ -455,7 +519,6 @@ function FireShot(wep)
 	local weptable = weapons.Get(wep.curweapon)
 	function wep:BulletCallbackFunc(dmgAmt,ply,tr,dmg,tracer,hard,multi)
 		if(tr.MatType==MAT_FLESH)then
-			util.Decal(table.Random(bloodpaint),tr.HitPos+tr.HitNormal,tr.HitPos-tr.HitNormal)
 			local vPoint = tr.HitPos
 			local effectdata = EffectData()
 			effectdata:SetOrigin( vPoint )
@@ -532,7 +595,6 @@ function FireShot(wep)
 	wep.NextShot=wep.NextShot or NextShot
 
 	if ( wep.NextShot > CurTime() ) then return end
-	print(wep.curweapon)
 	if wep.Clip<=0 then
 		sound.Play("snd_jack_hmcd_click.wav",wep:GetPos(),65,100)
 		wep.NextShot = CurTime() + weptable.CycleTime
@@ -589,10 +651,15 @@ function FireShot(wep)
 	wep:EmitSound(weptable.CloseFireSound,100,math.random(90,110),1,CHAN_WEAPON,0,0)
 	if wep.curweapon == "wep_jack_hmcd_rifle" then wep:EmitSound("snd_jack_hmcd_boltcycle.wav",55,100,1,CHAN_ITEM,0,0) end
 	local ply = wep:GetOwner()
-	local rag = ply:GetNWEntity("Ragdoll")
-	rag:ManipulateBoneAngles(rag:LookupBone("ValveBiped.Bip01_R_Finger11"), Angle(0,-60,0))
-	rag:GetPhysicsObjectNum(0):ApplyForceCenter(ply:EyeAngles():Forward()*-damage*7)
-	wep:GetPhysicsObject():ApplyForceCenter(wep:GetAngles():Forward()*-damage*3+wep:GetAngles():Right()*VectorRand(-90,90)+wep:GetAngles():Up()*100)
+
+	local vector1 = RecoilVector1[wep.curweapon] or -30
+	local vector2 = RecoilVector2[wep.curweapon] or 30
+
+	if IsValid(ply:GetNWEntity("Ragdoll")) then
+		local rag = ply:GetNWEntity("Ragdoll")
+		wep:GetPhysicsObject():ApplyForceCenter(wep:GetAngles():Forward()*-damage*3+wep:GetAngles():Right()*VectorRand(vector1,vector2)+wep:GetAngles():Up()*(RecoilUp[wep.curweapon] or 50))
+	end
+
 	wep.Clip=wep.Clip-1
 	ply.wepClip = wep.Clip
 	-- Make a muzzle flash

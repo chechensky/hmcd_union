@@ -27,9 +27,10 @@ hook.Add("RenderScreenspaceEffects","Effects", function()
     	DrawColorModify( hpeff )
 
 	DrawToyTown(fraction*8,ScrH()*fraction*1.5)
+	
 	if fraction>0.93 then
 		DrawMotionBlur( 0.2, 0.9, 0.03 )
-		local painlevel = ply:GetNWFloat("pain")
+		local painlevel = ply:GetNWFloat("pain", 0)
 		local fraction1 = math.Clamp(1-(painlevel/250),0.25,1)
 
 		local tab = {
