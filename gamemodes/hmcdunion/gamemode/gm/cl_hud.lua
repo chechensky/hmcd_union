@@ -57,6 +57,7 @@ function GM:DrawGameHUD(ply)
 		["AirboatGun"]=surface.GetTextureID("vgui/hud/hmcd_nail"),
 		["RPG_Round"]=surface.GetTextureID("vgui/hud/hmcd_round_76239")
 	}
+	print("commit test")
 
 	if ply.AmmoShow and ply.AmmoShow>CurTime() and ply:GetActiveWeapon().AmmoType != nil then
 		local Wep,TimeLeft,Opacity=ply:GetActiveWeapon(),ply.AmmoShow-CurTime(),255
