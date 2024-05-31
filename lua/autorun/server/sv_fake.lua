@@ -425,7 +425,6 @@ hook.Add("DoPlayerDeath","blad",function(ply,att,dmginfo)
 	PLYSPAWN_OVERRIDE = nil
 	ply.FakeShooting=false
 	ply:SetNWInt("FakeShooting",false)
-
 	timer.Create("stopbleed"..rag:EntIndex(),30,1,function()
 		if IsValid(ent) then ent.IsBleeding = false end
 	end)
@@ -944,6 +943,24 @@ hook.Add("Player Think","FakeControl",function(ply,time) --управление 
 			phys:Wake()
 			phys:ComputeShadowControl(shadowparams)
 		end
+
+		local phys = head
+		local angs = ply:EyeAngles()
+		angs:RotateAroundAxis(angs:Forward(),90)
+		angs:RotateAroundAxis(angs:Up(),90)
+		local shadowparams = {
+			secondstoarrive=0.01,
+			pos=head:GetPos()+Vector(0,0,-3),
+			angle=angs,
+			maxangulardamp=10,
+			maxspeeddamp=10,
+			maxangular=370,
+			maxspeed=40,
+			teleportdistance=0,
+			deltatime=deltatime,
+		}
+		head:Wake()
+		head:ComputeShadowControl(shadowparams)
 
 		if(ply:KeyDown(IN_USE))then
 			local phys = head

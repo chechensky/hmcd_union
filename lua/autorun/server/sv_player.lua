@@ -147,8 +147,10 @@ end
 hook.Add("PlayerSay", "DropWeapon", function(ply,text)
 	if string.lower(text) == "*drop" then
         if !ply.fake then
-            ply:DropWeapon()
-            return ""
+			if ply:GetActiveWeapon():GetClass() != "wep_jack_hmcd_hands" then
+				ply:DropWeapon()
+            	return ""
+			end
         else
             if IsValid(ply.wep) then
                 if IsValid(ply.WepCons) then

@@ -101,10 +101,13 @@ hook.Add("HOOK_UNION_Damage","Hit",function(ply,hitgroup,dmginfo,rag)
     local inf = dmginfo:GetInflictor()
     print("ammo", dmginfo:GetAmmoType())
 
+    if dmginfo:IsDamageType(DMG_BULLET+DMG_BUCKSHOT+DMG_SNIPER+DMG_SLASH+DMG_BLAST) then
+        ply.Bleed = ply.Bleed + math.random(5, 10)
+    end
+
     dmg_d = dmginfo:GetDamage()
     if dmginfo:IsDamageType(DMG_BULLET+DMG_BUCKSHOT+DMG_SNIPER) then
         dmg_d = dmg_d * 3.5
-        ply.Bleed = ply.Bleed + math.random(5, 10)
     elseif dmginfo:IsDamageType(DMG_SLASH+DMG_CLUB+DMG_BLAST+DMG_CRUSH) then
         dmg_d = dmg_d * 1.2
     end
@@ -114,18 +117,16 @@ hook.Add("HOOK_UNION_Damage","Hit",function(ply,hitgroup,dmginfo,rag)
     ply.pain = ply.pain + force_hit
 
     if dmginfo:IsDamageType(DMG_SLASH+DMG_BULLET+DMG_BUCKSHOT+DMG_SNIPER) then
-        for i = 1, 5 do
-        end
     end
 
-    if hitgroup == HITGROUP_HEAD and dmginfo:GetDamageType() == DMG_CRUSH and dmginfo:GetDamage() >= 6 and ent:GetVelocity():Length() > 200 then
+    if !rag and hitgroup == HITGROUP_HEAD and dmginfo:GetDamage() >= 70 or (hitgroup == HITGROUP_HEAD and dmginfo:GetDamageType() == DMG_CRUSH and dmginfo:GetDamage() >= 25 and ent:GetVelocity():Length() > 200) then
         ply:ChatPrint("Your neck is broken")
         ent:EmitSound("neck_snap_01.wav",511,100,1,CHAN_ITEM)
         ply:Kill()
         return
     end
 
-    if dmginfo:GetDamage() >= 50 or (dmginfo:GetDamageType() == DMG_CRUSH and dmginfo:GetDamage() >= 20 and ent:GetVelocity():Length() > 700) then
+    if dmginfo:GetDamage() >= 40 or (dmginfo:GetDamageType() == DMG_CRUSH and dmginfo:GetDamage() >= 20 and ent:GetVelocity():Length() > 700) then
         local brokenLeftLeg = hitgroup == HITGROUP_LEFTLEG
         local brokenRightLeg = hitgroup == HITGROUP_RIGHTLEG
         local brokenLeftArm = hitgroup == HITGROUP_LEFTARM
@@ -175,7 +176,7 @@ hook.Add("HOOK_UNION_Damage","Hit",function(ply,hitgroup,dmginfo,rag)
     else
         penetration:Mul(0.004)
     end
-    if not rag or (rag and not dmginfo:IsDamageType(DMG_CRUSH)) then
+    if !rag or (rag and !dmginfo:IsDamageType(DMG_CRUSH)) then
         local dmg = dmginfo:GetDamage()
 
         local dmgpos = dmginfo:GetDamagePosition()
@@ -222,13 +223,13 @@ hook.Add("HOOK_UNION_Damage","Hit",function(ply,hitgroup,dmginfo,rag)
         end
 
         if brain then
-            if dmginfo:IsDamageType(DMG_BULLET) and not inf.RubberBullets then
+            if dmginfo:IsDamageType(DMG_BULLET) then
                 ply:Kill()
             end
         end
 
         if jaw then
-            if ply.Bones['Jaw']>0 and dmginfo:IsDamageType(DMG_BULLET+DMG_CLUB) and not inf.RubberBullets then
+            if ply.Bones['Jaw']>0 and dmginfo:IsDamageType(DMG_BULLET+DMG_CLUB)  then
                 ply.Bones['Jaw']=ply.Bones['Jaw']-(dmginfo:GetDamage()/100)
                 if ply.Bones['Jaw'] <= 0.6 then
                     ply:ChatPrint("Your jaw has been dislocated")

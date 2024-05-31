@@ -11,7 +11,7 @@ function GM:PlayerStartTaunt(ply,act,length)
 	end)
 end
 
-local function addTaunt(cat, soundFile, sex, act) -- mechanical, why the hell was this a global function? You ass
+local function addTaunt(cat, soundFile, sex, act)
 	if !TauntP[cat] then
 		TauntP[cat] = {}
 	end
@@ -355,13 +355,17 @@ concommand.Add("taunt", function (ply, com, args, full)
 
 	if #args < 1 then return end
 	local cat = args[1]:lower()
-	if !TauntP[cat] then return end -- if he's not TAUNTING THE CAT then return end
+	if !TauntP[cat] then return end
 
 	local sex = string.lower(ply.ModelSex or "male")
 	if !TauntP[cat][sex] then return end
 
-	local taunt = table.Random(TauntP[cat][sex]) -- random table cat taunt sex, sounds kinky
-	if !IsValid(ply.fakeragdoll) then ply:EmitSound(taunt.sound) else sound.Play(taunt.sound, ply.fakeragdoll:GetPos()) end
+	local taunt = table.Random(TauntP[cat][sex])
+	if !IsValid(ply.fakeragdoll) then 
+		ply:EmitSound(taunt.sound) 
+	else 
+		sound.Play(taunt.sound, ply.fakeragdoll:GetPos()) 
+	end
 	local Dur=math.Clamp(SoundDuration(taunt.sound),1.5,5)
 	ply.NextTaunt=Time+Dur
 end)

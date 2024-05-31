@@ -31,14 +31,12 @@ end
 
 function BloodParticle(ply)
 	local pos = ply:GetPos()
-	local fallbackPos = pos - Vector(0, 0, 75)
     local tr = util.TraceLine({
         start = pos,
-        endpos = pos - Vector(0, 5, 30),
-        filter = target
+        endpos = pos - VectorRand() * 10,
+        filter = ply
     })
-
-	util.Decal("Blood", tr.HitPos + tr.HitNormal, tr.HitPos - tr.HitNormal)
+	util.Decal("Blood", tr.HitPos + tr.HitNormal * 25, tr.HitPos - tr.HitNormal / 25)
 end
 -- команды
 

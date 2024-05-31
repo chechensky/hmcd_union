@@ -599,8 +599,9 @@ function FireShot(wep)
 		sound.Play("snd_jack_hmcd_click.wav",wep:GetPos(),65,100)
 		wep.NextShot = CurTime() + weptable.CycleTime
 	return nil end
-
-	wep.NextShot = CurTime() + weptable.CycleTime*math.random(0.8, 2.3)
+	local shootwait = weptable.ShootWait_Ragdoll or weptable.CycleTime*math.random(0.8, 2.3)
+	print(shootwait)
+	wep.NextShot = CurTime() + shootwait
 	local Attachment = wep:GetAttachment(wep:LookupAttachment(weptable.World_MuzzleAttachmentName or "muzzle"))
 
 	local damage = weapons.Get(wep.curweapon).Damage
@@ -646,6 +647,8 @@ function FireShot(wep)
 		bullet.Damage		= guninfo.Damage
 		bullet.Attacker 	= ply
 	--]]
+	ParticleEffectAttach("pcf_jack_mf_barrelsmoke",PATTACH_POINT_FOLLOW,wep,1)
+
 	wep:FireBullets( bullet )
 	--wep:EmitSound(weptable.Primary.Sound,511,math.random(100,120),1,CHAN_WEAPON,0,0)
 	wep:EmitSound(weptable.CloseFireSound,100,math.random(90,110),1,CHAN_WEAPON,0,0)
@@ -655,10 +658,7 @@ function FireShot(wep)
 	local vector1 = RecoilVector1[wep.curweapon] or -30
 	local vector2 = RecoilVector2[wep.curweapon] or 30
 
-	if IsValid(ply:GetNWEntity("Ragdoll")) then
-		local rag = ply:GetNWEntity("Ragdoll")
-		wep:GetPhysicsObject():ApplyForceCenter(wep:GetAngles():Forward()*-damage*3+wep:GetAngles():Right()*VectorRand(vector1,vector2)+wep:GetAngles():Up()*(RecoilUp[wep.curweapon] or 50))
-	end
+	wep:GetPhysicsObject():ApplyForceCenter(wep:GetAngles():Forward()*-damage*3+wep:GetAngles():Right()*VectorRand(vector1,vector2)+wep:GetAngles():Up()*(RecoilUp[wep.curweapon] or 50))
 
 	wep.Clip=wep.Clip-1
 	ply.wepClip = wep.Clip
