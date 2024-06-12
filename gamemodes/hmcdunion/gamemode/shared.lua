@@ -6,14 +6,28 @@ GM.Email = "N/A"
 GM.Website = "N/A"
 GM.TeamBased = true
 
+-- checha gm ints!!!
+
+GM.RoundName = "sandbox"
+GM.RoundNext = "sandbox"
+GM.RoundType = 2
+GM.RoundEnd = false
+
+-- round types hmcd
+-- 1 = Standart
+-- 2 = State of Emergency
+-- 3 = Jihad
+-- 4 = Wild West
+-- 5 = Gun Free Zone
+
 include("loader.lua")
 
 GM.papkago("hmcdunion/gamemode/gm/")
 
 function GM:CreateTeams()
-	team.SetUp(1,"White",Color(255,255,255))
-	team.SetUp(2,"Black",Color(0,0,0))
-	team.SetUp(3,"Gray",Color(149,149,149))
+	team.SetUp(1,"Blue",Color(57,62,213))
+	team.SetUp(2,"Red",Color(188,24,24))
+	team.SetUp(3,"Spectator",Color(149,149,149))
 end
 
 blood_drop = {
@@ -21,6 +35,63 @@ blood_drop = {
 	"blood/drop2.wav",
 	"blood/drop3.wav",
 	"blood/drop4.wav"
+}
+
+Rounds = {
+	"homicide",
+	"sandbox",
+	"hl2",
+	"dm"
+}
+
+RoundsNormalise = {
+	["homicide"] = "Homicide",
+	["sandbox"] = "Sandbox",
+	["hl2"] = "Half Life 2 - Deathmatch",
+	["dm"] = "Deathmatch"
+}
+
+HMCD_Loadout = {
+	["Traitor"] = {
+		["1"] = {
+			"wep_jack_hmcd_knife",
+			"wep_jack_hmcd_shuriken",
+			"wep_jack_hmcd_poisonneedle",
+			"wep_jack_hmcd_poisonpowder",
+			"wep_jack_hmcd_ied",
+			"wep_jack_hmcd_oldgrenade",
+			"wep_jack_hmcd_smokebomb",
+			"wep_jack_hmcd_fakepistol",
+			"wep_jack_hmcd_adrenaline",
+			"wep_jack_hmcd_jam",
+			"wep_jack_hmcd_poisonliquid",
+			"wep_jack_hmcd_poisongoo",
+			"wep_jack_hmcd_poisoncanister",
+			"wep_jack_hmcd_mask",
+			"wep_jack_hmcd_beartrap"
+		}
+	},
+}
+
+HMCD_RoundsTypeNormalise = {
+	[1] = "Standart",
+	[2] = "State of Emergency",
+	[3] = "Jihad",
+	[4] = "Wild West",
+	[5] = "Gun-Free-Zone Mode"
+}
+
+HMCD_RoundStartSound = {
+	[1]="snd_jack_hmcd_halloween.mp3",
+	[2]="snd_jack_hmcd_disaster.mp3",
+	[3]="snd_mann_islam.mp3",
+	[4]="snd_jack_hmcd_wildwest.mp3",
+	[5]="unknownsound.mp3"
+}
+
+RoundStartSound = {
+	["dm"]="snd_jack_hmcd_deathmatch.mp3",
+	["hl2"]="hl2mode1.wav"
 }
 
 Clothes_Customize={
@@ -32,6 +103,15 @@ Clothes_Customize={
 	"striped",
 	"plaid",
 	"none"
+}
+
+NormaliseKonech = {
+	["left_hand"] = "Left arm",
+	["left_leg"] = "Left leg",
+	["right_hand"] = "Right arm",
+	["right_leg"] = "Right leg",
+	["stomach"] = "Stomach",
+	["chest"] = "Chest"
 }
 
 Models_Customize={
@@ -196,4 +276,155 @@ AccessoryListWithoutEmpty={
 
 	["Обычный Рюкзак"]={"models/modified/backpack_3.mdl","ValveBiped.Bip01_Spine4",{Vector(-3,-6,0),Angle(0,90,90),.9},{Vector(-3,-6,0),Angle(0,90,90),.8},false,0},
 	["Серый рюкзак"]={"models/modified/backpack_3.mdl","ValveBiped.Bip01_Spine4",{Vector(-3,-6,0),Angle(0,90,90),.9},{Vector(-3,-6,0),Angle(0,90,90),.8},false,1}
+}
+
+HMCD_EquipmentNames = {
+	"Level IIIA Armor",
+	"Level III Armor",
+	"Advanced Combat Helmet",
+	"M40 Gas Mask",
+	"Maglite ML300LX-S3CC6L Flashlight",
+	"Cobra M2 Suppressor",
+	"Hybrid 46 Suppressor",
+	"Salvo 12 Suppressor",
+	"Marcool JG5 Laser Sight",
+	"AN/PEQ-15 Laser Sight",
+	"Aimpoint CompM2 Sight",
+	"EOTech 552.A65 Sight",
+	"Kobra Sight",
+	"PBS-1 Suppressor",
+	"Osprey 45 Suppressor",
+	"Ballistic Mask",
+	"Ground Panoramic Night Vision Goggles",
+	"Bell Bullitt Motorcycle Helmet"
+}
+
+HMCD_AmmoWeights={
+	["AlyxGun"]=4,
+	["Pistol"]=12,
+	["HelicopterGun"]=30,
+	["357"]=15,
+	["AirboatGun"]=3,
+	["Buckshot"]=60,
+	["AR2"]=50,
+	["MP5_Grenade"]=60,
+	["SMG1"]=18,
+	["Gravity"]=18,
+	["SniperRound"]=20,
+	["XBowBolt"]=22,
+	["Thumper"]=26,
+	["StriderMinigun"]=20,
+	["RPG_Round"]=150,
+	["9mmRound"]=8,
+	["Hornet"]=30,
+	["SniperPenetratedRound"]=20
+}
+
+HMCD_AmmoNames={
+	["AlyxGun"]="5.7x16mm (.22 long rifle)",
+	["Pistol"]="9x19mm (9mm luger/parabellum)",
+	["357"]="9x29mmR (.38 special)",
+	["SMG1"]="5.56x45mm (.223 remington)",
+	["Buckshot"]="18.5x70mmR (12 gauge shotshell)",
+	["AR2"]="7x57mm (7mm mauser)",
+	["XBowBolt"]="6x735mm broadhead hunting arrow",
+	["AirboatGun"]="2x89mm Carpentry Nail",
+	["RPG_Round"]="40mm Rocket",
+	["StriderMinigun"]="7.62x51 NATO",
+	["HelicopterGun"]="4.6x30mm",
+	["SniperRound"]="7.62x39mm",
+	["Gravity"]="Pulse Slug",
+	["Thumper"]="300mm Rebar",
+	["MP5_Grenade"]="Energy Ball",
+	["SniperPenetratedRound"]="X26 Taser Cartridge",
+	["9mmRound"]="9×22mm P.A.",
+	["Hornet"]="Flexible Baton Round"
+}
+
+Box_Models = {
+	"models/props_c17/FurnitureDrawer001a.mdl",
+	"models/props_c17/FurnitureDresser001a.mdl",
+	"models/props_c17/FurnitureDrawer003a.mdl",
+	"models/props_c17/FurnitureCupboard001a.mdl",
+	"models/props_c17/shelfunit01a.mdl",
+	"models/props_junk/cardboard_box002a_gib01.mdl",
+	"models/props_junk/cardboard_box002a.mdl",
+	"models/props_junk/cardboard_box001b.mdl",
+	"models/props_junk/cardboard_box001a_gib01.mdl",
+	"models/props_junk/cardboard_box002b.mdl",
+	"models/props_junk/cardboard_box003a.mdl",
+	"models/props_junk/cardboard_box003a_gib01.mdl",
+	"models/props_junk/cardboard_box003b_gib01.mdl",
+	"models/props_junk/cardboard_box004a.mdl",
+	"models/props_junk/cardboard_box004a_gib01.mdl",
+	"models/props_junk/wood_crate001a.mdl",
+	"models/props_junk/wood_crate001a_damaged.mdl",
+	"models/props_junk/wood_crate002a.mdl"
+}
+
+HeavyBox_Models = {
+	"models/props_junk/wood_crate002a.mdl",
+	"models/props_c17/FurnitureDresser001a.mdl",
+	"models/props_c17/FurnitureDrawer003a.mdl"
+}
+
+Box_Drop = {
+	"ent_jack_hmcd_ammo",
+	"wep_jack_hmcd_fooddrinkbig",
+	"wep_jack_hmcd_fooddrink",
+	"wep_jack_hmcd_ptrd",
+	"wep_jack_hmcd_adrenaline",
+	"wep_jack_hmcd_medkit",
+	"wep_jack_hmcd_bandagebig",
+	"wep_jack_hmcd_morphine",
+	"wep_jack_hmcd_painpills",
+	"wep_jack_hmcd_bandage",
+	"wep_jack_hmcd_baseballbat",
+	"wep_jack_hmcd_brick",
+	"wep_jack_hmcd_cleaver",
+	"wep_jack_hmcd_hammer",
+	"wep_jack_hmcd_pocketknife",
+	"wep_jack_hmcd_crowbar",
+	"wep_jack_hmcd_hatchet",
+	"wep_jack_hmcd_leadpipe",
+	"wep_jack_hmcd_axe",
+	"wep_jack_hmcd_smallpistol",
+	"wep_jack_hmcd_ducttape",
+	"wep_jack_hmcd_oldgrenade_dm",
+	"wep_jack_hmcd_glock17",
+	"wep_jack_hmcd_revolver",
+	"wep_jack_hmcd_rifle",
+	"wep_jack_hmcd_sr25",
+	"wep_jack_hmcd_mp7",
+	"wep_jack_hmcd_shotgun",
+	"wep_jack_hmcd_dbarrel",
+	"wep_jack_hmcd_remington",
+	"wep_jack_hmcd_bugbait"
+}
+
+HeavyBox_Drop = {
+	"wep_jack_hmcd_ptrd",
+	"wep_jack_hmcd_adrenaline",
+	"wep_jack_hmcd_medkit",
+	"wep_jack_hmcd_oldgrenade_dm",
+	"wep_jack_hmcd_glock17",
+	"wep_jack_hmcd_revolver",
+	"wep_jack_hmcd_rifle",
+	"wep_jack_hmcd_sr25",
+	"wep_jack_hmcd_mp7",
+	"wep_jack_hmcd_shotgun",
+	"wep_jack_hmcd_dbarrel",
+	"wep_jack_hmcd_remington"
+}
+
+AmmoType_Drop = {
+	"AirboatGun",
+	"AlyxGun",
+	"357",
+	"Pistol",
+	"Buckshot",
+	"AR2",
+	"SMG1",
+	"XBowBolt",
+	"AirboatGun"
 }

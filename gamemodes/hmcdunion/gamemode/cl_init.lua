@@ -2,63 +2,64 @@ include("shared.lua")
 resource.AddSingleFile("resource/fonts/homicidefont.ttf")
 
 surface.CreateFont("DefaultFont",{
-	font = "Coolvetica Rg",
-	size = 18,
-	weight = 1100,
-	outline = false
+    font = "Coolvetica",
+    size = math.ceil(ScrW() / 38),
+    weight = 500,
+    antialias = true,
+    italic = false
 })
 
 surface.CreateFont("Role",{
-	font = "Coolvetica Rg",
+	font = "Coolvetica",
 	size = 48,
 	weight = 1100,
-	outline = false,
-	shadow = true
+    antialias = true,
+    italic = false
 })
 
 surface.CreateFont("GM",{
-	font = "Coolvetica Rg",
+	font = "Coolvetica",
 	size = 64,
 	weight = 1100,
-	outline = false,
-	shadow = true
+    antialias = true,
+    italic = false
 })
 
 surface.CreateFont("TextYou",{
-	font = "Coolvetica Rg",
+	font = "Coolvetica",
 	size = 30,
 	weight = 1100,
-	outline = false,
-	shadow = true
+    antialias = true,
+    italic = false
 })
 
 
 surface.CreateFont("FontTargetP",{
-	font = "Coolvetica Rg",
+	font = "Coolvetica",
 	size = 48,
 	weight = 1100,
-	outline = false,
-	shadow = true
+    antialias = true,
+    italic = false
 })
 
 surface.CreateFont("FontBigger",{
-	font = "Coolvetica Rg",
+	font = "Coolvetica",
 	size = 36,
 	weight = 1100,
-	outline = false,
-	shadow = true
+    antialias = true,
+    italic = false
 })
 
 surface.CreateFont("FontBig",{
-	font = "Coolvetica Rg",
+	font = "Coolvetica",
 	size = 25,
 	weight = 1100,
-	outline = false,
-	shadow = true
+    antialias = true,
+    italic = false
 })
 
 surface.CreateFont("FontRadialMenu",{
-	font = "Coolvetica Rg",
+	font = "Coolvetica",
 	size = 26,
 	weight = 1100,
 	antialias = true,
@@ -66,17 +67,27 @@ surface.CreateFont("FontRadialMenu",{
 })
 
 surface.CreateFont("FontLarge",{
-	font = "Coolvetica Rg",
+	font = "Coolvetica",
 	size = ScreenScale(30),
 	weight = 1100,
-	outline = false
+    antialias = true,
+    italic = false
 })
 
 surface.CreateFont("FontSmall",{
-	font = "Coolvetica Rg",
+	font = "Coolvetica",
 	size = ScreenScale(10),
 	weight = 1100,
-	outline = false
+    antialias = true,
+    italic = false
+})
+
+surface.CreateFont("MedKitFont",{
+	font = "Coolvetica",
+	size = ScreenScale(7),
+	weight = 150,
+    antialias = true,
+    italic = false
 })
 
 local view = {}
@@ -107,6 +118,7 @@ hook.Add("Initialize","CVarsSet", function()
 	RunConsoleCommand( "mp_decals", "9999" )
 	RunConsoleCommand( "r_queued_decals", "1" )
 	RunConsoleCommand( "gm_demo_icon", "0" )
+	RunConsoleCommand("sv_alltalk", "2")
 	RunConsoleCommand( "r_radiosity", "4" )
 	RunConsoleCommand( "cl_cmdrate", "101" )
 	RunConsoleCommand( "cl_updaterate", "101" )
@@ -162,6 +174,12 @@ end
 function GM:PostPlayerDraw(ply)
 	if !AccessoryListWithoutEmpty[ply.Accessory] then return end
 	if ply:Alive() then
+		self:RenderAccessories(ply)
+	end
+end
+
+function GM:PostDrawOpaqueRenderables(drawingDepth, drawingSkybox)
+	for key, ply in pairs(ents.FindByClass("prop_ragdoll")) do
 		self:RenderAccessories(ply)
 	end
 end

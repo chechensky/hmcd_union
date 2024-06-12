@@ -1,5 +1,3 @@
-print("pepsi")
-
 local Ammo = {
     ["beanbag"] = {
         name = "Beanbag",
@@ -24,7 +22,6 @@ local Ammo_Entity = {
 
 for k,v in pairs(Ammo) do
     game.AddAmmoType( v )
-
     if CLIENT then
         language.Add(v.name.."_ammo", v.name)
     end

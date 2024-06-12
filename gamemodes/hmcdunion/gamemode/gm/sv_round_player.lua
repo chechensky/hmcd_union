@@ -1,4 +1,3 @@
-roundName = nil
 local hRun = hook.Run
 
 hook.Add("RoundPlayerVar", "FUNC_VAR", function(ply)

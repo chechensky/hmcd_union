@@ -10,6 +10,7 @@ function GM:HUDPaint()
 	self:DrawGameHUD(client)
 	self:DrawPhraseMenu()
 	self:DrawRadialMenu()
+	self:Drawmenu_useMenu()
 end
 
 function RagdollOwner(rag)
@@ -57,8 +58,6 @@ function GM:DrawGameHUD(ply)
 		["AirboatGun"]=surface.GetTextureID("vgui/hud/hmcd_nail"),
 		["RPG_Round"]=surface.GetTextureID("vgui/hud/hmcd_round_76239")
 	}
-	print("commit 2test")
-
 	if ply.AmmoShow and ply.AmmoShow>CurTime() and ply:GetActiveWeapon().AmmoType != nil then
 		local Wep,TimeLeft,Opacity=ply:GetActiveWeapon(),ply.AmmoShow-CurTime(),255
 		if TimeLeft < 1 then Opacity=150 end
@@ -123,12 +122,13 @@ local RedVision={
 }
 
 function GM:GUIMousePressed(code, vector)
-	return self:PhraseMousePressed(code,vector)
+	LocalPlayer():ConCommand("-phrase")
+	LocalPlayer():ConCommand("-menu_use")
+	LocalPlayer():ConCommand("-menu_context")
 end
 
 function GM:OpenAmmoDropMenu()
 	local Ply,AmmoType,AmmoAmt,Ammos=LocalPlayer(),"Pistol",1,{}
-
 	for key,name in pairs(HMCD_AmmoNames)do
 		local Amownt=Ply:GetAmmoCount(key)
 		if(Amownt>0)then Ammos[key]=Amownt end
@@ -151,7 +151,6 @@ function GM:OpenAmmoDropMenu()
 	DermaPanel:ShowCloseButton(true)
 	DermaPanel:MakePopup()
 	DermaPanel:Center()
-	DermaPanel:Close()
 
 	local MainPanel=vgui.Create("DPanel",DermaPanel)
 	MainPanel:SetPos(5,25)
@@ -263,7 +262,7 @@ function GM:OpenEquipmentDropMenu()
 	end
 end
 
-function GM:OpenAttachmentMenu()
+function OpenAttachmentMenu()
 	local ply,Wep,attType=LocalPlayer(),LocalPlayer():GetActiveWeapon(),0
 	local List={}
 	if IsValid(Wep) then
@@ -285,10 +284,6 @@ function GM:OpenAttachmentMenu()
 				end
 			end
 		end	
-	end
-	if(#List<=0)then
-		ply:ChatPrint("You have no attachments!")
-		return
 	end
 	local size=ScrW()/8.5
 
@@ -334,3 +329,5 @@ function GM:OpenAttachmentMenu()
 		RunConsoleCommand("hmcd_attachrequest",attType)
 	end
 end
+
+concommand.Add("attachmentsmenu", OpenAttachmentMenu)

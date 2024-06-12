@@ -82,11 +82,11 @@ local function ImersiveCam(ply,pos,ang,fov)
 			origin = PosAng.Pos - Vector(2,0,0),
 			angles = PosAng.Ang,
 			znear = 1,
-			zfar = 26000
+			zfar = 26000,
+			fov = 110
 		}
 		return camfake
 	end
-	if !ply:Alive() then return end
 end
 
-hook.Add( "CalcView", "fwep-camera", ImersiveCam )
+hook.Add( "CalcView", "RagCam", ImersiveCam )

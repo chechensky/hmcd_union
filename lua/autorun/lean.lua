@@ -294,7 +294,7 @@ function LeanCalcView(ply, pos, angles, fov)
 	local status = ply.TFALean or 0
 	local off = Vector(0, status * -LeanOffset, 0)
 	off:Rotate(angles)
-	view.angles:RotateAroundAxis(view.angles:Forward(), status * 15)
+	view.angles:RotateAroundAxis(view.angles:Forward(), status * 5)
 	view.origin = bestcase(view.origin, view.origin + off, ply)
 
 	return view
@@ -346,7 +346,7 @@ function LeanCalcVMView(wep, vm, oldPos, oldAng, pos, ang, ...)
 		if math.abs(status) > 0.001 then
 			local off = Vector(0, status * -LeanOffset, 0)
 			off:Rotate(ang)
-			ang:RotateAroundAxis(ang:Forward(), status * 12 * (wep.ViewModelFlip and -1 or 1))
+			ang:RotateAroundAxis(ang:Forward(), status * 40 * (wep.ViewModelFlip and -1 or 1))
 			pos = bestcase(pos, pos + off, ply)
 			ISLEANINGCV_VM = true
 			local tpos, tang = hook.Run("CalcViewModelView", wep, vm, oldPos, oldAng, pos, ang, ...)

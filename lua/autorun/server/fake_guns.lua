@@ -20,6 +20,7 @@ Guns = {
 	"wep_jack_hmcd_dbarrel",
 	"wep_jack_hmcd_glock17",
 	"wep_jack_hmcd_usp",
+	"wep_jack_hmcd_rpg"
 }
 
 TwoHandedOrNo = {
@@ -44,11 +45,11 @@ TwoHandedOrNo = {
 	["wep_jack_hmcd_dbarrel"]=true,
 	["wep_jack_hmcd_glock17"]=false,
 	["wep_jack_hmcd_usp"]=false,
+	["wep_jack_hmcd_rpg"]=true
 }
 
 local Vectors = {
 	["wep_jack_hmcd_assaultrifle"]=Vector(13,-1.8,3),
-	["wep_jack_hmcd_akm"]=Vector(13,-1.8,3),
 	["wep_jack_hmcd_crossbow"]=Vector(0,1,-1),
 	["wep_jack_hmcd_mp7"]=Vector(4,-1.8,-1.5),
 	["wep_jack_hmcd_rifle"]=Vector(0,-1.5,-2),
@@ -68,13 +69,15 @@ local Vectors = {
 	["wep_jack_hmcd_smallpistol"]=Vector(0,-.5,0),
 	["wep_jack_hmcd_revolver"]=Vector(-2,-1,1.5),
 	["wep_jack_hmcd_cz75a"]=Vector(12,-1,4),
-	["wep_jack_hmcd_akm"]=Vector(13,-1.8,3),
+	["wep_jack_hmcd_akm"]=Vector(5,-1.8,0),
+	["wep_jack_hmcd_rpg"]=Vector(5,-1.8,0),
 	["wep_jack_hmcd_usp"]=Vector(6,-1.5,-1)
 }
 
 local Vectors2 = {
 	["wep_jack_hmcd_assaultrifle"]=Vector(15,-3.8,-4),
 	["wep_jack_hmcd_akm"]=Vector(15,-3.8,-4),
+	["wep_jack_hmcd_rpg"]=Vector(15,-3.8,-4),
 	["wep_jack_hmcd_crossbow"]=Vector(18,-3.8,-2),
 	["wep_jack_hmcd_mp7"]=Vector(5,-3.8,-2),
 	["wep_jack_hmcd_rifle"]=Vector(18,-3.8,-2),
@@ -137,12 +140,12 @@ function SpawnWeapon(ply,clip1)
 	--local guninfo = ply.GunInfo
 	--local guninfo = ply.GunInfo луа очень легкий
 
-	if !IsValid(ply.wep) and table.HasValue(Guns,ply.curweapon) then
+	if !IsValid(ply.wep) then
 		local rag = ply:GetNWEntity("Ragdoll")
 
 		if IsValid(rag) then
 			ply.FakeShooting=true
-			ply.wep = ents.Create("prop_physics")
+			ply.wep = ents.Create(weapons.Get(ply.curweapon).ENT)
 			ply.wep:SetModel(weapons.Get(ply.curweapon).WorldModel or W_Models[ply.curweapon] or nil)
 			ply.wep:SetOwner(ply)
 			local vec1=rag:GetPhysicsObjectNum(rag:TranslateBoneToPhysBone(rag:LookupBone( "ValveBiped.Bip01_R_Hand" ))):GetPos()
@@ -155,6 +158,7 @@ function SpawnWeapon(ply,clip1)
 			ply.wep:SetAngles(rag:GetPhysicsObjectNum(rag:TranslateBoneToPhysBone(rag:LookupBone( "ValveBiped.Bip01_R_Hand" ))):GetAngles()-(Angle_Normalize[ply.curweapon] or Angle(0,0,-180)))
 
 			ply.wep:SetCollisionGroup(COLLISION_GROUP_WEAPON)
+			GiveAttachments(ply)
 			ply.wep:Spawn()
 			ply:SetNWEntity("wep",ply.wep)
 			ply.wep:GetPhysicsObject():SetMass(0)
@@ -175,9 +179,8 @@ function SpawnWeapon(ply,clip1)
 			rag.wep = ply.wep
 			rag.wep:CallOnRemove("inv",remove,rag)
 			ply.wep.rag = rag
-			ply.wepClip = ply.Info.Weapons[ply.curweapon].Clip1
+			ply.wep.RoundsInMag = ply.Info.Weapons[ply.curweapon].Clip1
 			ply.wep.AmmoType = ply.Info.Weapons[ply.curweapon].AmmoType
-
 			ply:SetNWString("curweapon",ply.wep.curweapon)
 			if (TwoHandedOrNo[ply.curweapon]) then
 				local vec1=rag:GetPhysicsObjectNum(rag:TranslateBoneToPhysBone(rag:LookupBone( "ValveBiped.Bip01_R_Hand" ))):GetPos()
@@ -201,7 +204,7 @@ function DespawnWeapon(ply)
 	if not ply.Info then return end
 
 	if not ply.Info.Weapons[ply.Info.ActiveWeapon] then return end
-	ply.Info.Weapons[ply.Info.ActiveWeapon].Clip1 = ply.wepClip
+	ply.Info.Weapons[ply.Info.ActiveWeapon].Clip1 = ply.wep.RoundsInMag
 	ply.Info.ActiveWeapon2=ply.curweapon
 	--if ply:Alive() and !ply.wep.pickable then
 	if ply.wep_sup then
@@ -274,7 +277,7 @@ function CheckAmmo(ply, wep)
 end
 
 function SpawnWeaponEnt(weapon, pos, ply)
-    local wep = ents.Create("prop_physics")
+    local wep = ents.Create(ply:GetActiveWeapon().ENT)
     wep:SetModel(GunsModel[weapon])
     wep:SetPos(pos)
 	wep:SetCollisionGroup(COLLISION_GROUP_DEBRIS)
@@ -350,7 +353,7 @@ function FireShot(wep)
 	local ply = wep:GetOwner()
 	local info = ply.Info
 	-- knife
-	if ply.wepmelee == true or string.find(wep.curweapon, "knife") or wep.curweapon == "wep_jack_gmod_knife" then
+	--[[if ply.wepmelee == true or string.find(wep.curweapon, "knife") or wep.curweapon == "wep_jack_gmod_knife" then
 		if CurTime() < lastAttackTime + attackDelay then return end
 			local tr = util.TraceLine({
 				start = wep:GetPos(),
@@ -391,7 +394,7 @@ function FireShot(wep)
 			if RagdollOwner(tr.Entity) != ply then tr.Entity:TakeDamageInfo( dmginfo ) end
 			lastAttackTime = CurTime()
 		end
-	end
+	end]]--
 
 	if wep.curweapon == "wep_jack_gmod_pocketknife" then
 		if CurTime() < lastAttackTime + attackDelay then return end
@@ -600,7 +603,7 @@ function FireShot(wep)
 		wep.NextShot = CurTime() + weptable.CycleTime
 	return nil end
 	local shootwait = weptable.ShootWait_Ragdoll or weptable.CycleTime*math.random(0.8, 2.3)
-	print(shootwait)
+
 	wep.NextShot = CurTime() + shootwait
 	local Attachment = wep:GetAttachment(wep:LookupAttachment(weptable.World_MuzzleAttachmentName or "muzzle"))
 
@@ -647,7 +650,7 @@ function FireShot(wep)
 		bullet.Damage		= guninfo.Damage
 		bullet.Attacker 	= ply
 	--]]
-	ParticleEffectAttach("pcf_jack_mf_barrelsmoke",PATTACH_POINT_FOLLOW,wep,1)
+	ParticleEffectAttach("pcf_jack_mf_barrelsmoke",PATTACH_POINT_FOLLOW,wep,(wep:LookupAttachment("muzzle")) or 1)
 
 	wep:FireBullets( bullet )
 	--wep:EmitSound(weptable.Primary.Sound,511,math.random(100,120),1,CHAN_WEAPON,0,0)
@@ -661,7 +664,7 @@ function FireShot(wep)
 	wep:GetPhysicsObject():ApplyForceCenter(wep:GetAngles():Forward()*-damage*3+wep:GetAngles():Right()*VectorRand(vector1,vector2)+wep:GetAngles():Up()*(RecoilUp[wep.curweapon] or 50))
 
 	wep.Clip=wep.Clip-1
-	ply.wepClip = wep.Clip
+	ply.wep.RoundsInMag = wep.Clip
 	-- Make a muzzle flash
 	local obj = wep:LookupAttachment(weptable.ShellAttachment)
 	local Attachment = wep:GetAttachment(obj)

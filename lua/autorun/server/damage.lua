@@ -30,7 +30,6 @@ function GetPhysicsBoneDamageInfo(ent,dmgInfo)
 		return result.PhysicsBone
 	end
 end
-
 local NULLENTITY = Entity(-1)
 
 hook.Add("EntityTakeDamage","ragdamage",function(ent,dmginfo)
@@ -44,7 +43,6 @@ hook.Add("EntityTakeDamage","ragdamage",function(ent,dmginfo)
 	local rag = ply ~= ent and ent
 
 	if rag and dmginfo:IsDamageType(DMG_CRUSH) and att and att:IsRagdoll() then
-		dmginfo:SetDamage(0)
 		return true
 	end
     
@@ -64,7 +62,7 @@ hook.Add("EntityTakeDamage","ragdamage",function(ent,dmginfo)
 	local entAtt = dmginfo:GetAttacker()
 	local att =
 		(entAtt:IsPlayer() and entAtt:Alive() and entAtt) or
-		(entAtt:GetClass() == "wep" and entAtt:GetOwner())-- or
+		(entAtt:GetClass() == "wep" and entAtt:GetOwner())
 	att = dmginfo:GetDamageType() ~= DMG_CRUSH and att or ply.LastAttacker
 
 	local Attacker = dmginfo:GetAttacker()
@@ -78,19 +76,17 @@ hook.Add("EntityTakeDamage","ragdamage",function(ent,dmginfo)
 	rubatPidor:SetDamageForce(dmginfo:GetDamageForce())
 
 	ply.LastDMGInfo = rubatPidor
-
-	dmginfo:ScaleDamage(2)
-	hook.Run("HOOK_UNION_Damage",ply,hitgroup,dmginfo,rag)
 	dmginfo:ScaleDamage(2)
 	if rag then
 		if dmginfo:GetDamageType() == DMG_CRUSH then
-			dmginfo:ScaleDamage(1 / 40 / 15)
+			dmginfo:ScaleDamage(1 / 15)
 		end
 
 		ply:SetHealth(ply:Health() - dmginfo:GetDamage())
 
 		if ply:Health() <= 0 then ply:Kill() end
 	end
+	hook.Run("HOOK_UNION_Damage",ply,hitgroup,dmginfo,rag)
 end)
 
 --------------------------------------------------------
@@ -99,10 +95,42 @@ end)
 hook.Add("HOOK_UNION_Damage","Hit",function(ply,hitgroup,dmginfo,rag)
     local ent = rag or ply
     local inf = dmginfo:GetInflictor()
-    print("ammo", dmginfo:GetAmmoType())
+    if dmginfo:IsDamageType(DMG_BULLET+DMG_BUCKSHOT+DMG_SNIPER+DMG_SLASH+DMG_CRUSH+DMG_BLAST) then
+        ply.adrenaline = ply.adrenaline + dmginfo:GetDamage() * math.random(-0.4, 1.3)
+    end
+    if dmginfo:IsDamageType(DMG_BULLET+DMG_BUCKSHOT+DMG_SNIPER+DMG_SLASH) then
+        if hitgroup == HITGROUP_STOMACH then
 
-    if dmginfo:IsDamageType(DMG_BULLET+DMG_BUCKSHOT+DMG_SNIPER+DMG_SLASH+DMG_BLAST) then
-        ply.Bleed = ply.Bleed + math.random(5, 10)
+            ply.Wounds["stomach"] = ply.Wounds["stomach"] + 1
+            ply.BleedOuts["stomach"] = ply.BleedOuts["stomach"] + math.random(10, 15)
+
+        elseif hitgroup == HITGROUP_CHEST then
+
+            ply.Wounds["chest"] = ply.Wounds["chest"] + 1
+            ply.BleedOuts["chest"] = ply.BleedOuts["chest"] + math.random(4, 9)
+
+        elseif hitgroup == HITGROUP_LEFTARM then
+            ply.Wounds["left_hand"] = ply.Wounds["left_hand"] + 1
+            ply.BleedOuts["left_hand"] = ply.BleedOuts["left_hand"] + math.random(4, 5)
+
+        elseif hitgroup == HITGROUP_RIGHTARM then
+
+            ply.Wounds["right_hand"] = ply.Wounds["right_hand"] + 1
+            ply.BleedOuts["right_hand"] = ply.BleedOuts["right_hand"] + math.random(4, 5)
+
+        elseif hitgroup == HITGROUP_LEFTLEG then
+
+            ply.Wounds["left_leg"] = ply.Wounds["left_leg"] + 1
+            ply.BleedOuts["left_leg"] = ply.BleedOuts["left_leg"] + math.random(4, 6)
+
+        elseif hitgroup == HITGROUP_RIGHTLEG then
+            ply.Wounds["right_leg"] = ply.Wounds["right_leg"] + 1
+            ply.BleedOuts["right_leg"] = ply.BleedOuts["right_leg"] + math.random(4, 6)
+        else
+            ply.BleedOuts["stomach"] = ply.BleedOuts["stomach"] + math.random(4, 6)
+            ply.BleedOuts["chest"] = ply.BleedOuts["chest"] + math.random(4, 6)
+
+        end
     end
 
     dmg_d = dmginfo:GetDamage()
@@ -111,46 +139,63 @@ hook.Add("HOOK_UNION_Damage","Hit",function(ply,hitgroup,dmginfo,rag)
     elseif dmginfo:IsDamageType(DMG_SLASH+DMG_CLUB+DMG_BLAST+DMG_CRUSH) then
         dmg_d = dmg_d * 1.2
     end
-
     local force_hit = dmg_d / math.random(2.1, 3.2)
     ply.bullet_force = ply.bullet_force + force_hit
-    ply.pain = ply.pain + force_hit
+    ply.pain_add = ply.pain_add + force_hit
 
-    if dmginfo:IsDamageType(DMG_SLASH+DMG_BULLET+DMG_BUCKSHOT+DMG_SNIPER) then
-    end
-
-    if !rag and hitgroup == HITGROUP_HEAD and dmginfo:GetDamage() >= 70 or (hitgroup == HITGROUP_HEAD and dmginfo:GetDamageType() == DMG_CRUSH and dmginfo:GetDamage() >= 25 and ent:GetVelocity():Length() > 200) then
-        ply:ChatPrint("Your neck is broken")
+    if hitgroup == HITGROUP_HEAD and dmginfo:GetDamageType() == DMG_CRUSH and dmginfo:GetDamage() >= 15 and ent:GetVelocity():Length() > 400 then
+        if ply.adrenaline < 20 then
+            ply:ChatPrint("Your neck is broken")
+            ply:Kill()
+        else
+            ply.ane_neck = true
+        end
         ent:EmitSound("neck_snap_01.wav",511,100,1,CHAN_ITEM)
-        ply:Kill()
         return
     end
+    if hitgroup == HITGROUP_STOMACH and ply.fake and !ply.Hit['spine'] and dmginfo:GetDamageType() == DMG_CRUSH and ent:GetVelocity():Length() > 730 then
+        ply.Hit['spine']=true
+        ply:ChatPrint("Your spine is broken")
+        ply.pain_add = ply.pain_add + 300
+        ent:EmitSound("neck_snap_01.wav",70,125,0.7,CHAN_ITEM)
+     end
 
-    if dmginfo:GetDamage() >= 40 or (dmginfo:GetDamageType() == DMG_CRUSH and dmginfo:GetDamage() >= 20 and ent:GetVelocity():Length() > 700) then
+    if dmginfo:GetDamage() >= 70 or (dmginfo:GetDamageType() == DMG_CRUSH and dmginfo:GetDamage() >= 5 and ent:GetVelocity():Length() > 100) then
         local brokenLeftLeg = hitgroup == HITGROUP_LEFTLEG
         local brokenRightLeg = hitgroup == HITGROUP_RIGHTLEG
         local brokenLeftArm = hitgroup == HITGROUP_LEFTARM
         local brokenRightArm = hitgroup == HITGROUP_RIGHTARM
-
         local sub = dmginfo:GetDamage() / 120
         if brokenLeftArm and ply.Bones['LeftArm']>=1 then
-            ply:ChatPrint("Your left arm is broken")
-            ply.pain = ply.pain + 120
+            if ply.adrenaline < 5 then
+                ply:ChatPrint("Your left arm is broken")
+            else
+                ply.ane_la = true
+            end
             ply.Bones['LeftArm'] = ply.Bones['LeftArm'] - sub
+            ply.pain_add = ply.pain_add + 120
             ent:EmitSound("npc/barnacle/neck_snap2.wav",70,65,0.4,CHAN_ITEM)
         end
 
         if brokenRightArm and ply.Bones['RightArm']>=1 then
-            ply:ChatPrint("Your right arm is broken")
-            ply.pain = ply.pain + 120
+            if ply.adrenaline < 5 then
+                ply:ChatPrint("Your right arm is broken")
+            else
+                ply.ane_ra = true
+            end
             ply.Bones['RightArm'] = ply.Bones['RightArm'] - sub
+            ply.pain_add = ply.pain_add + 120
             ent:EmitSound("npc/barnacle/neck_snap1.wav",70,65,0.4,CHAN_ITEM)
         end
 
         if brokenLeftLeg and ply.Bones['LeftLeg']>=1 then
-            ply:ChatPrint("Your left leg is broken")
-            ply.pain = ply.pain + 120
+            if ply.adrenaline < 5 then
+                ply:ChatPrint("Your left leg is broken")
+            else
+                ply.ane_ll = true
+            end
             ply.Bones['LeftLeg'] = ply.Bones['LeftLeg'] - sub
+            ply.pain_add = ply.pain_add + 120
             ent:EmitSound("npc/barnacle/neck_snap1.wav",70,65,0.4,CHAN_ITEM)
             
             if ply.Bones['LeftLeg'] < 1 and !ply.fake then
@@ -159,9 +204,13 @@ hook.Add("HOOK_UNION_Damage","Hit",function(ply,hitgroup,dmginfo,rag)
         end
 
         if brokenRightLeg and ply.Bones['RightLeg']>=1 then
-            ply:ChatPrint("Your right leg is broken")
-            ply.pain = ply.pain + 120
+            if ply.adrenaline < 5 then
+                ply:ChatPrint("Your right leg is broken")
+            else
+                ply.ane_rl = true
+            end
             ply.Bones['RightLeg'] = ply.Bones['RightLeg'] - sub
+            ply.pain_add = ply.pain_add + 120
             ent:EmitSound("npc/barnacle/neck_snap1.wav",70,65,0.4,CHAN_ITEM)
             
             if ply.Bones['RightLeg'] < 1 and !ply.fake then
@@ -172,9 +221,9 @@ hook.Add("HOOK_UNION_Damage","Hit",function(ply,hitgroup,dmginfo,rag)
 
     local penetration = dmginfo:GetDamageForce()
     if dmginfo:IsDamageType(DMG_BULLET + DMG_SLASH) then
-        penetration:Mul(3)
+        penetration:Mul(5)
     else
-        penetration:Mul(0.004)
+        penetration:Mul(0.03)
     end
     if !rag or (rag and !dmginfo:IsDamageType(DMG_CRUSH)) then
         local dmg = dmginfo:GetDamage()
@@ -182,7 +231,7 @@ hook.Add("HOOK_UNION_Damage","Hit",function(ply,hitgroup,dmginfo,rag)
         local dmgpos = dmginfo:GetDamagePosition()
 
         local pos,ang = ent:GetBonePosition(ent:LookupBone('ValveBiped.Bip01_Head1'))
-        local brain = util.IntersectRayWithOBB(dmgpos,penetration,pos,ang,Vector(3,-3,-2),Vector(6,1,2))
+        local brain = util.IntersectRayWithOBB(dmgpos,penetration,pos,ang,Vector(2,-4,-3),Vector(6,1,3))
         local jaw = util.IntersectRayWithOBB(dmgpos,penetration,pos,ang,Vector(-1,-5,-3),Vector(2,1,3))
         local neckartery_1 = util.IntersectRayWithOBB(dmgpos,penetration, pos, ang, Vector(-3,-2,-2), Vector(0,-1,-1))
         local neckartery_2 = util.IntersectRayWithOBB(dmgpos,penetration, pos, ang, Vector(-3,-2,1), Vector(0,-1,2))
@@ -204,7 +253,7 @@ hook.Add("HOOK_UNION_Damage","Hit",function(ply,hitgroup,dmginfo,rag)
         local lung = util.IntersectRayWithOBB(dmgpos,penetration,pos,ang,Vector(-1,0,-6),Vector(10,6,6))
         local heart = util.IntersectRayWithOBB(dmgpos,penetration, pos, ang, Vector(1,0,-1),Vector(5,4,3))
 
-        local pos,ang = ent:GetBonePosition(ent:LookupBone('ValveBiped.Bip01_L_Forearm'))
+        --[[local pos,ang = ent:GetBonePosition(ent:LookupBone('ValveBiped.Bip01_L_Forearm'))
         local left_hand_artery = util.IntersectRayWithOBB(dmgpos,penetration, pos, ang, Vector(-5,-1,-2), Vector(10,0,-1))
 
         local pos,ang = ent:GetBonePosition(ent:LookupBone('ValveBiped.Bip01_R_Forearm'))
@@ -214,16 +263,17 @@ hook.Add("HOOK_UNION_Damage","Hit",function(ply,hitgroup,dmginfo,rag)
         local left_leg_artery = util.IntersectRayWithOBB(dmgpos,penetration, pos, ang, Vector(-5,-1,-2), Vector(10,0,-1))
 
         local pos,ang = ent:GetBonePosition(ent:LookupBone('ValveBiped.Bip01_R_Calf'))
-        local right_leg_artery = util.IntersectRayWithOBB(dmgpos,penetration, pos, ang, Vector(-5,-2,1), Vector(10,0,2))
+        local right_leg_artery = util.IntersectRayWithOBB(dmgpos,penetration, pos, ang, Vector(-5,-2,1), Vector(10,0,2))]]--
 
         if lung then
             if !ply.Hit['lungs'] then
                 ply.Hit['lungs'] = true
+				ply.BleedOuts["chest"] = ply.BleedOuts["chest"] + 20
             end
         end
 
         if brain then
-            if dmginfo:IsDamageType(DMG_BULLET) then
+            if dmginfo:IsDamageType(DMG_BULLET+DMG_BUCKSHOT+DMG_SNIPER) then
                 ply:Kill()
             end
         end
@@ -232,15 +282,23 @@ hook.Add("HOOK_UNION_Damage","Hit",function(ply,hitgroup,dmginfo,rag)
             if ply.Bones['Jaw']>0 and dmginfo:IsDamageType(DMG_BULLET+DMG_CLUB)  then
                 ply.Bones['Jaw']=ply.Bones['Jaw']-(dmginfo:GetDamage()/100)
                 if ply.Bones['Jaw'] <= 0.6 then
-                    ply:ChatPrint("Your jaw has been dislocated")
-                    ply.pain = ply.pain + 150
-                    if !ply.fake then
-                        Faking(ply)
+                    if ply.adrenaline < 15 then
+                        ply:ChatPrint("Your jaw has been dislocated")
+                        if !ply.fake then
+                            Faking(ply)
+                        end
+                    else
+                        ply.ane_jdis = true
                     end
+                    ply.pain_add = ply.pain_add + 150
                 end
-                if ply.Bones['Jaw'] <= 0.4 then
-                    ply:ChatPrint("Your jaw is broken")
-                    ply.mutejaw = true
+                if ply.Bones['Jaw'] <= 0.1 then
+                    if ply.adrenaline < 15 then
+                        ply:ChatPrint("Your jaw is broken")
+                        ply.mutejaw = true
+                    else
+                        ply.ane_jaw = true
+                    end
                 end
             end
         end
@@ -248,24 +306,28 @@ hook.Add("HOOK_UNION_Damage","Hit",function(ply,hitgroup,dmginfo,rag)
         if liver then
             if ply.Hit['liver']!=true and !dmginfo:IsDamageType(DMG_CLUB) then
                 ply.Hit['liver'] = true
+				ply.BleedOuts["stomach"] = ply.BleedOuts["stomach"] + 20
             end
         end
         
         if stomach then
             if ply.Hit['stomach'] != true and !dmginfo:IsDamageType(DMG_CLUB) then
                 ply.Hit['stomach'] = true
+                ply.BleedOuts["stomach"] = ply.BleedOuts["stomach"] + 10
             end
         end
         
         if intestines then
             if ply.Hit['intestines']!=true and !dmginfo:IsDamageType(DMG_CLUB) then
                 ply.Hit['intestines'] = true
+                ply.BleedOuts["stomach"] = ply.BleedOuts["stomach"] + 10
             end
         end
         
         if heart then
             if !ply.Hit['heart'] and !dmginfo:IsDamageType(DMG_CLUB) then
                 ply.Hit['heart'] = true
+				ply.BleedOuts["chest"] = ply.BleedOuts["chest"] + 100
             end
         end
 
@@ -306,7 +368,7 @@ hook.Add("HOOK_UNION_Damage","Hit",function(ply,hitgroup,dmginfo,rag)
             end
         end
 
-        if (spine) and !ply.Hit['spine'] and dmginfo:IsDamageType(DMG_BULLET+DMG_CRUSH) then
+        if spine and !ply.Hit['spine'] and dmginfo:IsDamageType(DMG_BULLET+DMG_CRUSH) then
             ply.Hit['spine']=true
             timer.Simple(0.01,function()
                 if !ply.fake then
@@ -314,7 +376,7 @@ hook.Add("HOOK_UNION_Damage","Hit",function(ply,hitgroup,dmginfo,rag)
                 end
             end)
             ply:ChatPrint("Your spine is broken")
-            ply.pain = ply.pain + 300
+            ply.pain_add = ply.pain_add + 300
             ent:EmitSound("neck_snap_01.wav",70,125,0.7,CHAN_ITEM)
         end
     end
@@ -329,6 +391,8 @@ end)
 -------------------------------------------------------------------------------
 
 hook.Add("ScalePlayerDamage","FallPain", function(ply,hit,dmg)
+    ply.lasthitgroup = hit
+    print(ply.bullet_force)
     if hit == HITGROUP_LEFTLEG or hit == HITGROUP_RIGHTLEG then
         if ply.bullet_force > 20 or ply.pain > 100 then
             if !ply.fake then
@@ -347,7 +411,7 @@ end)
 
 local hook_run = hook.Run
 
-timer.Create("MinusOrganismInt",3,0,function()
+timer.Create("MinusOrganismInt",1.4,0,function()
     for _, ply in player.Iterator() do
         hook_run("OrganismVars", ply)
     end

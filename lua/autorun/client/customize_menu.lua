@@ -39,7 +39,7 @@ local acc_cords = {
 	["Большой красный рюкзак"]=Vector(50,0,0)
 }
 
-net.Receive("lutiiikol",function()
+net.Receive("accessory",function()
 	local ply = net.ReadEntity()
 	ply.ModelSex = net.ReadString()
 	ply.Accessory = net.ReadString()
@@ -227,6 +227,7 @@ local accsselect = vgui.Create("DModelPanel", Fon)
 		Mixer:SetColor(Color(vartxt[2] * 255, vartxt[3] * 255, vartxt[4] * 255, 255))
 		CSelect:SetValue(tostring(vartxt[5]))
 		Namey:SetValue(tostring(vartxt[6]))
+		NamePers:SetText(tostring(vartxt[6]))
 		SistemaRostaModel:SetValue(tostring(vartxt[7]))
 		ASelect:SetValue(tostring(vartxt[8]))
 	end

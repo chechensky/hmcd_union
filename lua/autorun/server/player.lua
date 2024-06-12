@@ -57,8 +57,14 @@ Female_Names={
 
 -- functions meta
 
-local PlayerMeta = FindMetaTable("Player")
-local EntityMeta = FindMetaTable("Entity")
+function PlayerMeta:Cough()
+	if self.ModelSex == "male" then
+		self:EmitSound("snd_jack_hmcd_cough_male.wav", 55, 80, 1, CHAN_AUTO)
+	else
+		self:EmitSound("snd_jack_hmcd_cough_female.wav", 55, 80, 1, CHAN_AUTO)
+	end
+end
+
 function EntityMeta:IsUsingValidModel()
 	local Mod = string.lower(self:GetModel())
 	for key, maud in pairs(Models_Customize) do
@@ -115,7 +121,7 @@ function EntityMeta:SetAccessory(acc)
 	timer.Simple(
 		1,
 		function()
-			net.Start("lutiiikol")
+			net.Start("accessory")
 			net.WriteEntity(ent)
 			net.WriteString(sex)
 			net.WriteString(acc)
@@ -147,8 +153,10 @@ end
 hook.Add("PlayerSay", "DropWeapon", function(ply,text)
 	if string.lower(text) == "*drop" then
         if !ply.fake then
-			if ply:GetActiveWeapon():GetClass() != "wep_jack_hmcd_hands" then
+			if IsValid(ply:GetActiveWeapon()) and ply:GetActiveWeapon():GetClass() != "wep_jack_hmcd_hands" then
 				ply:DropWeapon()
+				ply:ViewPunch(Angle(5,0,0))
+				ply:AddGesture(48)
             	return ""
 			end
         else
@@ -181,7 +189,8 @@ end)
 
 concommand.Add("attach", function(ply,cmd,args)
 	if !ply:IsAdmin() then return end
-	ply:GetActiveWeapon():SetNWBool(args[1],true)
+	if args[1] == "" then return end
+	ply:GetActiveWeapon():SetNWBool(args[1], true)
 end)
 
 concommand.Add("unattach", function(ply,cmd,args)
@@ -257,8 +266,38 @@ hook.Add("Vars Player", "VarsS", function(ply)
 	}
 	ply.stamina_sound = false
 	ply:StopSound("player/breathe1.wav")
-	ply.Bleed = 0
+
+	ply.BleedOuts = {
+		["right_hand"] = 0,
+		["left_hand"] = 0,
+
+		["left_leg"] = 0,
+		["right_leg"] = 0,
+
+		["stomach"] = 0,
+		["chest"] = 0
+	}
+	ply.Wounds = {
+		["right_hand"] = 0,
+		["left_hand"] = 0,
+
+		["left_leg"] = 0,
+		["right_leg"] = 0,
+
+		["stomach"] = 0,
+		["chest"] = 0
+	}
+	ply.Equipment = {}
+	ply.lasthitgroup = nil
+	ply.capsicum = 0
+	ply.MurdererIdentityHidden = false
+	ply.overdose = 0
+	ply.cant_eat = false
+
+	ply.heartstop = false
 	ply.pain = 0
+	ply.pain_add = 0
+
 	ply.IsBleeding = false
 	ply.o2 = 1
 	ply.Otrub = false
@@ -268,6 +307,9 @@ hook.Add("Vars Player", "VarsS", function(ply)
 
 	ply.stamina_sound = false
 
+	ply.ArteryThink = 0
+
+	ply.in_handcuff = false
 	ply.pulse = 70
 	ply.bullet_force = 0
 
@@ -278,6 +320,18 @@ hook.Add("Vars Player", "VarsS", function(ply)
 	ply.msgRightArm = 0
 	ply.msgLeftLeg = 0
 	ply.msgRightLeg = 0
+
+	-- adrenaline not experience:
+	-- head
+	ply.ane_neck = false
+	ply.ane_jdis = false
+	ply.ane_jaw = false
+	-- legs
+	ply.ane_rl = false
+	ply.ane_ll = false
+	-- arms
+	ply.ane_ra = false
+	ply.ane_la = false
 
 	-- THink wokrs
 
@@ -311,7 +365,6 @@ hook.Add("Vars Player", "VarsS", function(ply)
 		['RightLeg']=1,
 		['Jaw']=1
 	}
-
 	hook_run("Identity", ply)
 	---------------------------------
 end)
@@ -321,16 +374,4 @@ hook.Add("PlayerSpawn", "VarsIS", function(ply) ply:SetTeam(1) hook_run("Vars Pl
 hook.Add("PlayerDeath", "VarsD", function(ply)
 	ply:SetTeam(1)
 	hook_run("Vars Player", ply)
-end)
-
-hook.Add("PlayerTick", "Glaza", function (ply)
-    ply:SetEyeTarget(ply:GetEyeTrace().HitPos)
-end)
-
-hook.Add( "PlayerFootstep", "CustomFootstep", function( ply, pos, foot, sound, volume, rf )
-	if ply:IsSprinting() and foot == 0 then
-		ply:ViewPunch(Angle((ply.Bones["LeftLeg"] < 1 and 3) or 1,0,0))
-	elseif ply:IsSprinting() and foot == 1 then
-		ply:ViewPunch(Angle((ply.Bones["RightLeg"] < 1 and 3) or 1,0,0))
-	end
 end)

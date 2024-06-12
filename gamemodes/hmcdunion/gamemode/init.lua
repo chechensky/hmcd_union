@@ -2,7 +2,9 @@ AddCSLuaFile("cl_init.lua")
 AddCSLuaFile("shared.lua")
 
 include("shared.lua")
-util.AddNetworkString("lutiiikol")
+util.AddNetworkString("accessory")
+util.AddNetworkString("StartRound")
+util.AddNetworkString("EndRound")
 
 local plymanag = player_manager
 
@@ -98,18 +100,99 @@ function HMCD_Poison(victim, attacker, poison)
 			timer.Simple(CurareTime, function()
 				if !ValidPlayer_WithLifeID(victim, TAS) then return end
 				HMCD_Moan(victim)
-				victim.pain = victim.pain + 100
+				victim.pain_add = victim.pain_add + 100
 				
 				timer.Simple(CurareTime, function()
 					if !ValidPlayer_WithLifeID(victim, TAS) then return end
-					local poison=DamageInfo()
-					poison:SetDamage(105)
-					poison:SetDamageType(DMG_POISON)
-					poison:SetAttacker(attacker)
-					poison:SetInflictor(victim)
-					poison:SetDamagePosition(victim:GetPos())
-					poison:SetDamageForce(Vector(0,0,0))
-					victim:TakeDamageInfo(poison)
+					victim:Kill()
+				
+				end)
+			
+			end)
+		
+		end)
+	end
+
+	if poison == "VX" then
+		timer.Simple(VXTime, function()
+			if !ValidPlayer_WithLifeID(victim, TAS) then return end
+			HMCD_Moan(victim)
+			
+			timer.Simple(VXTime, function()
+				if !ValidPlayer_WithLifeID(victim, TAS) then return end
+				HMCD_Moan(victim)
+				victim.pain_add = victim.pain_add + 400
+				
+				timer.Simple(VXTime, function()
+					if !ValidPlayer_WithLifeID(victim, TAS) then return end
+					victim:Kill()
+				
+				end)
+			
+			end)
+		
+		end)
+	end
+
+	if poison == "VX" then
+		timer.Simple(VXTime, function()
+			if !ValidPlayer_WithLifeID(victim, TAS) then return end
+			HMCD_Moan(victim)
+			
+			timer.Simple(VXTime, function()
+				if !ValidPlayer_WithLifeID(victim, TAS) then return end
+				HMCD_Moan(victim)
+				victim.pain_add = victim.pain_add + 400
+				
+				timer.Simple(VXTime, function()
+					if !ValidPlayer_WithLifeID(victim, TAS) then return end
+					victim:Kill()
+				
+				end)
+			
+			end)
+		
+		end)
+	end
+
+	if poison == "Cyanide" then
+		timer.Simple(CyanidePowderTime, function()
+			if !ValidPlayer_WithLifeID(victim, TAS) then return end
+			victim:Cough()
+			
+			timer.Simple(CyanidePowderTime, function()
+				if !ValidPlayer_WithLifeID(victim, TAS) then return end
+				HMCD_Moan(victim)
+				victim.pain_add = victim.pain_add + 300
+				
+				timer.Simple(CyanidePowderTime, function()
+					if !ValidPlayer_WithLifeID(victim, TAS) then return end
+					victim:Kill()
+				
+				end)
+			
+			end)
+		
+		end)
+	end
+
+	if poison == "Tetrodotoxin" then
+		timer.Simple(TetrodotoxinTime, function()
+			if !ValidPlayer_WithLifeID(victim, TAS) then return end
+			victim:Cough()
+			
+			timer.Simple(TetrodotoxinTime, function()
+				if !ValidPlayer_WithLifeID(victim, TAS) then return end
+				HMCD_Moan(victim)
+				victim.pain_add = victim.pain_add + 300
+				if !victim.fake then
+					Faking(victim)
+				end
+				
+				timer.Simple(TetrodotoxinTime, function()
+					if !ValidPlayer_WithLifeID(victim, TAS) then return end
+					print("123123")
+					victim:Kill()
 				
 				end)
 			

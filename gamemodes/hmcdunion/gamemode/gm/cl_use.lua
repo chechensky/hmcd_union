@@ -15,13 +15,12 @@ surface.CreateFont( "RadialSmall_QM" , {
 })
 
 local ments
-local radialOpen = false
+local Menuuse = false
 local prevSelected, prevSelectedVertex
-function GM:OpenRadialMenu(elements)
+function GM:Openmenu_useMenu(elements)
 	if not LocalPlayer():Alive() then return end
-	if PhraseOpen then return end
-	radialOpen = true
-	LocalPlayer():SetNWBool("radialopen", true)
+	Menuuse = true
+	LocalPlayer():SetNWBool("Menuuse", true)
 	gui.EnableScreenClicker(true)
 	ments = elements or {}
 	prevSelected = nil
@@ -63,9 +62,9 @@ local other = {
    	"nails"
 }
 
-function GM:CloseRadialMenu()
-	radialOpen = false
-	LocalPlayer():SetNWBool("radialopen", false)
+function GM:Closemenu_useMenu()
+	Menuuse = false
+	LocalPlayer():SetNWBool("Menuuse", false)
 	gui.EnableScreenClicker(false)
 end
 
@@ -105,43 +104,30 @@ local function hasWeapon(ply, weaponName)
     return false 
 end
 
-function GM:RadialMousePressed(code, vec)
-	if radialOpen then
+function GM:menu_useMousePressed(code, vec)
+	local lply = LocalPlayer()
+	local eyetrace = lply:GetEyeTrace()
+	if Menuuse then
 		local selected = getSelected()
 		if selected and selected > 0 and code == MOUSE_LEFT then
 			if selected and ments[selected] then
-				if ments[selected].Code == "hmcd_ammo" then
-					RunConsoleCommand("open_ammo_drop_menu")
-				elseif ments[selected].Code == "unloadwep" then
-					local lply = LocalPlayer()
-        			local wep = lply:GetActiveWeapon()
-                	net.Start("Unload")
-                	net.WriteEntity(wep)
-                	net.SendToServer()
-				elseif ments[selected].Code == "drop" then
-					local lply = LocalPlayer()
-					lply:ConCommand("say *drop")
-				elseif ments[selected].Code == "phrase" then
-					local lply = LocalPlayer()
-					lply:ConCommand("+phrase")
-				elseif ments[selected].Code == "laser" then
-					local lply = LocalPlayer()
-					if !lply:GetActiveWeapon():GetNWBool("LaserStatus", false) then
-						lply:GetActiveWeapon():SetNWBool("LaserStatus", true)
-						lply:EmitSound("att/laser_on.ogg", 75,100,1,CHAN_AUTO)
-					else
-						lply:GetActiveWeapon():SetNWBool("LaserStatus", false)
-						lply:ViewPunch(Angle(20,0,0))
-						lply:EmitSound("att/laser_off.ogg", 75,100,1,CHAN_AUTO)
-					end
-				elseif ments[selected].Code == "usemenu" then
-					local lply = LocalPlayer()
-					lply:ConCommand("+menu_use")
+				if ments[selected].Code == "door_stuck" then
+					net.Start("Use_DoorStuck")
+					net.WriteEntity(eyetrace.Entity)
+					net.SendToServer()
+				elseif ments[selected].Code == "door_unstuck" then
+					net.Start("Use_DoorUnStuck")
+					net.WriteEntity(eyetrace.Entity)
+					net.SendToServer()
+				elseif ments[selected].Code == "ply_push" then
+					net.Start("Player_Push")
+					net.WriteEntity(eyetrace.Entity)
+					net.SendToServer()				
 				end
 			end
 		end
 
-		self:CloseRadialMenu()
+		self:Closemenu_useMenu()
 	end
 end
 
@@ -156,32 +142,35 @@ local function addElement(transCode, code)
 end
 
 concommand.Add(
-	"+menu_context",
+	"+menu_use",
 	function(client, com, args, full)
-		if client:GetNWBool("Phraseopen") then return end
-		if client:GetNWBool("Otrub", false) == true then return end
 		if client:Alive() then
 			local Wep = client:GetActiveWeapon()
 			elements = {}
-			addElement("Ammo Menu","hmcd_ammo")
-			addElement("Phrase_Category","phrase")
-			addElement("MenuUse_Category","usemenu")
-			if IsValid(Wep) then
-				if Wep:GetClass() ~= "wep_jack_hmcd_hands" then addElement("Drop", "drop") end
-				if Wep:GetNWBool("Laser", false) then addElement("LaserOn","laser") end
-        		if Wep:Clip1() > 0 then
-					addElement("UnloadWep", "unloadwep")
+
+			local distance_postoeyetrace = client:GetPos():Distance(client:GetEyeTrace().Entity:GetPos())
+			if distance_postoeyetrace <= 100 then
+				if HMCD_IsDoor(client:GetEyeTrace().Entity) then
+					addElement("Door_Stuck", "door_stuck")
+				end
+
+				if HMCD_IsDoor(client:GetEyeTrace().Entity) then
+					addElement("Door_UnStuck", "door_unstuck")
+				end
+
+				if client:GetEyeTrace().Entity:IsPlayer() then
+					addElement("Player_Push", "ply_push")
 				end
 			end
-			GAMEMODE:OpenRadialMenu(elements)
+			GAMEMODE:Openmenu_useMenu(elements)
 		end
 	end
 )
 
 concommand.Add(
-	"-menu_context",
+	"-menu_use",
 	function(client, com, args, full)
-		GAMEMODE:RadialMousePressed(MOUSE_LEFT)
+		GAMEMODE:menu_useMousePressed(MOUSE_LEFT)
 	end
 )
 
@@ -198,8 +187,8 @@ end
 
 local circleVertex
 local fontHeight = draw.GetFontHeight("Radial_QM")
-function GM:DrawRadialMenu()
-	if radialOpen then
+function GM:Drawmenu_useMenu()
+	if Menuuse then
 		local sw,sh = ScrW(), ScrH()
 		local total = #ments
 		local w = math.min(sw * 0.45, sh * 0.45)
@@ -207,7 +196,9 @@ function GM:DrawRadialMenu()
 		local sx, sy = sw / 2, sh / 2
 
 		local selected = getSelected() or -1
-
+		if total == 0 then
+			addElement("NO_ACTION", "")
+		end
 
 		if !circleVertex then
 			circleVertex = {}
@@ -240,7 +231,7 @@ function GM:DrawRadialMenu()
 			local textCol = defaultTextCol
 			if(ment.Code=="villain")then
 				textCol=Color(200,10,10,150)
-			elseif(ment.Code=="hero") or (ment.Code=="police")then
+			elseif(ment.Code=="hero")then
 				textCol=Color(20,200,255,150)
 			end
 			if selected == k then
@@ -270,46 +261,30 @@ function GM:DrawRadialMenu()
 
 				surface.SetTexture(tex)
 				surface.SetDrawColor(20,120,255,120)
-				if ment.Code == "happy" then
-					surface.SetDrawColor(255, 20, 20, 120)
-				elseif ment.Code == "burp" then
-					surface.SetDrawColor(195, 167, 30, 120)
-				elseif ment.Code == "fart" then
-					surface.SetDrawColor(111, 94, 8, 120)
-				elseif ment.Code == "kurare" then
-					surface.SetDrawColor(192, 23, 23, 120)
+				if(ment.Code=="villain")then
+					textCol=Color(255,50,50,255)
+				elseif(ment.Code=="hero")then
+					textCol=Color(100,225,255,255)
 				end
-
 				surface.DrawPoly(vertexes)
 				textCol = color_white
 			end
 			local ply = LocalPlayer()
 			local Main, Sub
 
-			if ment.TransCode == "Ammo Menu" then
-				Main = "Ammo Menu"
-				Sub = "open ammo menu"
-			elseif ment.TransCode == "UnloadWep" then
-				Main = "Unload Ammo"
-				Sub = "unload weapon in your hands"
-			elseif ment.TransCode == "Drop" then
-				Main = "Drop Weapon"
-				Sub = "drop weapon in your hands"
-			elseif ment.TransCode == "Phrase_Category" then
-				Main = "Phrase"
-				Sub = "open phrases category"
-			elseif ment.TransCode == "LaserOn" then
-				Main = "Laser"
-				Sub = (ply:GetActiveWeapon():GetNWBool("LaserStatus") and "Disable") or "Enable"
-			elseif ment.TransCode == "MenuUse_Category" then
-				Main = "Actions Menu"
-				Sub = "action menu, interacts with the environment"
+			if ment.TransCode == "Door_Stuck" then
+				Main = "Stuck Door"
+				Sub = "Try stuck the door"
+			elseif ment.TransCode == "Door_UnStuck" then
+				Main = "Unstuck Door"
+				Sub = "Try unstuck the door"
+			elseif ment.TransCode == "Player_Push" then
+				Main = "Push player"
+				Sub = "tolknut terpilu"
 			else
-    			Main = "?"
-    			Sub = "?"
+				Main = "No actions"
+				Sub = "pizdec.."
 			end
-			drawShadow(ply:GetNWString("Character_Name") or "Bystander", "GM", w/2.7, h/8.5, Color(255,255,255,255), 1)
-			drawShadow(ply:GetNWString("Role") or "Bystander", "GM", w/3, h/5, Color(ply:GetNWInt("RoleColor_R"),ply:GetNWInt("RoleColor_G"),ply:GetNWInt("RoleColor_B"),255), 1)
 			drawShadow(Main, "Radial_QM", sx + w * 0.6 * x, sy + h * 0.6 * y - fontHeight / 3,textCol, 1)
 			drawShadow(Sub, "RadialSmall_QM", sx + w * 0.6 * x, sy + h * 0.6 * y + fontHeight / 2, textCol, 1)
 		end
