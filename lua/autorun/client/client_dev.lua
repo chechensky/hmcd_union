@@ -167,3 +167,11 @@ end]]--
 net.Receive("ebal_chellele",function(len)
     net.ReadEntity().curweapon = net.ReadString()
 end)
+
+local COLOR_BLACK = Color( 0, 0, 0 )
+local COLOR_BLUE = Color( 34, 19, 233 )
+
+local MATERIAL_COLOR = Material( "color" )
+
+-- Performs a draw operation that will be used to create our mask
+-- This is a separate function only to make the hook's code easier to read.

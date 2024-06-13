@@ -44,6 +44,26 @@ Rounds = {
 	"dm"
 }
 
+HMCD_REMOVEEQUIPMENT=-1
+HMCD_ARMOR3A=1
+HMCD_ARMOR3=2
+HMCD_ACH=3
+HMCD_GASMASK=4
+HMCD_FLASHLIGHT=5
+HMCD_PISTOLSUPP=6
+HMCD_RIFLESUPP=7
+HMCD_SHOTGUNSUPP=8
+HMCD_LASERSMALL=9
+HMCD_LASERBIG=10
+HMCD_AIMPOINT=11
+HMCD_EOTECH=12
+HMCD_KOBRA=13
+HMCD_PBS=14
+HMCD_OSPREY=15
+HMCD_BALLISTICMASK=16
+HMCD_NVG=17
+HMCD_MOTHELMET=18
+
 HMCD_HelpRole = {
 	["Traitor"] = "KILL'EM ALL!",
 	["Bystander"] = "You innocent, just find traitor and kill him.",
@@ -434,3 +454,68 @@ AmmoType_Drop = {
 	"XBowBolt",
 	"AirboatGun"
 }
+local sights={
+    [1]=Material( "models/weapons/tfa_ins2/optics/kobra_dot", "noclamp nocull smooth"),
+    [2]=Material( "models/weapons/tfa_ins2/optics/eotech_reticule", "noclamp nocull smooth"),
+    [3]=Material( "scope/aimpoint", "noclamp nocull smooth")
+}
+
+local sightUp = {
+	["wep_jack_hmcd_akm"] = {
+		[1] = -100,
+		[2] = -120,
+		[3] = -100
+	}
+}
+
+local size = {
+	[1] = 300,
+	[2] = 200,
+	[3] = 600
+}
+
+function GM:DrawScopeDot(wep, sightnum, model,vm)
+    if IsValid(wep) and wep.ScopeDotAngle then
+        local material = sights[sightnum]
+        if IsValid(model) then
+    		render.UpdateScreenEffectTexture()
+    		render.ClearStencil()
+    		render.SetStencilEnable(true)
+    		render.SetStencilCompareFunction(STENCIL_ALWAYS)
+    		render.SetStencilPassOperation(STENCIL_REPLACE)
+    		render.SetStencilFailOperation(STENCIL_KEEP)
+    		render.SetStencilZFailOperation(STENCIL_REPLACE)
+    		render.SetStencilWriteMask(255)
+    		render.SetStencilTestMask(255)
+
+            render.SetBlend(0)
+
+			render.SetStencilReferenceValue(56)
+
+            model:DrawModel()
+
+            render.SetBlend(1)
+    		render.SetStencilPassOperation(STENCIL_KEEP)
+    		render.SetStencilCompareFunction(STENCIL_EQUAL)
+
+        end
+        render.SetMaterial(Material())
+		render.SetColorMaterial(Material())
+		local sight_upped
+		if sightUp[wep:GetClass()] then
+			sight_upped = sightUp[wep:GetClass()][sightnum]
+		else
+			sight_upped = 1
+		end
+		local size = size[sightnum]
+
+		local pos = LocalPlayer():EyePos()	
+        local up = model:GetAngles():Up()
+        local right = model:GetAngles():Right()
+		pos = pos + model:GetAngles():Forward() * 4200 + model:GetAngles():Up() * sight_upped
+
+        render.DrawQuad(pos + (up * size / 2) - (right * size / 2), pos + (up * size / 2) + (right * size / 2), pos - (up * size / 2) + (right * size / 2), pos - (up * size / 2) - (right * size / 2), Color(0,0,0,255))
+
+    	render.SetStencilEnable(false)
+    end
+end

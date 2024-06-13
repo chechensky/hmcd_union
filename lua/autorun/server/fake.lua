@@ -389,6 +389,10 @@ end
 
 
 hook.Add("DoPlayerDeath","blad",function(ply,att,dmginfo)
+	if IsValid(ply.wep) then
+		ply.wep.OwnerAlive = false
+		ply.wep = nil
+	end
 	SavePlyInfo(ply)
 	local rag = ply:GetNWEntity("Ragdoll")
 	
@@ -448,7 +452,6 @@ hook.Add("DoPlayerDeath","blad",function(ply,att,dmginfo)
 	PLYSPAWN_OVERRIDE = nil
 	ply.FakeShooting=false
 	ply:SetNWInt("FakeShooting",false)
-	ply.wep.OwnerAlive = false
 	ent:SetFlexWeight(9, 10)
 	timer.Create("collision"..ent:EntIndex(),15,1,function()
 		if IsValid(ent) and GAMEMODE.RoundName != "homicide" then rag:SetCollisionGroup(COLLISION_GROUP_WEAPON) end
