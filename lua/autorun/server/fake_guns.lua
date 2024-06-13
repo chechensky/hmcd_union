@@ -77,7 +77,7 @@ local Vectors = {
 local Vectors2 = {
 	["wep_jack_hmcd_assaultrifle"]=Vector(15,-3.8,-4),
 	["wep_jack_hmcd_akm"]=Vector(15,-3.8,-4),
-	["wep_jack_hmcd_rpg"]=Vector(15,-3.8,-4),
+	["wep_jack_hmcd_rpg"]=Vector(5,-3.8,-4),
 	["wep_jack_hmcd_crossbow"]=Vector(18,-3.8,-2),
 	["wep_jack_hmcd_mp7"]=Vector(5,-3.8,-2),
 	["wep_jack_hmcd_rifle"]=Vector(18,-3.8,-2),
@@ -162,6 +162,7 @@ function SpawnWeapon(ply,clip1)
 			ply.wep:Spawn()
 			ply:SetNWEntity("wep",ply.wep)
 			ply.wep:GetPhysicsObject():SetMass(0)
+			ply.wep.OwnerAlive = true
 			local weapon = ply:GetActiveWeapon()
 
 			CheckAmmo(ply, ply.wep)

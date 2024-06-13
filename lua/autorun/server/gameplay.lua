@@ -17,7 +17,7 @@ hook.Add("PropBreak", "SystemLoot", function(ply, prop)
 
 	local hdrop = table.Random(HeavyBox_Drop)
 	local drop = table.Random(Box_Drop)
-	if table.HasValue(HeavyBox_Models, prop:GetModel()) then
+	if table.HasValue(HeavyBox_Models, prop:GetModel()) and chance_empty > 60 then
 		local heavyloot = ents.Create(hdrop)
 		heavyloot:SetPos(pos+Vector(0,0,5))
 		heavyloot:Activate()
@@ -83,8 +83,7 @@ hook.Add("PlayerUse", "RealPropTake", function(ply,prop)
 end)
 
 local function WorkOtrub(ply)
-	if ply.adrenaline >= 4 then return end
-	if ply.Blood <= 3100 or ply.pain >= 250 then
+	if ply.Blood <= 3100 or ply.pain >= 250 or ply.o2 <= 0.4 then
 		ply.Otrub = true
 		ply:ScreenFade(SCREENFADE.IN, color_black, 0.5, 0.5)
 		ply:SetDSP(14)
@@ -127,4 +126,13 @@ hook.Add("Move", "FakeBecauseHitWall", function(ply,mv)
 			end
         end
     end]]--
+end)
+
+concommand.Add("hmcd_holdbreath", function(ply)
+	local breath = ply:GetNWBool("Breath", true)
+	if breath then
+		ply:SetNWBool("Breath", false)
+	else
+		ply:SetNWBool("Breath", true)
+	end
 end)

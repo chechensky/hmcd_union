@@ -47,8 +47,6 @@ function GM:StartRound()
 		ply:StripAmmo()
 		ply:StripWeapons()
 		ply:Spawn()
-		net.Start("StartRound")
-		net.Send(ply)
 	end
     timer.Simple(.1,function()
 
@@ -60,9 +58,14 @@ function GM:StartRound()
         until gunman != traitor
 
         traitor.Role = "Traitor"
+        gunman:SetNWString("RoleShow", "Traitor")
         gunman.SecretRole = "Gunman"
-
+        gunman:SetNWString("RoleShow", "Gunman")
     end)
+	for _,ply in pairs(ply_GetAll())do
+	    net.Start("StartRound")
+	    net.Send(ply)
+	end
 end
 
 function GM:EndRound()

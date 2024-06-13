@@ -2,33 +2,26 @@ print("no empty")
 
 -- Stamina Work
 
-hook.Add( "PlayerPostThink", "StaminaInt", function( ply )
+hook.Add("Player Think", "StaminaWork", function(ply,time)
 	local leg = ply.stamina['leg']
 	local duo_leg = ply.Bones['RightLeg']+ply.Bones['LeftLeg']
 
-	local run = leg*6.5+ply.adrenaline
-	local walk = leg*2+ply.adrenaline
-	local jump = leg*4.2+ply.adrenaline
-
+	local run = leg*6.5
+	local walk = leg*2
+	local jump = leg*4.2
+	local hui = (ply.ModelSex == "male" and "m") or "f"
 	if walk != ply:GetWalkSpeed() then ply:SetWalkSpeed(walk)  end
 	if jump != ply:GetJumpPower() then ply:SetJumpPower(jump) end
 	if run != ply:GetRunSpeed() then ply:SetRunSpeed(run) end
-	if leg < 20 and !ply.stamina_sound then
-		ply:EmitSound("player/breathe1.wav", 75, 100, 1, CHAN_AUTO, SND_NOFLAGS)
-		ply.stamina_sound = true
-		timer.Simple(5, function()
-			ply:StopSound("player/breathe1.wav")
-		end)
-	end
-end)
+	if ply:HasGodMode() or not ply:Alive() or (ply.staminaNext or time) > time then return end
+	ply.staminaNext = time + 1
 
-hook.Add( "PlayerFootstep", "StaminaMinus", function( ply, pos, foot, sound, volume, rf )
-	if ply.adrenaline > 0 then return end
-    if ply:IsSprinting() then
-        if ply.stamina['leg'] > 0 then ply.stamina['leg'] = ply.stamina['leg'] - 0.6 end
-    else
-        if ply.stamina['leg'] > 0 then ply.stamina['leg'] = ply.stamina['leg'] - 0.3 end
-    end
+	if ply:GetMoveType() == MOVETYPE_WALK and ply:IsSprinting() and ply.stamina['leg'] >= 3 then
+		ply.stamina['leg'] = ply.stamina['leg'] - 2.5
+	end
+	if leg < 20 then
+		ply:EmitSound("snds_jack_hmcd_breathing/" .. hui .. math.random(1,6) .. ".wav",60,100,0.6,CHAN_AUTO)
+	end
 end)
 
 ------------------------------------------------------------------
@@ -61,7 +54,7 @@ hook.Add("Player Think","Organs_Hit_Reactions",function(ply,time)
 	if not(ply.OrgansNextThink>CurTime())then
 		ply.OrgansNextThink=CurTime() + 0.2
 		if ply.Hit and ply:Alive() then
-			if ply.holdbreath then
+			if !ply:GetNWBool("Breath", true) then
 				ply.o2 = ply.o2 - math.Rand(0.01,0.05)
 			end
 			if ply.Hit["intestines"] == true then

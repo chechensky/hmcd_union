@@ -120,7 +120,7 @@ end
 
 function TFALeanModel()
 	for k, ply in ipairs(player.GetAll()) do
-		ply.TFALean = Lerp(FrameTime() * 7, ply.TFALean or 0, ply:GetNW2Int("TFALean")) --unpredicted lean which gets synched with our predicted lean status
+		ply.TFALean = Lerp(FrameTime() * 5, ply.TFALean or 0, ply:GetNW2Int("TFALean")) --unpredicted lean which gets synched with our predicted lean status
 		local lean = ply.TFALean
 		local bone = ply:LookupBone("ValveBiped.Bip01_Spine")
 
@@ -346,7 +346,7 @@ function LeanCalcVMView(wep, vm, oldPos, oldAng, pos, ang, ...)
 		if math.abs(status) > 0.001 then
 			local off = Vector(0, status * -LeanOffset, 0)
 			off:Rotate(ang)
-			ang:RotateAroundAxis(ang:Forward(), status * 40 * (wep.ViewModelFlip and -1 or 1))
+			ang:RotateAroundAxis(ang:Forward(), status * 35 * (wep.ViewModelFlip and -1 or 1))
 			pos = bestcase(pos, pos + off, ply)
 			ISLEANINGCV_VM = true
 			local tpos, tang = hook.Run("CalcViewModelView", wep, vm, oldPos, oldAng, pos, ang, ...)

@@ -44,6 +44,12 @@ Rounds = {
 	"dm"
 }
 
+HMCD_HelpRole = {
+	["Traitor"] = "KILL'EM ALL!",
+	["Bystander"] = "You innocent, just find traitor and kill him.",
+	["Gunman"] = "You have a gun, kill traitor in your party."
+}
+
 RoundsNormalise = {
 	["homicide"] = "Homicide",
 	["sandbox"] = "Sandbox",
@@ -54,21 +60,21 @@ RoundsNormalise = {
 HMCD_Loadout = {
 	["Traitor"] = {
 		["1"] = {
-			"wep_jack_hmcd_knife",
-			"wep_jack_hmcd_shuriken",
-			"wep_jack_hmcd_poisonneedle",
-			"wep_jack_hmcd_poisonpowder",
-			"wep_jack_hmcd_ied",
-			"wep_jack_hmcd_oldgrenade",
-			"wep_jack_hmcd_smokebomb",
-			"wep_jack_hmcd_fakepistol",
-			"wep_jack_hmcd_adrenaline",
-			"wep_jack_hmcd_jam",
-			"wep_jack_hmcd_poisonliquid",
-			"wep_jack_hmcd_poisongoo",
-			"wep_jack_hmcd_poisoncanister",
-			"wep_jack_hmcd_mask",
-			"wep_jack_hmcd_beartrap"
+			"ent_jack_hmcd_knife",
+			"ent_jack_hmcd_shuriken",
+			"ent_jack_hmcd_poisonneedle",
+			"ent_jack_hmcd_poisonpowder",
+			"ent_jack_hmcd_ied",
+			"ent_jack_hmcd_oldgrenade",
+			"ent_jack_hmcd_smokebomb",
+			"ent_jack_hmcd_fakepistol",
+			"ent_jack_hmcd_adrenaline",
+			"ent_jack_hmcd_jam",
+			"ent_jack_hmcd_poisonliquid",
+			"ent_jack_hmcd_poisongoo",
+			"ent_jack_hmcd_poisoncanister",
+			"ent_jack_hmcd_mask",
+			"ent_jack_hmcd_beartrap"
 		}
 	},
 }
@@ -370,51 +376,51 @@ HeavyBox_Models = {
 
 Box_Drop = {
 	"ent_jack_hmcd_ammo",
-	"wep_jack_hmcd_fooddrinkbig",
-	"wep_jack_hmcd_fooddrink",
-	"wep_jack_hmcd_ptrd",
-	"wep_jack_hmcd_adrenaline",
-	"wep_jack_hmcd_medkit",
-	"wep_jack_hmcd_bandagebig",
-	"wep_jack_hmcd_morphine",
-	"wep_jack_hmcd_painpills",
-	"wep_jack_hmcd_bandage",
-	"wep_jack_hmcd_baseballbat",
-	"wep_jack_hmcd_brick",
-	"wep_jack_hmcd_cleaver",
-	"wep_jack_hmcd_hammer",
-	"wep_jack_hmcd_pocketknife",
-	"wep_jack_hmcd_crowbar",
-	"wep_jack_hmcd_hatchet",
-	"wep_jack_hmcd_leadpipe",
-	"wep_jack_hmcd_axe",
-	"wep_jack_hmcd_smallpistol",
-	"wep_jack_hmcd_ducttape",
-	"wep_jack_hmcd_oldgrenade_dm",
-	"wep_jack_hmcd_glock17",
-	"wep_jack_hmcd_revolver",
-	"wep_jack_hmcd_rifle",
-	"wep_jack_hmcd_sr25",
-	"wep_jack_hmcd_mp7",
-	"wep_jack_hmcd_shotgun",
-	"wep_jack_hmcd_dbarrel",
-	"wep_jack_hmcd_remington",
-	"wep_jack_hmcd_bugbait"
+	"ent_jack_hmcd_fooddrinkbig",
+	"ent_jack_hmcd_fooddrink",
+	"ent_jack_hmcd_ptrd",
+	"ent_jack_hmcd_adrenaline",
+	"ent_jack_hmcd_medkit",
+	"ent_jack_hmcd_bandagebig",
+	"ent_jack_hmcd_morphine",
+	"ent_jack_hmcd_painpills",
+	"ent_jack_hmcd_bandage",
+	"ent_jack_hmcd_baseballbat",
+	"ent_jack_hmcd_brick",
+	"ent_jack_hmcd_cleaver",
+	"ent_jack_hmcd_hammer",
+	"ent_jack_hmcd_pocketknife",
+	"ent_jack_hmcd_crowbar",
+	"ent_jack_hmcd_hatchet",
+	"ent_jack_hmcd_leadpipe",
+	"ent_jack_hmcd_axe",
+	"ent_jack_hmcd_smallpistol",
+	"ent_jack_hmcd_ducttape",
+	"ent_jack_hmcd_oldgrenade_dm",
+	"ent_jack_hmcd_glock17",
+	"ent_jack_hmcd_revolver",
+	"ent_jack_hmcd_rifle",
+	"ent_jack_hmcd_sr25",
+	"ent_jack_hmcd_mp7",
+	"ent_jack_hmcd_shotgun",
+	"ent_jack_hmcd_dbarrel",
+	"ent_jack_hmcd_remington",
+	"ent_jack_hmcd_bugbait"
 }
 
 HeavyBox_Drop = {
-	"wep_jack_hmcd_ptrd",
-	"wep_jack_hmcd_adrenaline",
-	"wep_jack_hmcd_medkit",
-	"wep_jack_hmcd_oldgrenade_dm",
-	"wep_jack_hmcd_glock17",
-	"wep_jack_hmcd_revolver",
-	"wep_jack_hmcd_rifle",
-	"wep_jack_hmcd_sr25",
-	"wep_jack_hmcd_mp7",
-	"wep_jack_hmcd_shotgun",
-	"wep_jack_hmcd_dbarrel",
-	"wep_jack_hmcd_remington"
+	"ent_jack_hmcd_ptrd",
+	"ent_jack_hmcd_adrenaline",
+	"ent_jack_hmcd_medkit",
+	"ent_jack_hmcd_oldgrenade_dm",
+	"ent_jack_hmcd_glock17",
+	"ent_jack_hmcd_revolver",
+	"ent_jack_hmcd_rifle",
+	"ent_jack_hmcd_sr25",
+	"ent_jack_hmcd_mp7",
+	"ent_jack_hmcd_shotgun",
+	"ent_jack_hmcd_dbarrel",
+	"ent_jack_hmcd_remington"
 }
 
 AmmoType_Drop = {

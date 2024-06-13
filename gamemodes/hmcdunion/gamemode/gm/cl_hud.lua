@@ -270,7 +270,7 @@ function OpenAttachmentMenu()
 		if Wep.Attachments and Wep.Attachments["Owner"] then
 			for attachment,info in pairs(Wep.Attachments["Owner"]) do
 				if info.num then
-					if(Wep:GetNWBool(attachment)) and not(ply.Equipment[HMCD_EquipmentNames[info.num]]) then
+					if Wep:GetNWBool(attachment) then
 						table.insert(List,info.num)
 					end
 					table.insert(atts,info.num)

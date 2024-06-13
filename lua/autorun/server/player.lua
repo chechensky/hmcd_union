@@ -153,7 +153,7 @@ end
 hook.Add("PlayerSay", "DropWeapon", function(ply,text)
 	if string.lower(text) == "*drop" then
         if !ply.fake then
-			if IsValid(ply:GetActiveWeapon()) and ply:GetActiveWeapon():GetClass() != "wep_jack_hmcd_hands" then
+			if IsValid(ply:GetActiveWeapon()) and ply:GetActiveWeapon():GetClass() != "wep_jack_hmcd_hands" and ply:GetActiveWeapon().PinOut != true then
 				ply:DropWeapon()
 				ply:ViewPunch(Angle(5,0,0))
 				ply:AddGesture(48)
@@ -253,12 +253,13 @@ hook.Add("Vars Player", "VarsS", function(ply)
 	-- Anatomy
 
 	-- Base Vars
-
+	ply:SetNWBool("Breath", true)
 	ply.Blood = 5200
 	ply:SetNWFloat("Stamina_Arm", 50)
 	ply.stamina = {
 		['leg']=50
 	}
+	ply.staminaNext = 0
 	ply.dmginfo = {
 		['LastAttacker']=nil,
 		['LastDMGPosition']=Vector(),
@@ -302,7 +303,6 @@ hook.Add("Vars Player", "VarsS", function(ply)
 	ply.o2 = 1
 	ply.Otrub = false
 	ply:ConCommand("soundfade 0 1")
-	ply.holdbreath = false
 	ply.sprint = false
 
 	ply.stamina_sound = false

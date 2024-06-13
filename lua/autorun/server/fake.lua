@@ -186,7 +186,6 @@ end
 
 function Faking(ply) -- функция падения
 	if not ply:Alive() then return end
-	if ply.Otrub then return end
 	if not ply.fake then
 		if hook.Run("Fake",ply) ~= nil then return end
 		SavePlyInfo(ply)
@@ -248,6 +247,9 @@ function Faking(ply) -- функция падения
 			end
 		end
 	else
+		if ply.Otrub then
+			ply:ChatPrint("You're unconscious")
+		return false end
 		if ply.Hit["spine"] then
 			ply:ChatPrint("Your spine is broken")
 		return false end
@@ -446,6 +448,7 @@ hook.Add("DoPlayerDeath","blad",function(ply,att,dmginfo)
 	PLYSPAWN_OVERRIDE = nil
 	ply.FakeShooting=false
 	ply:SetNWInt("FakeShooting",false)
+	ply.wep.OwnerAlive = false
 	ent:SetFlexWeight(9, 10)
 	timer.Create("collision"..ent:EntIndex(),15,1,function()
 		if IsValid(ent) and GAMEMODE.RoundName != "homicide" then rag:SetCollisionGroup(COLLISION_GROUP_WEAPON) end

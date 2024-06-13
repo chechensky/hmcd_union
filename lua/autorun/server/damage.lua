@@ -96,7 +96,7 @@ hook.Add("HOOK_UNION_Damage","Hit",function(ply,hitgroup,dmginfo,rag)
     local ent = rag or ply
     local inf = dmginfo:GetInflictor()
     if dmginfo:IsDamageType(DMG_BULLET+DMG_BUCKSHOT+DMG_SNIPER+DMG_SLASH+DMG_CRUSH+DMG_BLAST) then
-        ply.adrenaline = ply.adrenaline + dmginfo:GetDamage() * math.random(-0.4, 1.3)
+        ply.adrenaline = ply.adrenaline + dmginfo:GetDamage() / 2.5
     end
     if dmginfo:IsDamageType(DMG_BULLET+DMG_BUCKSHOT+DMG_SNIPER+DMG_SLASH) then
         if hitgroup == HITGROUP_STOMACH then
@@ -417,9 +417,15 @@ timer.Create("MinusOrganismInt",1.4,0,function()
     end
 end)
 
-timer.Create("PlusStamina",1.5,0,function()
+timer.Create("PlusStamina",0.9,0,function()
     for _, ply in player.Iterator() do
         hook_run("StaminaVars", ply)
+    end
+end)
+
+timer.Create("WorkKislorod",2,0,function()
+    for _, ply in player.Iterator() do
+        hook_run("O2Vars", ply)
     end
 end)
 
@@ -437,10 +443,17 @@ hook.Add("StaminaVars", "PlusStamina", function(ply)
     if ply.stamina['leg'] > 50 then ply.stamina['leg'] = 50 end
     if ply:GetNWFloat("Stamina_Arm", 50) > 50 then ply:SetNWFloat("Stamina_Arm", 50) end
 
-    if ply.stamina['leg'] < 50 and !ply:IsSprinting() then
+    if ply.stamina['leg'] < 50 then
         ply.stamina['leg'] = ply.stamina['leg'] + 1.3
     end
     if ply:GetNWFloat("Stamina_Arm", 50) < 50 then
         ply:SetNWFloat("Stamina_Arm", ply:GetNWInt("Stamina_Arm") + 1.1)
+    end
+end)
+
+hook.Add("O2Vars", "O2_Work", function(ply)
+    if ply.o2 < 0 then ply.o2 = 0 end
+    if ply:GetNWBool("Breath", true) and ply:WaterLevel() >= 3 then
+        ply.o2 = ply.o2 - math.Rand(0.2, 0.5)
     end
 end)

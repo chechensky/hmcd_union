@@ -39,7 +39,7 @@ function GM:StartNewRound()
 	end
 
     --help
-	local RoundLabel = Label(Text,Panel)
+	local RoundLabel = Label(HMCD_HelpRole[ply:GetNWString("RoleShow", "")],Panel)
 	RoundLabel:SetFont("FontSmall")
 	RoundLabel:SizeToContents()
 	RoundLabel:Center()

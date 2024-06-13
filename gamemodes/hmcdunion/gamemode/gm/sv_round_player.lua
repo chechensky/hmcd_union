@@ -2,6 +2,7 @@ local hRun = hook.Run
 
 hook.Add("RoundPlayerVar", "FUNC_VAR", function(ply)
     ply.Role = "Bystander"
+    ply:SetNWString("RoleShow", "Bystander")
 end)
 
 hook.Add("PlayerSpawn", "RoundPlayerVar_Spawn", function(ply)
