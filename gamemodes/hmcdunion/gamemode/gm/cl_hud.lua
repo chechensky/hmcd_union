@@ -377,7 +377,7 @@ local function addPlayerItem(self, mlist, ply, pteam)
 				surface.DrawTexturedRect(s + 4, h / 2 - 16, 32, 32)
 				s = s + 32
 			end
-
+--я не знаю
 			if ply:IsMuted() then
 				surface.SetMaterial(muted)
 				surface.SetDrawColor(color_white)
