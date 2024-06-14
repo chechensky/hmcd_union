@@ -47,7 +47,7 @@ function GM:StartNewRound()
 	RoundLabel:SetPos(RoundLabel:GetX(),ScrH()-fontHeight*2)
 	RoundLabel:SetColor(Color(ply:GetNWInt("RoleColor_R"),ply:GetNWInt("RoleColor_G"),ply:GetNWInt("RoleColor_B"),255))
 	
-	local RoundLabel = Label( RoundsNormalise[GAMEMODE.RoundName] .. (GAMEMODE.RoundName == "homicide" and HMCD_RoundsTypeNormalise[GAMEMODE.RoundType] ) or "", Panel)
+	local RoundLabel = Label( RoundsNormalise[GAMEMODE.RoundName] .. HMCD_RoundsTypeNormalise[GAMEMODE.RoundType], Panel)
 	RoundLabel:SetFont("FontSmall")
 	RoundLabel:SizeToContents()
 	RoundLabel:CenterHorizontal()

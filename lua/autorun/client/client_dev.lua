@@ -38,10 +38,6 @@ hook.Add("PostDrawOpaqueRenderables", "LaserChecha", function()
        	endpos = endPos,
     	filter = ply
 	}) 
-
-	render.SetMaterial(Material("cable/redlaser"))
-	render.DrawBeam(startPos, tr.HitPos, 0.03, 2, 0, Color(255, 0, 0, 255))
-    
 	render.SetMaterial(Material("sprites/light_glow02_add"))
 	render.DrawQuadEasy(tr.HitPos, tr.HitNormal, 10, 10, Color(255, 0, 0, 255), 0)
 end)

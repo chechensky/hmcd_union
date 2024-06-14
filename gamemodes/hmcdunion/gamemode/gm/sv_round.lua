@@ -72,7 +72,7 @@ function GM:EndRound()
     PrintMessage(HUD_PRINTTALK, "Round end")
     net.Start("EndRound")
     net.Broadcast()
-    timer.Simple(10, function()
+    timer.Simple(4, function()
         GAMEMODE:StartRound()
     end)
 end

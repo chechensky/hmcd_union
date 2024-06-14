@@ -175,7 +175,8 @@ end)
 
 concommand.Add("oi", function(ply,cmd,args)
 	local huyply = args[1] and player.GetListByName(args[1])[1] or ply
-    print("Pain", huyply.pain)
+    print("Health", huyply:Health())
+	print("Pain", huyply.pain)
     print("Blood", huyply.Blood)
 	print("Adrenaline", huyply.adrenaline)
     print("Stamina", huyply.stamina['leg'] .. " " .. huyply:GetNWFloat("Stamina_Arm"))

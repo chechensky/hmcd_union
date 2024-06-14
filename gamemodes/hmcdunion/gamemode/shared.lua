@@ -12,6 +12,7 @@ GM.RoundName = "sandbox"
 GM.RoundNext = "sandbox"
 GM.RoundType = 2
 GM.RoundEnd = false
+GM.Version = "0.0.1"
 
 -- round types hmcd
 -- 1 = Standart
@@ -25,9 +26,8 @@ include("loader.lua")
 GM.papkago("hmcdunion/gamemode/gm/")
 
 function GM:CreateTeams()
-	team.SetUp(1,"Blue",Color(57,62,213))
-	team.SetUp(2,"Red",Color(188,24,24))
-	team.SetUp(3,"Spectator",Color(149,149,149))
+	team.SetUp(1,"Players",Color(57,62,213))
+	team.SetUp(2,"Spectators",Color(149,149,149))
 end
 
 blood_drop = {
@@ -100,6 +100,7 @@ HMCD_Loadout = {
 }
 
 HMCD_RoundsTypeNormalise = {
+	[0] = "",
 	[1] = "Standart",
 	[2] = "State of Emergency",
 	[3] = "Jihad",
@@ -457,7 +458,19 @@ AmmoType_Drop = {
 local sights={
     [1]=Material( "models/weapons/tfa_ins2/optics/kobra_dot", "noclamp nocull smooth"),
     [2]=Material( "models/weapons/tfa_ins2/optics/eotech_reticule", "noclamp nocull smooth"),
-    [3]=Material( "scope/aimpoint", "noclamp nocull smooth")
+    [3]=Material( "scope/aimpoint", "noclamp nocull smooth"),
+	[4]=Material( "scope/aimpoint", "noclamp nocull smooth")
+}
+
+local sightRight = {
+	["wep_jack_hmcd_mp7"] = {
+		[1] = 20,
+		[2] = 0,
+		[3] = 0
+	},
+	["wep_jack_hmcd_glock17"] = {
+		[4] = -5
+	}
 }
 
 local sightUp = {
@@ -465,13 +478,17 @@ local sightUp = {
 		[1] = -100,
 		[2] = -120,
 		[3] = -100
+	},
+	["wep_jack_hmcd_glock17"] = {
+		[4] = -20
 	}
 }
 
 local size = {
-	[1] = 300,
+	[1] = 230,
 	[2] = 200,
-	[3] = 600
+	[3] = 600,
+	[4] = 350
 }
 
 function GM:DrawScopeDot(wep, sightnum, model,vm)
@@ -499,22 +516,28 @@ function GM:DrawScopeDot(wep, sightnum, model,vm)
     		render.SetStencilCompareFunction(STENCIL_EQUAL)
 
         end
-        render.SetMaterial(Material())
-		render.SetColorMaterial(Material())
+        render.SetMaterial(material)
 		local sight_upped
 		if sightUp[wep:GetClass()] then
 			sight_upped = sightUp[wep:GetClass()][sightnum]
 		else
-			sight_upped = 1
+			sight_upped = 0
+		end
+
+		local sight_righited
+		if sightRight[wep:GetClass()] then
+			sight_righited = sightRight[wep:GetClass()][sightnum]
+		else
+			sight_righited = 0
 		end
 		local size = size[sightnum]
 
 		local pos = LocalPlayer():EyePos()	
         local up = model:GetAngles():Up()
         local right = model:GetAngles():Right()
-		pos = pos + model:GetAngles():Forward() * 4200 + model:GetAngles():Up() * sight_upped
+		pos = pos + model:GetAngles():Forward() * 4200 + model:GetAngles():Up() * sight_upped + model:GetAngles():Right() * sight_righited
 
-        render.DrawQuad(pos + (up * size / 2) - (right * size / 2), pos + (up * size / 2) + (right * size / 2), pos - (up * size / 2) + (right * size / 2), pos - (up * size / 2) - (right * size / 2), Color(0,0,0,255))
+        render.DrawQuad(pos + (up * size / 2) - (right * size / 2), pos + (up * size / 2) + (right * size / 2), pos - (up * size / 2) + (right * size / 2), pos - (up * size / 2) - (right * size / 2), Color(255,255,255,255))
 
     	render.SetStencilEnable(false)
     end

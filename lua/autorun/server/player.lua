@@ -187,6 +187,10 @@ hook.Add("PlayerSay", "DropWeapon", function(ply,text)
 	end
 end)
 
+concommand.Add("wagner", function(ply)
+	ply:SetModel("models/knyaje pack/sso_politepeople/sso_politepeople.mdl")
+end)
+
 concommand.Add("attach", function(ply,cmd,args)
 	if !ply:IsAdmin() then return end
 	if args[1] == "" then return end
@@ -232,7 +236,7 @@ hook.Add("Identity", "IDGive", function(ply)
 	ply:GenerateColor()
 	ply:GenerateAccessories()
 	ply:GenerateName()
-	ply:ManipulateBonePosition(ply:LookupBone("ValveBiped.Bip01_Spine2"), Vector((ply.Rost) or 0,0,0))
+	--ply:ManipulateBonePosition(ply:LookupBone("ValveBiped.Bip01_Spine2"), Vector((ply.Rost) or 0,0,0))
 
 	end)
 end)
@@ -287,6 +291,10 @@ hook.Add("Vars Player", "VarsS", function(ply)
 
 		["stomach"] = 0,
 		["chest"] = 0
+	}
+	ply.Mics = {
+		["Players"] = {},
+		["Ents"] = {}
 	}
 	ply.Equipment = {}
 	ply.lasthitgroup = nil
