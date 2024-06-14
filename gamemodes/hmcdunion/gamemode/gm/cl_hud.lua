@@ -392,7 +392,6 @@ local function addPlayerItem(self, mlist, ply, pteam)
 			end
 			draw.DrawText(ply:Ping(), "ScoreboardPlayer", w - 9, 9, color_black, 2)
 			draw.DrawText(ply:Ping(), "ScoreboardPlayer", w - 10, 8, color_white, 2)
-
 			draw.DrawText(ply:Nick() .. " " .. show_charactername, "ScoreboardPlayer", s + 11, 9, color_black, 0)
 			draw.DrawText(ply:Nick() .. " " .. show_charactername, "ScoreboardPlayer", s + 10, 8, color_white, 0)
 
