@@ -1,0 +1,12 @@
+--[[
+Server Name: [EU] Homicide
+Server IP:   185.17.0.25:27025
+File Path:   gamemodes/homicide/entities/entities/ent_jack_hmcd_uspsuppressor.lua
+
+--]]
+AddCSLuaFile()
+ENT.Type = "anim"
+ENT.Base = "ent_jack_hmcd_eq_base"
+ENT.ImpactSound = "physics/metal/weapon_impact_soft3.wav"
+ENT.Model = "models/weapons/tfa_ins2/upgrades/usp_match/w_suppressor_pistol.mdl"
+ENT.EquipmentNum = HMCD_OSPREY
