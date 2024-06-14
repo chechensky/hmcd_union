@@ -114,7 +114,7 @@ if SERVER then
 			core.Spread = 0
 			core.Tracer = 0
 			core.Force = .6
-			core.Damage = 600
+			core.Damage = 1300
 			core.HullSize = 10.5
 			core.AmmoType = "Buckshot"
 			self:FireBullets(core)
@@ -127,7 +127,7 @@ if SERVER then
 				shrapnel.Spread = 0
 				shrapnel.Tracer = 0
 				shrapnel.Force = .6
-				shrapnel.Damage = 60
+				shrapnel.Damage = 140
 				shrapnel.AmmoType = "Buckshot"
 				self:FireBullets(shrapnel)
 			end

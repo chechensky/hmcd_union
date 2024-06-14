@@ -377,7 +377,7 @@ local function addPlayerItem(self, mlist, ply, pteam)
 				surface.DrawTexturedRect(s + 4, h / 2 - 16, 32, 32)
 				s = s + 32
 			end
---я не знаю
+
 			if ply:IsMuted() then
 				surface.SetMaterial(muted)
 				surface.SetDrawColor(color_white)
@@ -415,9 +415,9 @@ function GM:DoScoreboardActionPopup(ply)
 	--end
 
 	if ply != LocalPlayer() then
-		local t = translate.scoreboardActionMute
+		local t = "Mute"
 		if ply:IsMuted() then
-			t = translate.scoreboardActionUnmute
+			t = "UnMute"
 		end
 		local mute = actions:AddOption( t )
 		mute:SetIcon("icon16/sound_mute.png")
