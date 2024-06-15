@@ -58,26 +58,36 @@ function LerpAngleFT(lerp,source,set)
 end
 
 local function ImersiveCam(ply,pos,ang,fov)
-	local lply = LocalPlayer()
-	local ragdoll = lply:GetNWEntity("Ragdoll")
-	if !ply:Alive() and IsValid(ragdoll) then
-		ragdoll:ManipulateBoneScale(6,Vector(1,1,1))
-		local att = ragdoll:GetAttachment(ragdoll:LookupAttachment("eyes"))
-		local eyeAngs = lply:EyeAngles()
-		LerpEyeRagdoll = LerpAngleFT(30,LerpEyeRagdoll,LerpAngle(1,eyeAngs,att.Ang))
-		LerpEyeRagdoll[3] = LerpEyeRagdoll[3]
-		local view = {
-			origin = att.Pos,
-			angles = LerpEyeRagdoll,
-			znear = 1,
-			zfar = 26000
-		}
-		return view
-	elseif ply:Alive() and ply:GetNWBool("fake") and IsValid(ragdoll) then
+	
+	local plyselect = ply:GetNWEntity("SelectPlayer", Entity(-1))
+	local ragdoll = ply:GetNWEntity("Ragdoll")
+
+	if not ply:Alive() and ply:GetNWBool("Spectating", false) == true and ply:GetNWInt("SpectateMode", 0) == 0 then
+		if !plyselect:GetNWBool("fake") then
+			local att = plyselect:GetAttachment(plyselect:LookupAttachment("eyes"))
+			local view = {
+				origin = att.Pos + Vector(0,-15,0),
+				angles = att.Ang
+			}
+			return view
+		elseif plyselect:GetNWBool("fake") and IsValid(plyselect:GetNWEntity("Ragdoll")) then
+			local ragdollselect = plyselect:GetNWEntity("Ragdoll")
+			ragdollselect:ManipulateBoneScale(6,vecZero)
+			local PosAng = ragdollselect:GetAttachment(ragdollselect:LookupAttachment("eyes"))
+			local camfake = {
+				origin = PosAng.Pos - Vector(2,0,0),
+				angles = PosAng.Ang,
+				znear = 1,
+				zfar = 26000,
+				fov = 110
+			}
+			return camfake
+		end
+	end
+
+	if ply:Alive() and ply:GetNWBool("fake") and IsValid(ragdoll) then
 		ragdoll:ManipulateBoneScale(6,vecZero)
 		local PosAng = ragdoll:GetAttachment(ragdoll:LookupAttachment("eyes"))
-		LerpEyeRagdoll = LerpAngleFT(1,LerpEyeRagdoll,LerpAngle(0.5,lply:EyeAngles(),PosAng.Ang))
-		LerpEyeRagdoll[3] = LerpEyeRagdoll[3]
 		local camfake = {
 			origin = PosAng.Pos - Vector(2,0,0),
 			angles = PosAng.Ang,

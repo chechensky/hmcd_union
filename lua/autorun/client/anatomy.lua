@@ -4,7 +4,7 @@ print("don't empty plz")
 
 hook.Add("RenderScreenspaceEffects","Effects", function()
 	local ply = LocalPlayer()
-	
+	if ply:GetNWBool("Spectating", false) == true then return end
 	local bloodlevel = ply:GetNWFloat("Blood",5200)
 	local painlevel = ply:GetNWFloat("pain",0)
 	local fraction = math.Clamp(1-((bloodlevel-3200)/((5000-1400)-2000)),0,1)

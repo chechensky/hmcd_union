@@ -11,6 +11,18 @@ function GM:HUDPaint()
 	self:DrawPhraseMenu()
 	self:DrawRadialMenu()
 	self:Drawmenu_useMenu()
+	self:DrawSpectate()
+end
+
+function GM:DrawSpectate()
+	local ply = LocalPlayer()
+	local plyselect = ply:GetNWEntity("SelectPlayer", Entity(-1))
+	if !ply:Alive() and ply:GetNWBool("Spectating", false) then
+		drawTextShadow( (ply:GetNWInt("SpectateMode") == 3 and "Noclip") or plyselect:Nick() ,"DefaultFont",950,50,team.GetColor(1), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+		drawTextShadow("R - Change mode spectate player","FontSmall",930,900,color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+		drawTextShadow("LMB - Change player spectate","FontSmall",930,930,color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+		drawTextShadow("RMB - Change mode spectate ( noclip / player )","FontSmall",930,960,color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+	end
 end
 
 function RagdollOwner(rag)
@@ -417,7 +429,7 @@ function GM:DoScoreboardActionPopup(ply)
 	if ply != LocalPlayer() then
 		local t = "Mute"
 		if ply:IsMuted() then
-			t = "UnMute"
+			t = "Unmute"
 		end
 		local mute = actions:AddOption( t )
 		mute:SetIcon("icon16/sound_mute.png")
@@ -651,8 +663,7 @@ function GM:DisplayEndRoundBoard(data)
 	if IsValid(menu) then
 		menu:Close()
 	end
-	PrintTable(data)
-	local Showin,Dude=false,self.MVP
+	local Showin,Dude=false,GAMEMODE.MVP
 	if(Dude)then Showin=true end
 	menu = vgui.Create("DFrame")
 	menu:SetSize(ScrW() * 0.8, ScrH() * 0.8)
@@ -664,6 +675,7 @@ function GM:DisplayEndRoundBoard(data)
 	menu:SetTitle("")
 	menu:MakePopup()
 	menu:SetKeyboardInputEnabled(false)
+	
 
 	function menu:Paint()
 		surface.SetDrawColor(Color(40,40,40,255))
@@ -715,7 +727,7 @@ function GM:DisplayEndRoundBoard(data)
 		was:SizeToContentsX()
 		local name=vgui.Create("DLabel", murdererPnl)
 		name:Dock(LEFT)
-		name:SetText(" "..data.murdererName)
+		name:SetText(" "..data.murdererName.." - "..data.murderer:Nick())
 		name:SetTextColor(msgs.color or color_white)
 		name:SetFont("FontSmall")
 		name:SizeToContentsX()
@@ -735,23 +747,21 @@ function GM:DisplayEndRoundBoard(data)
 	desc:SetAutoStretchVertical(true)
 	desc:SetText("Players")
 	desc:SetTextColor(color_white)
-	for k,v in pairs(player.GetAll()) do
+	local lootList = vgui.Create("DPanelList", lootPnl)
+	lootList:Dock(FILL)
+	for k,v in pairs(team.GetPlayers(1)) do
 
 		local pnl = vgui.Create("DPanel")
-		pnl:SetTall(draw.GetFontHeight("BigEndRound"))
+		pnl:SetTall(draw.GetFontHeight("FontSmall"))
 		function pnl:Paint(w, h)
-			--
 		end
+
+		--
 		function pnl:PerformLayout()
 			if self.NamePnl then
 				self.NamePnl:SetWidth(self:GetWide() * 0.4)
 			end
-			if self.BNamePnl then
-				self.BNamePnl:SetWidth(self:GetWide() * 0.3)
-			end
-			if self.SNamePnl then
-				self.SNamePnl:SetWidth(self:GetWide() * 0.4)
-			end
+
 			self:SizeToChildren(false, true)
 		end
 
@@ -759,34 +769,21 @@ function GM:DisplayEndRoundBoard(data)
 		pnl.NamePnl = name
 		name:Dock(LEFT)
 		name:SetAutoStretchVertical(true)
-		name:SetText(v:Nick())
+		name:SetText(v:Nick().." - "..v:GetNWString("Role", ""))
 		name:SetFont("FontSmall")
-		name:SetTextColor(color_white)
+		name:SetTextColor(Color(v:GetNWInt("RoleColor_R", 255), v:GetNWInt("RoleColor_G", 255), v:GetNWInt("RoleColor_B", 255)))
 		name:SetContentAlignment(4)
-		function name:Paint() end
+		function name:Paint()
+		end
+
 		function name:DoClick()
 			if IsValid(v) then
 				GAMEMODE:DoScoreboardActionPopup(v)
 			end
 		end
 
-		local bname = vgui.Create("DButton", pnl)
-		pnl.BNamePnl = bname
-		bname:Dock(LEFT)
-		bname:SetAutoStretchVertical(true)
-		local col
-		if(v.MurdererIdentityHidden)then
-			bname:SetText(v.TrueIdentity[5])
-			col=v.TrueIdentity[7]
-		else
-			bname:SetText(v:GetNWString("Character_Name"))
-			col=v:GetPlayerColor()
-		end
-		bname:SetFont("FontSmall")
-		bname:SetTextColor(Color(col.x * 255, col.y * 255, col.z * 255))
-		bname:SetContentAlignment(4)
-		function bname:Paint() end
-		bname.DoClick = name.DoClick
+		lootList:AddItem(pnl)
+
 	end
 	
 	if(Showin)then
@@ -830,6 +827,7 @@ function GM:DisplayEndRoundBoard(data)
 		end
 		--
 		if Dude then
+			print("dude", Dude)
 			Bottom:ShowCloseButton(false)
 			Bottom:SetSize(600,75)
 			Bottom:SetPos(ScrW()*.05,ScrH()*.05)

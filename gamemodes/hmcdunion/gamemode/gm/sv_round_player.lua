@@ -1,5 +1,4 @@
 local hRun = hook.Run
-
 hook.Add("RoundPlayerVar", "FUNC_VAR", function(ply)
     ply.Role = "Bystander"
     ply.SecretRole = ""

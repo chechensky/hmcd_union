@@ -241,8 +241,7 @@ hook.Add("Identity", "IDGive", function(ply)
 	end)
 end)
 
-hook.Add("Vars Player", "VarsS", function(ply)
-	-- Alive give
+hook.Add("Vars Player", "VarsS", function(ply)	-- Alive give
 	if PLYSPAWN_OVERRIDE then return end
 
 	timer.Simple(.1, function()
@@ -291,6 +290,9 @@ hook.Add("Vars Player", "VarsS", function(ply)
 		["Players"] = {},
 		["Ents"] = {}
 	}
+	ply:SetNWBool("Spectating",false)
+	ply:SetNWInt("SpectateMode", 0)
+	ply:SetNWEntity("SelectPlayer", Entity(-1))
 	ply.Equipment = {}
 	ply.lasthitgroup = nil
 	ply.capsicum = 0
@@ -372,7 +374,10 @@ hook.Add("Vars Player", "VarsS", function(ply)
 	---------------------------------
 end)
 
-hook.Add("PlayerSpawn", "VarsIS", function(ply) ply:SetTeam(1) hook_run("Vars Player", ply) end)
+hook.Add("PlayerSpawn", "VarsIS", function(ply) 
+	ply:SetTeam(1) 
+	hook_run("Vars Player", ply)
+end)
 
 hook.Add("PlayerDeath", "VarsD", function(ply)
 	ply:SetTeam(1)
