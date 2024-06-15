@@ -24,7 +24,7 @@ SWEP.Instructions = "This is a light weight, automatic pistol firing 9x19mm roun
 SWEP.Primary.ClipSize = 27
 SWEP.Primary.DefaultClip = SWEP.Primary.ClipSize * 2
 SWEP.ViewModel = "models/weapons/tfa_ins2/c_cz75a.mdl"
-SWEP.WorldModel = "models/pwb/weapons/w_cz75.mdl"
+SWEP.WorldModel = "models/weapons/tfa_ins2/w_cz75a.mdl"
 SWEP.UseHands = true
 SWEP.ViewModelFlip = false
 SWEP.Damage = 20
@@ -153,9 +153,9 @@ SWEP.Attachments = {
 	["Viewer"] = {
 		["Weapon"] = {
 			pos = {
-				right = 0,
-				up = 3,
-				forward = 14
+				right = 1,
+				up = -2,
+				forward = 5
 			},
 			ang = {
 				forward = 180,
@@ -167,8 +167,8 @@ SWEP.Attachments = {
 		},
 		["Suppressor"] = {
 			pos = {
-				forward = 14.2,
-				up = -3.8,
+				forward = 16,
+				up = -4.95,
 				right = 1
 			},
 			ang = {

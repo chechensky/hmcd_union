@@ -20,7 +20,8 @@ Guns = {
 	"wep_jack_hmcd_dbarrel",
 	"wep_jack_hmcd_glock17",
 	"wep_jack_hmcd_usp",
-	"wep_jack_hmcd_rpg"
+	"wep_jack_hmcd_rpg",
+	"wep_jack_hmcd_makarych"
 }
 
 TwoHandedOrNo = {
@@ -45,46 +46,48 @@ TwoHandedOrNo = {
 	["wep_jack_hmcd_dbarrel"]=true,
 	["wep_jack_hmcd_glock17"]=false,
 	["wep_jack_hmcd_usp"]=false,
-	["wep_jack_hmcd_rpg"]=true
+	["wep_jack_hmcd_rpg"]=true,
+	["wep_jack_hmcd_makarych"]=false,
 }
 
 local Vectors = {
 	["wep_jack_hmcd_assaultrifle"]=Vector(13,-1.8,3),
 	["wep_jack_hmcd_crossbow"]=Vector(0,1,-1),
-	["wep_jack_hmcd_mp7"]=Vector(4,-1.8,-1.5),
-	["wep_jack_hmcd_rifle"]=Vector(0,-1.5,-2),
+	["wep_jack_hmcd_mp7"]=Vector(3.5,-1.5,-2),
+	["wep_jack_hmcd_rifle"]=Vector(0,-1.7,-1),
 	["wep_jack_hmcd_mp5"]=Vector(5,-1.8,-1),
 	["wep_jack_hmcd_m249"]=Vector(5.5,-1.8,-2),
 	["wep_jack_hmcd_combinesniper"]=Vector(15,-1.8,-2),
-	["wep_jack_hmcd_ar2"]=Vector(5.5,-1.8,-2),
+	["wep_jack_hmcd_ar2"]=Vector(5.5,-1.5,-2),
 	["wep_jack_hmcd_ptrd"]=Vector(4,-1.8,-2),
 	["wep_jack_hmcd_remington"]=Vector(5,-1.3,-4),
 	["wep_jack_hmcd_shotgun"]=Vector(0,-1.3,1),
 	["wep_jack_hmcd_spas"]=Vector(6,-1,-2.8),
-	["wep_jack_hmcd_sr25"]=Vector(5,-1,-1),
+	["wep_jack_hmcd_sr25"]=Vector(5,-1.29,-1),
 	["wep_jack_hmcd_dbarrel"]=Vector(1.5,-1,-1),
-	["wep_jack_hmcd_glock17"]=Vector(3.5,-1,-2),
+	["wep_jack_hmcd_glock17"]=Vector(3.5,-1,-3),
 	
-	["wep_jack_hmcd_suppressed"]=Vector(6,-1.5,-1),
+	--["wep_jack_hmcd_makarych"]=Vector(5,-1.5,-1),
+	["wep_jack_hmcd_suppressed"]=Vector(4.8,-1.5,-2),
 	["wep_jack_hmcd_smallpistol"]=Vector(0,-.5,0),
 	["wep_jack_hmcd_revolver"]=Vector(-2,-1,1.5),
-	["wep_jack_hmcd_cz75a"]=Vector(12,-1,4),
+	["wep_jack_hmcd_cz75a"]=Vector(5,-1.2,-2),
 	["wep_jack_hmcd_akm"]=Vector(5,-1.8,0),
-	["wep_jack_hmcd_rpg"]=Vector(5,-1.8,0),
-	["wep_jack_hmcd_usp"]=Vector(6,-1.5,-1)
+	["wep_jack_hmcd_rpg"]=Vector(6.5,0.8,-1.2),
+	["wep_jack_hmcd_usp"]=Vector(6,-1.5,-2)
 }
 
 local Vectors2 = {
 	["wep_jack_hmcd_assaultrifle"]=Vector(15,-3.8,-4),
 	["wep_jack_hmcd_akm"]=Vector(15,-3.8,-4),
-	["wep_jack_hmcd_rpg"]=Vector(5,-3.8,-4),
+	["wep_jack_hmcd_rpg"]=Vector(5.7,0.4,1),
 	["wep_jack_hmcd_crossbow"]=Vector(18,-3.8,-2),
-	["wep_jack_hmcd_mp7"]=Vector(5,-3.8,-2),
+	["wep_jack_hmcd_mp7"]=Vector(6,-2.7,0.2),
 	["wep_jack_hmcd_rifle"]=Vector(18,-3.8,-2),
 	["wep_jack_hmcd_mp5"]=Vector(12,-2.8,-3.5),
 	["wep_jack_hmcd_m249"]=Vector(10,-3.8,-1),
 	["wep_jack_hmcd_combinesniper"]=Vector(10,-3.8,-1),
-	["wep_jack_hmcd_ar2"]=Vector(10,-3.8,-1),
+	["wep_jack_hmcd_ar2"]=Vector(10,-3.9,-1),
 	["wep_jack_hmcd_ptrd"]=Vector(13,-4.5,-5.5),
 	["wep_jack_hmcd_remington"]=Vector(14,-3.8,-3),
 	["wep_jack_hmcd_shotgun"]=Vector(18,-3,-1.5),
@@ -110,9 +113,7 @@ local cir = {
 -- checha tables
 
 local Angle_Normalize = {
-	["wep_jack_hmcd_ar2"]=Angle(0,180,180),
-	["wep_jack_hmcd_usp"]=Angle(0,-10,-180),
-	["wep_jack_hmcd_glock17"]=Angle(0,-10,-180)
+	["wep_jack_hmcd_ar2"]=Angle(0,145,180) 
 }
 
 -- в первом векторе обязательнор нахуй поставить - в начале, мне лень было кодить там что бы автоматом - ставился

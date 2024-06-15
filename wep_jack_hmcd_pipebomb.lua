@@ -185,9 +185,9 @@ if CLIENT then
 		end
 
 		if self:GetOwner():KeyDown(IN_SPEED) then
-			self.DownAmt = math.Clamp(self.DownAmt + .2, 0, 15)
+			self.DownAmt = math.Clamp(self.DownAmt + .2,0,15)
 		else
-			self.DownAmt = math.Clamp(self.DownAmt - .3, 0, 15)
+			self.DownAmt = math.Clamp(self.DownAmt - .3,0,15)
 		end
 
 		pos = pos - ang:Up() * (self.DownAmt + 7) + ang:Forward() * 20 - ang:Right() * 13

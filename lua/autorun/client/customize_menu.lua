@@ -116,7 +116,7 @@ local accsselect = vgui.Create("DModelPanel", Fon)
     	draw.RoundedBox(4, 0, h * 0.5 - 4, w, 8, Color(255, 255, 255))
 	end
 
-	--[[local SistemaRostaModel = vgui.Create("DNumSlider", Fon)
+	local SistemaRostaModel = vgui.Create("DNumSlider", Fon)
 	SistemaRostaModel:SetPos(1045, 860)
 	SistemaRostaModel:SetSize(230, 20)
 	SistemaRostaModel:SetText("Рост")
@@ -129,7 +129,7 @@ local accsselect = vgui.Create("DModelPanel", Fon)
 	SistemaRostaModel.TextArea:SetTextColor(Color(255, 255, 255))
 	SistemaRostaModel.Slider.Paint = function(self, w, h)
     	draw.RoundedBox(4, 0, h * 0.5 - 4, w, 8, Color(255, 255, 255))
-	end]]--
+	end
 
 	function playerModelPanel:LayoutEntity(ent)
     	ent:SetAngles(Angle(0, SlideModel:GetValue(), 0))
