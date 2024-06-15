@@ -47,7 +47,7 @@ function GM:StartNewRound()
 	RoundLabel:SetPos(RoundLabel:GetX(),ScrH()-fontHeight*2)
 	RoundLabel:SetColor(Color(ply:GetNWInt("RoleColor_R"),ply:GetNWInt("RoleColor_G"),ply:GetNWInt("RoleColor_B"),255))
 	
-	local RoundLabel = Label( RoundsNormalise[GAMEMODE.RoundName] .. HMCD_RoundsTypeNormalise[GAMEMODE.RoundType], Panel)
+	local RoundLabel = Label( RoundsNormalise[GAMEMODE.RoundName] .. " " .. HMCD_RoundsTypeNormalise[GAMEMODE.RoundType], Panel)
 	RoundLabel:SetFont("FontSmall")
 	RoundLabel:SizeToContents()
 	RoundLabel:CenterHorizontal()
@@ -57,9 +57,17 @@ end
 
 net.Receive("StartRound",function()
 	GAMEMODE:StartNewRound()
+    GAMEMODE.RoundNext = table.Random(Rounds)
+    GAMEMODE.RoundNextType = hmcd_roundtype
 end)
 
 net.Receive("EndRound",function()
+	local data = {}
+	data.reason=net.ReadInt(8)
+	data.murderer = net.ReadEntity()
+	data.murdererColor = net.ReadVector()
+	data.murdererName = net.ReadString()
+    GAMEMODE:DisplayEndRoundBoard(data)
 	local pitch = math.random(80, 120)
 	if IsValid(LocalPlayer()) then
 		LocalPlayer():EmitSound("ambient/alarms/warningbell1.wav", 100, pitch)

@@ -264,11 +264,6 @@ hook.Add("Vars Player", "VarsS", function(ply)
 		['leg']=50
 	}
 	ply.staminaNext = 0
-	ply.dmginfo = {
-		['LastAttacker']=nil,
-		['LastDMGPosition']=Vector(),
-		['LastDMGWeaponName']=nil
-	}
 	ply.stamina_sound = false
 	ply:StopSound("player/breathe1.wav")
 
@@ -302,7 +297,7 @@ hook.Add("Vars Player", "VarsS", function(ply)
 	ply.MurdererIdentityHidden = false
 	ply.overdose = 0
 	ply.cant_eat = false
-
+	ply.LastAttacker = nil
 	ply.heartstop = false
 	ply.pain = 0
 	ply.pain_add = 0

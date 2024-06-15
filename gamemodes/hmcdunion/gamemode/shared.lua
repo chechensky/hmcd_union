@@ -8,11 +8,12 @@ GM.TeamBased = true
 
 -- checha gm ints!!!
 
-GM.RoundName = "sandbox"
-GM.RoundNext = "sandbox"
+GM.RoundName = "homicide"
+GM.RoundNext = "homicide"
 GM.RoundType = 2
-GM.RoundEnd = false
+GM.RoundState = 1
 GM.Version = "0.0.1"
+GM.Traitor = nil
 
 -- round types hmcd
 -- 1 = Standart
@@ -493,6 +494,14 @@ local size = {
 
 function GM:DrawScopeDot(wep, sightnum, model,vm)
     if IsValid(wep) and wep.ScopeDotAngle then
+
+
+    	model.sight3 = Material("models/weapons/tfa_ins2/optics/eotech_lense")
+    	model.sight3:SetTexture("$basetexture","empty")
+
+    	model.sight2 = Material("models/weapons/tfa_ins2/optics/aimpoint_lense")
+    	model.sight2:SetTexture("$basetexture","empty")
+
         local material = sights[sightnum]
         if IsValid(model) then
     		render.UpdateScreenEffectTexture()
@@ -502,8 +511,6 @@ function GM:DrawScopeDot(wep, sightnum, model,vm)
     		render.SetStencilPassOperation(STENCIL_REPLACE)
     		render.SetStencilFailOperation(STENCIL_KEEP)
     		render.SetStencilZFailOperation(STENCIL_REPLACE)
-    		render.SetStencilWriteMask(255)
-    		render.SetStencilTestMask(255)
 
             render.SetBlend(0)
 
@@ -532,7 +539,7 @@ function GM:DrawScopeDot(wep, sightnum, model,vm)
 		end
 		local size = size[sightnum]
 
-		local pos = LocalPlayer():EyePos()	
+		local pos = LocalPlayer():EyePos()
         local up = model:GetAngles():Up()
         local right = model:GetAngles():Right()
 		pos = pos + model:GetAngles():Forward() * 4200 + model:GetAngles():Up() * sight_upped + model:GetAngles():Right() * sight_righited

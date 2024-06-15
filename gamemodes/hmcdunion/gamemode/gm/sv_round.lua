@@ -12,7 +12,7 @@ end)
 
 concommand.Add("union_gamemode_end", function(ply,cmd,args)
     if not ply:IsAdmin() then return end
-    GAMEMODE:EndRound()
+    GAMEMODE:EndRound(1, ply)
 end)
 
 concommand.Add("union_homicidetype", function(ply,cmd,args)
@@ -31,24 +31,34 @@ local pitch = math.random(80, 120)
 function GM:Think()
     if GAMEMODE.RoundName == "sandbox" then return end
     if #ply_GetAll() < 2 then return end
-    local liveplayers = GetAlivePlayerCount()
-    if liveplayers <= 0 then
-        GAMEMODE:EndRound()
-    end
+    if GAMEMODE.RoundState == 0 then return end
+    local alive_ply = GetAlivePlayerCount()
+    if GAMEMODE.Round == "homicide" then
+
+        if GAMEMODE.RoundState == 1 then
+            local alive_traitor, alive_innocent = GetAliveRoleCount("Traitor"), GetAliveRoleCount("Bystander")
+            if alive_innocent < 1 then
+                GAMEMODE:EndRound(1, GAMEMODE.Traitor)
+
+            elseif alive_traitor < 1 and alive_innocent > 0 then
+                GAMEMODE:EndRound(2, GAMEMODE.Traitor.LastAttacker)
+            end
+
+        end
+
+    return end
 end
 
 function GM:StartRound()
     GAMEMODE.RoundName = GAMEMODE.RoundNext
     GAMEMODE.RoundType = GAMEMODE.RoundNextType
-    GAMEMODE.RoundNext = table.Random(Rounds)
-    GAMEMODE.RoundNextType = hmcd_roundtype
     PrintMessage(HUD_PRINTTALK, "Next gamemode: Homicide - " .. HMCD_RoundsTypeNormalise[hmcd_roundtype])
 	for _,ply in pairs(ply_GetAll())do
 		ply:StripAmmo()
 		ply:StripWeapons()
 		ply:Spawn()
 	end
-    timer.Simple(.1,function()
+    timer.Simple(.3,function()
 
         local traitor = table.Random(ply_GetAll())
         local gunman
@@ -56,11 +66,12 @@ function GM:StartRound()
         repeat
             gunman = table.Random(ply_GetAll())
         until gunman != traitor
-
         traitor.Role = "Traitor"
         gunman:SetNWString("RoleShow", "Traitor")
         gunman.SecretRole = "Gunman"
         gunman:SetNWString("RoleShow", "Gunman")
+
+        GAMEMODE.Traitor = traitor
     end)
 	for _,ply in pairs(ply_GetAll())do
 	    net.Start("StartRound")
@@ -68,11 +79,26 @@ function GM:StartRound()
 	end
 end
 
-function GM:EndRound()
+-- win traitor 1
+-- lost traitor 2 
+function GM:EndRound(reason, mvp)
     PrintMessage(HUD_PRINTTALK, "Round end")
     net.Start("EndRound")
+
+	    net.WriteUInt(reason, 8)
+	    net.WriteEntity(mvp or Entity(-1))
+    if GAMEMODE.Traitor then
+	    net.WriteVector(GAMEMODE.Traitor:GetPlayerColor())
+	    net.WriteString(GAMEMODE.Traitor:GetNWString("Character_Name"))
+    else
+	    net.WriteVector(Vector(0,0,0))
+	    net.WriteString("?")
+    end
+
     net.Broadcast()
-    timer.Simple(4, function()
+    timer.Simple(5, function()
         GAMEMODE:StartRound()
+        GAMEMODE.RoundState = 1
     end)
+    GAMEMODE.RoundState = 0
 end

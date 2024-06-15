@@ -63,10 +63,9 @@ hook.Add("EntityTakeDamage","ragdamage",function(ent,dmginfo)
 	local att =
 		(entAtt:IsPlayer() and entAtt:Alive() and entAtt) or
 		(entAtt:GetClass() == "wep" and entAtt:GetOwner())
-	att = dmginfo:GetDamageType() ~= DMG_CRUSH and att or ply.LastAttacker
+	att = dmginfo:GetDamageType() ~= DMG_CRUSH and att
 
 	local Attacker = dmginfo:GetAttacker()
-
 	local rubatPidor = DamageInfo()
 	rubatPidor:SetAttacker(Attacker)
 	--rubatPidor:SetInflictor(dmginfo:GetInflictor())
@@ -75,6 +74,7 @@ hook.Add("EntityTakeDamage","ragdamage",function(ent,dmginfo)
 	rubatPidor:SetDamagePosition(dmginfo:GetDamagePosition())
 	rubatPidor:SetDamageForce(dmginfo:GetDamageForce())
 
+    ply.LastAttacker = att
 	ply.LastDMGInfo = rubatPidor
 	dmginfo:ScaleDamage(2)
 	if rag then
@@ -132,7 +132,7 @@ hook.Add("HOOK_UNION_Damage","Hit",function(ply,hitgroup,dmginfo,rag)
 
         end
     end
-
+    print(inf)
     dmg_d = dmginfo:GetDamage()
     if dmginfo:IsDamageType(DMG_BULLET+DMG_BUCKSHOT+DMG_SNIPER) then
         dmg_d = dmg_d * 3.5

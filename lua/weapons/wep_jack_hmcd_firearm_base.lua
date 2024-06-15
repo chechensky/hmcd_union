@@ -1952,8 +1952,6 @@ if CLIENT then
 	end
 
 	function SWEP:DrawHUD()
-		self.mat_holo = Material("models/weapons/tfa_ins2/optics/eotech_lense")
-		self.mat_holo:SetInt("$transculent", 0)
     	--[[ply = self:GetOwner()
 		if self:GetNWBool("Sight") or self:GetNWBool("Sight2") or self:GetNWBool("Sight3") or self:GetNWBool("Scope1") then
 		local rt = {

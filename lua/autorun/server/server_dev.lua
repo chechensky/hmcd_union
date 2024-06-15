@@ -92,6 +92,18 @@ function GetAlivePlayerCount()
     return aliveCount
 end
 
+function GetAliveRoleCount(role)
+    local rolealive = 0
+    for _, ply in ipairs(player.GetAll()) do
+        if ply:Alive() then
+			if ply.Role == role then
+            	rolealive = rolealive + 1
+			end
+		end
+    end
+    return rolealive
+end
+
 function Bleed(ply, mbleed, limb, ent)
 	local multiplier
 	local fatalbleed = ply.BleedOuts[limb] / 2.5
