@@ -195,6 +195,7 @@ concommand.Add("wagner", function(ply) --СВОСВОСВОСВО ZZZZZZZZZZZZZV
     end
 	ply:SetModel("models/knyaje pack/sso_politepeople/sso_politepeople.mdl")
 	ply:SetBodyGroups("010111111")
+    --тут надо убрать (ресетнуть) акссесуар.
 end)
 
 concommand.Add("azov", function(ply) --свинота
@@ -203,7 +204,8 @@ concommand.Add("azov", function(ply) --свинота
         ply:SetSubMaterial(i, "")
     end
 	ply:SetModel("models/player/azov.mdl")
-	ply:SetBodyGroups("122320000211") --да кстати, я не умею пользоваться там таблицами бодигрупп (ну или че там) короче говно тут, надо переделать и выставить все правильно
+	ply:SetBodyGroups("122320000211") --да кстати, я не умею пользоваться там таблицами бодигрупп (ну или че там) короче говно тут, надо переделать и выставить все правильно.
+    --тут надо убрать (ресетнуть) акссесуар.
 end)
 
 concommand.Add("attach", function(ply,cmd,args)
