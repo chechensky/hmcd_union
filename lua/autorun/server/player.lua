@@ -188,8 +188,22 @@ hook.Add("PlayerSay", "DropWeapon", function(ply,text)
 	end
 end)
 
-concommand.Add("wagner", function(ply)
+concommand.Add("wagner", function(ply) --СВОСВОСВОСВО ZZZZZZZZZZZZZVVVVVVVVVVVV
+    ply:SetMaterial("")
+    for i = 0, 9 do
+        ply:SetSubMaterial(i, "")
+    end
 	ply:SetModel("models/knyaje pack/sso_politepeople/sso_politepeople.mdl")
+	ply:SetBodyGroups("010111111")
+end)
+
+concommand.Add("azov", function(ply) --свинота
+    ply:SetMaterial("")
+    for i = 0, 9 do
+        ply:SetSubMaterial(i, "")
+    end
+	ply:SetModel("models/player/azov.mdl")
+	ply:SetBodyGroups("122320000211")
 end)
 
 concommand.Add("attach", function(ply,cmd,args)
