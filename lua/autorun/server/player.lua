@@ -300,7 +300,6 @@ hook.Add("Vars Player", "VarsS", function(ply)	-- Alive give
 	ply.MurdererIdentityHidden = false
 	ply.overdose = 0
 	ply.cant_eat = false
-	ply.LastAttacker = nil
 	ply.heartstop = false
 	ply.pain = 0
 	ply.pain_add = 0
@@ -378,6 +377,7 @@ end)
 
 hook.Add("PlayerSpawn", "VarsIS", function(ply) 
 	ply:SetTeam(1) 
+	ply.LastAttacker = nil
 	hook_run("Vars Player", ply)
 end)
 

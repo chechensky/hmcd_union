@@ -110,6 +110,19 @@ hook.Add("PlayerPostThink", "Glazkiotrub", function(ply)
 	end
 end)
 
+hook.Add("SpawnMenuOpen", "RestrictSpawnMenu", function()
+    local ply = LocalPlayer()
+    if not (ply:IsAdmin() or ply:IsSuperAdmin()) then
+        return false
+    end
+end)
+
+hook.Add("KeyPress", "sims", function(ply,key)
+	if input.IsKeyDown(KEY_F1) then
+		ply:ConCommand("gm_showhelp")
+	end
+end)
+
 hook.Add("Move", "FakeBecauseHitWall", function(ply,mv)
     --[[local speed = mv:GetVelocity():LengthSqr()
     local need = 75000

@@ -86,7 +86,6 @@ function GM:EndRound(reason, mvp)
         end
 
     net.Broadcast()
-    GAMEMODE.MVP = mvp
     timer.Simple(5, function()
         GAMEMODE:StartRound()
     end)
@@ -94,12 +93,11 @@ function GM:EndRound(reason, mvp)
 end
 
 function GM:Think()
-    print(GAMEMODE.RoundName)
     if GAMEMODE.RoundName == "sandbox" then return end
     if #ply_GetAll() < 2 then return end
-    if GAMEMODE.RoundState == 0 then return end
+    if GAMEMODE.RoundState == 0 or GAMEMODE.RoundState == 2 then return end
+    if GAMEMODE.RoundState == 2 and #ply_GetAll() > 1 then GAMEMODE:EndRound(1, table.Random(ply_GetAll())) end
     local alive_ply = GetAlivePlayerCount()
-
     if GAMEMODE.RoundName == "homicide" then
         if GAMEMODE.RoundState == 1 then
             local alive_traitor, alive_innocent = GetAliveRoleCount("Traitor"), GetAliveRoleCount("Bystander")

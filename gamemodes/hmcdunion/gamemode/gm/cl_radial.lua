@@ -156,7 +156,7 @@ local function addElement(transCode, code)
 end
 
 concommand.Add(
-	"+menu_context",
+	"+menu",
 	function(client, com, args, full)
 		if client:GetNWBool("Phraseopen") then return end
 		if client:GetNWBool("Otrub", false) == true then return end
@@ -179,7 +179,7 @@ concommand.Add(
 )
 
 concommand.Add(
-	"-menu_context",
+	"-menu",
 	function(client, com, args, full)
 		GAMEMODE:RadialMousePressed(MOUSE_LEFT)
 	end

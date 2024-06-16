@@ -11,9 +11,10 @@ GM.TeamBased = true
 GM.RoundName = "homicide"
 GM.RoundNext = "homicide"
 GM.RoundType = 2
-GM.RoundState = 1
+GM.RoundState = 2
 GM.Version = "0.0.1"
 GM.Traitor = nil
+GM.MVP = nil
 
 -- round types hmcd
 -- 1 = Standart

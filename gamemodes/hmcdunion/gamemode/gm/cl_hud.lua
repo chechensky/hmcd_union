@@ -664,11 +664,11 @@ function GM:DisplayEndRoundBoard(data)
 		menu:Close()
 	end
 	local Showin,Dude=false,GAMEMODE.MVP
-	if(Dude)then Showin=true end
+	if Dude then Showin=true end
 	menu = vgui.Create("DFrame")
 	menu:SetSize(ScrW() * 0.8, ScrH() * 0.8)
 	menu:Center()
-	if(Showin)then
+	if Showin then
 		menu:SetSize(ScrW()*.45,ScrH()*.9)
 		menu:SetPos(ScrW()*.525,ScrH()*.05)
 	end
@@ -727,7 +727,7 @@ function GM:DisplayEndRoundBoard(data)
 		was:SizeToContentsX()
 		local name=vgui.Create("DLabel", murdererPnl)
 		name:Dock(LEFT)
-		name:SetText(" "..data.murdererName.." - "..data.murderer:Nick())
+		name:SetText(" "..data.murdererName)
 		name:SetTextColor(msgs.color or color_white)
 		name:SetFont("FontSmall")
 		name:SizeToContentsX()
@@ -786,7 +786,7 @@ function GM:DisplayEndRoundBoard(data)
 
 	end
 	
-	if(Showin)then
+	if Showin then
 		local Top,Bottom
 		--[[Top=vgui.Create("DFrame")
 		function Top:Paint()
@@ -827,7 +827,6 @@ function GM:DisplayEndRoundBoard(data)
 		end
 		--
 		if Dude then
-			print("dude", Dude)
 			Bottom:ShowCloseButton(false)
 			Bottom:SetSize(600,75)
 			Bottom:SetPos(ScrW()*.05,ScrH()*.05)
