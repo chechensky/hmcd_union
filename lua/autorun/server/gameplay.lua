@@ -117,10 +117,10 @@ hook.Add("SpawnMenuOpen", "RestrictSpawnMenu", function()
     end
 end)
 
-hook.Add("KeyPress", "sims", function(ply,key)
-	if input.IsKeyDown(KEY_F1) then
-		ply:ConCommand("gm_showhelp")
-	end
+hook.Add("PlayerButtonDown", "F1_ShowHelp", function(ply, button)
+    if button == KEY_F1 then
+        ply:ConCommand("gm_showhelp")
+    end
 end)
 
 hook.Add("Move", "FakeBecauseHitWall", function(ply,mv)
