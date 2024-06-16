@@ -9,7 +9,7 @@ ENT.Type = "anim"
 ENT.Base = "ent_jack_hmcd_wep_base"
 ENT.SWEP = "wep_jack_hmcd_assaultrifle"
 ENT.ImpactSound = "physics/metal/weapon_impact_soft3.wav"
-ENT.Model = "models/drgordon/weapons/ar-15/m4/colt_m4.mdl"
+ENT.Model = "models/weapons/w_rif_m4a1.mdl"
 
 ENT.Bodygroups = {
 	[2] = 1,
@@ -18,8 +18,8 @@ ENT.Bodygroups = {
 
 ENT.DefaultAmmoAmt = 30
 ENT.AmmoType = "SMG1"
-ENT.MuzzlePos = Vector(0, -23.1, 3.65)
-ENT.BulletDir = Vector(0, -1, 0)
+ENT.MuzzlePos = Vector(15, 5, 10)
+ENT.BulletDir = Vector(5, -1, 0)
 ENT.BulletEjectPos = Vector(0, -5.1, 3.8)
 ENT.BulletEjectDir = Vector(1, 0, 0)
 ENT.Damage = 90

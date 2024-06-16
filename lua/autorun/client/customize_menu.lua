@@ -116,21 +116,6 @@ local accsselect = vgui.Create("DModelPanel", Fon)
     	draw.RoundedBox(4, 0, h * 0.5 - 4, w, 8, Color(255, 255, 255))
 	end
 
-	local SistemaRostaModel = vgui.Create("DNumSlider", Fon)
-	SistemaRostaModel:SetPos(1045, 860)
-	SistemaRostaModel:SetSize(230, 20)
-	SistemaRostaModel:SetText("Рост")
-	SistemaRostaModel:SetMin(-10)
-	SistemaRostaModel:SetMax(30)                                          -- чечка ты ебанат
-	SistemaRostaModel:SetDecimals(0)
-	SistemaRostaModel:SetValue(0)
-	SistemaRostaModel.Label:SizeToContents()
-	SistemaRostaModel.Label:SetTextColor(Color(255, 255, 255))
-	SistemaRostaModel.TextArea:SetTextColor(Color(255, 255, 255))
-	SistemaRostaModel.Slider.Paint = function(self, w, h)
-    	draw.RoundedBox(4, 0, h * 0.5 - 4, w, 8, Color(255, 255, 255))
-	end
-
 	function playerModelPanel:LayoutEntity(ent)
     	ent:SetAngles(Angle(0, SlideModel:GetValue(), 0))
 	end
@@ -228,7 +213,6 @@ local accsselect = vgui.Create("DModelPanel", Fon)
 		CSelect:SetValue(tostring(vartxt[5]))
 		Namey:SetValue(tostring(vartxt[6]))
 		NamePers:SetText(tostring(vartxt[6]))
-		SistemaRostaModel:SetValue(tostring(vartxt[7]))
 		ASelect:SetValue(tostring(vartxt[8]))
 	end
 

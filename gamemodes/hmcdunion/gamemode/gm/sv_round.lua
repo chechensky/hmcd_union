@@ -1,12 +1,20 @@
-local hmcd_roundtype = math.random(1,4)
 local ply_GetAll = player.GetAll
 
 concommand.Add("union_gamemode", function(ply,cmd,args)
     if not ply:IsAdmin() then return end
     if args[1] == "homicide" then
+        local hmcd_roundtype = math.random(1,5)
         GAMEMODE.RoundNext = "homicide"
         GAMEMODE.RoundNextType = hmcd_roundtype
         PrintMessage(HUD_PRINTTALK, "Next gamemode: Homicide - " .. HMCD_RoundsTypeNormalise[hmcd_roundtype])
+    elseif args[1] == "dm" then
+        GAMEMODE.RoundNext = "dm"
+        GAMEMODE.RoundNextType = 0
+        PrintMessage(HUD_PRINTTALK, "Next gamemode: Deathmatch")
+    elseif args[1] == "hl2" then
+        GAMEMODE.RoundNext = "hl2"
+        GAMEMODE.RoundNextType = 0
+        PrintMessage(HUD_PRINTTALK, "Next gamemode: Half Life 2 - Deathmatch")
     end
 end)
 
@@ -29,9 +37,9 @@ end)
 local pitch = math.random(80, 120)
 
 function GM:StartRound()
+    local hmcd_roundtype = math.random(1,5)
     GAMEMODE.RoundName = GAMEMODE.RoundNext
     GAMEMODE.RoundType = GAMEMODE.RoundNextType
-    PrintMessage(HUD_PRINTTALK, "Next gamemode: Homicide - " .. HMCD_RoundsTypeNormalise[hmcd_roundtype])
     game.CleanUpMap(false, { "env_fire", "entityflame", "_firesmoke" })
 	for _,ply in pairs(ply_GetAll())do
         ply:UnSpectate()
@@ -86,6 +94,7 @@ function GM:EndRound(reason, mvp)
 end
 
 function GM:Think()
+    print(GAMEMODE.RoundName)
     if GAMEMODE.RoundName == "sandbox" then return end
     if #ply_GetAll() < 2 then return end
     if GAMEMODE.RoundState == 0 then return end

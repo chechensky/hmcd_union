@@ -652,7 +652,7 @@ function SWEP:PrimaryAttack()
 	dev = GetConVar( "developer" )
 	--local vm = self:GetOwner():GetViewModel()
 	--bullet.Dir = (vm:GetAngles():Forward()*self.BulletDir[1]+vm:GetAngles():Right()*self.BulletDir[2]+vm:GetAngles():Up()*self.BulletDir[3]+VectorRand()*InAcc):GetNormalized()
-	bullet.Spread = Vector(0, 0, 0)
+	bullet.Spread = Vector(self.Spread, self.Spread, 0)
 	bullet.Tracer = 0
 	bullet.Force = dmgAmt / 10
 	bullet.Damage = dmgAmt / 4

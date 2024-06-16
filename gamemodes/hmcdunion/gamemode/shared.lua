@@ -64,6 +64,26 @@ HMCD_OSPREY=15
 HMCD_BALLISTICMASK=16
 HMCD_NVG=17
 HMCD_MOTHELMET=18
+HMCD_EquipmentNames = {
+	[1] = "Level IIIA Armor",
+	[2] = "Level III Armor",
+	[3] = "Advanced Combat Helmet",
+	[4] = "M40 Gas Mask",
+	[5] = "Maglite ML300LX-S3CC6L Flashlight",
+	[6] = "Cobra M2 Suppressor",
+	[7] = "Hybrid 46 Suppressor",
+	[8] = "Salvo 12 Suppressor",
+	[9] = "Marcool JG5 Laser Sight",
+	[10] = "AN/PEQ-15 Laser Sight",
+	[11] = "Aimpoint CompM2 Sight",
+	[12] = "EOTech 552.A65 Sight",
+	[13] = "Kobra Sight",
+	[14] = "PBS-1 Suppressor",
+	[15] = "Osprey 45 Suppressor",
+	[16] = "Ballistic Mask",
+	[17] = "Ground Panoramic Night Vision Goggles",
+	[18] = "Bell Bullitt Motorcycle Helmet"
+}
 
 HMCD_HelpRole = {
 	["Traitor"] = "KILL'EM ALL!",
@@ -75,7 +95,8 @@ RoundsNormalise = {
 	["homicide"] = "Homicide",
 	["sandbox"] = "Sandbox",
 	["hl2"] = "Half Life 2 - Deathmatch",
-	["dm"] = "Deathmatch"
+	["dm"] = "Deathmatch",
+	["svo"] = "Special Military Operation"
 }
 
 HMCD_Loadout = {
@@ -304,27 +325,6 @@ AccessoryListWithoutEmpty={
 
 	["Обычный Рюкзак"]={"models/modified/backpack_3.mdl","ValveBiped.Bip01_Spine4",{Vector(-3,-6,0),Angle(0,90,90),.9},{Vector(-3,-6,0),Angle(0,90,90),.8},false,0},
 	["Серый рюкзак"]={"models/modified/backpack_3.mdl","ValveBiped.Bip01_Spine4",{Vector(-3,-6,0),Angle(0,90,90),.9},{Vector(-3,-6,0),Angle(0,90,90),.8},false,1}
-}
-
-HMCD_EquipmentNames = {
-	"Level IIIA Armor",
-	"Level III Armor",
-	"Advanced Combat Helmet",
-	"M40 Gas Mask",
-	"Maglite ML300LX-S3CC6L Flashlight",
-	"Cobra M2 Suppressor",
-	"Hybrid 46 Suppressor",
-	"Salvo 12 Suppressor",
-	"Marcool JG5 Laser Sight",
-	"AN/PEQ-15 Laser Sight",
-	"Aimpoint CompM2 Sight",
-	"EOTech 552.A65 Sight",
-	"Kobra Sight",
-	"PBS-1 Suppressor",
-	"Osprey 45 Suppressor",
-	"Ballistic Mask",
-	"Ground Panoramic Night Vision Goggles",
-	"Bell Bullitt Motorcycle Helmet"
 }
 
 HMCD_AmmoWeights={

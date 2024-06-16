@@ -295,7 +295,7 @@ function OpenAttachmentMenu()
 					table.insert(List,attachment)
 				end
 			end
-		end	
+		end
 	end
 	local size=ScrW()/8.5
 

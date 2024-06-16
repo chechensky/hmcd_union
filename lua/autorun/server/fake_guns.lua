@@ -113,7 +113,7 @@ local cir = {
 -- checha tables
 
 local Angle_Normalize = {
-	["wep_jack_hmcd_ar2"]=Angle(0,145,180) 
+	["wep_jack_hmcd_ar2"]=Angle(0,145,180)
 }
 
 -- в первом векторе обязательнор нахуй поставить - в начале, мне лень было кодить там что бы автоматом - ставился
