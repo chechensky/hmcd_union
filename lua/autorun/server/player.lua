@@ -208,6 +208,8 @@ concommand.Add("azov", function(ply) --свинота
     --тут надо убрать (ресетнуть) акссесуар.
 end)
 
+-- козявка пиздец ты ебанутый конча
+
 concommand.Add("attach", function(ply,cmd,args)
 	if !ply:IsAdmin() then return end
 	if args[1] == "" then return end
