@@ -11,7 +11,7 @@ GM.TeamBased = true
 GM.RoundName = "homicide"
 GM.RoundNext = "homicide"
 GM.RoundType = 2
-GM.RoundState = 2
+GM.RoundState = 3
 GM.Version = "0.0.1"
 GM.Traitor = nil
 GM.MVP = nil
@@ -89,7 +89,8 @@ HMCD_EquipmentNames = {
 HMCD_HelpRole = {
 	["Traitor"] = "KILL'EM ALL!",
 	["Bystander"] = "You innocent, just find traitor and kill him.",
-	["Gunman"] = "You have a gun, kill traitor in your party."
+	["Gunman"] = "You have a gun, kill traitor in your party.",
+	["Fighter"] = "You fighter, kill all and stay alive."
 }
 
 RoundsNormalise = {
@@ -100,26 +101,107 @@ RoundsNormalise = {
 	["svo"] = "Special Military Operation"
 }
 
+HMCD_Loadout_Firearms = {
+	["Traitor"] = {
+		[1] = {""},
+		[2] = {"wep_jack_hmcd_suppressed"},
+		[3] = {""},
+		[4] = {"wep_jack_hmcd_revolver"},
+		[5] = {""}
+	},
+	["Gunman"] = {
+		[1] = {"wep_jack_hmcd_smallpistol"},
+		[2] = {"wep_jack_hmcd_rifle","wep_jack_hmcd_shotgun"},
+		[3] = {"wep_jack_hmcd_smallpistol"},
+		[4] = {"wep_jack_hmcd_smallpistol"},
+		[5] = {""}
+	},
+	["Bystander"] = {
+		[1] = {""},
+		[2] = {""},
+		[3] = {""},
+		[4] = {"wep_jack_hmcd_revolver"},
+		[5] = {""}
+	}
+}
+
 HMCD_Loadout = {
 	["Traitor"] = {
-		["1"] = {
-			"ent_jack_hmcd_knife",
-			"ent_jack_hmcd_shuriken",
-			"ent_jack_hmcd_poisonneedle",
-			"ent_jack_hmcd_poisonpowder",
-			"ent_jack_hmcd_ied",
-			"ent_jack_hmcd_oldgrenade",
-			"ent_jack_hmcd_smokebomb",
-			"ent_jack_hmcd_fakepistol",
-			"ent_jack_hmcd_adrenaline",
-			"ent_jack_hmcd_jam",
-			"ent_jack_hmcd_poisonliquid",
-			"ent_jack_hmcd_poisongoo",
-			"ent_jack_hmcd_poisoncanister",
-			"ent_jack_hmcd_mask",
-			"ent_jack_hmcd_beartrap"
+		[1] = {
+			"wep_jack_hmcd_knife",
+			"wep_jack_hmcd_shuriken",
+			"wep_jack_hmcd_poisonneedle",
+			"wep_jack_hmcd_poisonpowder",
+			"wep_jack_hmcd_ied",
+			"wep_jack_hmcd_oldgrenade",
+			"wep_jack_hmcd_smokebomb",
+			"wep_jack_hmcd_fakepistol",
+			"wep_jack_hmcd_adrenaline",
+			"wep_jack_hmcd_jam",
+			"wep_jack_hmcd_poisonliquid",
+			"wep_jack_hmcd_poisongoo",
+			"wep_jack_hmcd_poisoncanister",
+			"wep_jack_hmcd_mask",
+			"wep_jack_hmcd_beartrap"
+		},
+		[2] = {
+			"wep_jack_hmcd_knife",
+			"wep_jack_hmcd_poisonpowder",
+			"wep_jack_hmcd_ied",
+			"wep_jack_hmcd_oldgrenade",
+			"wep_jack_hmcd_smokebomb",
+			--"wep_jack_hmcd_suppressed",
+			"wep_jack_hmcd_adrenaline",
+			"wep_jack_hmcd_poisoncanister",
+			"wep_jack_hmcd_poisonliquid"
+		},
+		[3] = {
+			"wep_jack_hmcd_knife",
+			"wep_jack_hmcd_ied",
+			"wep_jack_hmcd_pipebomb",
+			"wep_jack_hmcd_jihad",
+			"wep_jack_hmcd_molotov",
+			"wep_jack_hmcd_oldgrenade",
+			"wep_jack_hmcd_claymore"
+		},
+		[4] = {
+			"wep_jack_hmcd_knife",
+			--"wep_jack_hmcd_revolver",
+			"wep_jack_hmcd_ied",
+			"wep_jack_hmcd_smokebomb"
+		},
+		[5] = {
+			"wep_jack_hmcd_knife",
+			"wep_jack_hmcd_shuriken",
+			"wep_jack_hmcd_poisonneedle",
+			"wep_jack_hmcd_poisonpowder",
+			"wep_jack_hmcd_ied",
+			"wep_jack_hmcd_oldgrenade",
+			"wep_jack_hmcd_smokebomb",
+			"wep_jack_hmcd_fakepistol",
+			"wep_jack_hmcd_adrenaline",
+			"wep_jack_hmcd_jam",
+			"wep_jack_hmcd_poisonliquid",
+			"wep_jack_hmcd_poisongoo",
+			"wep_jack_hmcd_poisoncanister",
+			"wep_jack_hmcd_mask",
+			"wep_jack_hmcd_beartrap"
 		}
 	},
+	["Gunman"] = {
+		[1] = {""},
+		[2] = {""},
+		[3] = {""},
+		[4] = {""},
+		[5] = {""}	
+	},
+	["Bystander"] = {
+		[1] = {""},
+		[2] = {""},
+		[3] = {""},
+		[4] = {"wep_jack_hmcd_revolver"},
+		[5] = {""}
+	}
 }
 
 HMCD_RoundsTypeNormalise = {
@@ -397,6 +479,35 @@ HeavyBox_Models = {
 	"models/props_c17/FurnitureDrawer003a.mdl"
 }
 
+Box_DropGunFreeZone = {
+	"ent_jack_hmcd_ammo",
+	"ent_jack_hmcd_fooddrinkbig",
+	"ent_jack_hmcd_fooddrink",
+	"ent_jack_hmcd_adrenaline",
+	"ent_jack_hmcd_medkit",
+	"ent_jack_hmcd_bandagebig",
+	"ent_jack_hmcd_morphine",
+	"ent_jack_hmcd_painpills",
+	"ent_jack_hmcd_bandage",
+	"ent_jack_hmcd_baseballbat",
+	"ent_jack_hmcd_brick",
+	"ent_jack_hmcd_cleaver",
+	"ent_jack_hmcd_hammer",
+	"ent_jack_hmcd_pocketknife",
+	"ent_jack_hmcd_crowbar",
+	"ent_jack_hmcd_hatchet",
+	"ent_jack_hmcd_leadpipe",
+	"ent_jack_hmcd_axe",
+	"ent_jack_hmcd_ducttape",
+	"ent_jack_hmcd_oldgrenade_dm",
+	"ent_jack_hmcd_bugbait"
+}
+
+HeavyBox_DropGunFreeZone = {
+	"ent_jack_hmcd_adrenaline",
+	"ent_jack_hmcd_medkit"
+}
+
 Box_Drop = {
 	"ent_jack_hmcd_ammo",
 	"ent_jack_hmcd_fooddrinkbig",
@@ -493,60 +604,108 @@ local size = {
 	[4] = 350
 }
 
+local atts_simplified={
+	[HMCD_PISTOLSUPP]="Suppressor",
+	[HMCD_RIFLESUPP]="Suppressor",
+	[HMCD_SHOTGUNSUPP]="Suppressor",
+	[HMCD_LASERSMALL]="Laser",
+	[HMCD_LASERBIG]="Laser",
+	[HMCD_KOBRA]="Sight",
+	[HMCD_AIMPOINT]="Sight2",
+	[HMCD_EOTECH]="Sight3",
+	[HMCD_PBS]="Suppressor",
+	[HMCD_OSPREY]="Suppressor"
+}
+
+concommand.Add("hmcd_attachrequest",function(ply,cmd,args)
+	local attachment=math.Round(args[1])
+	local wep=ply:GetActiveWeapon()
+	if wep:GetNWBool(atts_simplified[attachment]) then
+		if ply.Equipment[HMCD_EquipmentNames[attachment]] then ply:PrintMessage(HUD_PRINTTALK, "You already have this attachment!") return end
+		wep:SetNWBool(atts_simplified[attachment],false)
+		ply.Equipment[HMCD_EquipmentNames[attachment]]=true
+		net.Start("hmcd_equipment")
+		net.WriteInt(attachment,6)
+		net.WriteBit(true)
+		net.Send(ply)
+	else
+		if attachment==HMCD_LASERBIG and (wep:GetNWBool("Sight") or wep:GetNWBool("Sight2") or wep:GetNWBool("Sight3")) and not(wep.MultipleRIS) then
+			ply:PrintMessage(HUD_PRINTTALK, "You can't apply this attachment! There isn't enough space!")
+			return
+		end
+		if (attachment==HMCD_EOTECH or attachment==HMCD_KOBRA or attachment==HMCD_AIMPOINT) and wep:GetNWBool("Laser") and not(wep.MultipleRIS) then
+			ply:PrintMessage(HUD_PRINTTALK, "You can't apply this attachment! There isn't enough space!")
+			return
+		end
+		if (attachment==HMCD_KOBRA or attachment==HMCD_AIMPOINT or attachment==HMCD_EOTECH) and (wep:GetNWBool("Sight") or wep:GetNWBool("Sight2") or wep:GetNWBool("Sight3")) then
+			ply:PrintMessage(HUD_PRINTTALK, "You already have a sight attached!")
+			return
+		end
+		if wep:GetClass() == "wep_jack_hmcd_akm" and attachment==HMCD_KOBRA or attachment==HMCD_AIMPOINT or attachment==HMCD_EOTECH then
+			wep:SetNWBool("Rail", true)
+		end
+		wep:SetNWBool(atts_simplified[attachment],true)
+		ply.Equipment[HMCD_EquipmentNames[attachment]]=false
+		net.Start("hmcd_equipment")
+		net.WriteInt(attachment, 6)
+		net.WriteBit(false)
+		net.Send(ply)
+	end
+end)
+
+function DepthedWHO(mdl)
+    local eyedist = WorldToLocal(mdl:GetPos(), mdl:GetAngles(), EyePos(), EyeAngles()).x
+    render.DepthRange(0, 0.0093 + (0.0005 * eyedist / 20))
+end
+
 function GM:DrawScopeDot(wep, sightnum, model,vm)
-    if IsValid(wep) and wep.ScopeDotAngle then
+    model.sight3 = Material("models/weapons/tfa_ins2/optics/eotech_lense")
+    model.sight3:SetTexture("$basetexture","empty")
 
+    model.sight2 = Material("models/weapons/tfa_ins2/optics/aimpoint_lense")
+    model.sight2:SetTexture("$basetexture","empty")
 
-    	model.sight3 = Material("models/weapons/tfa_ins2/optics/eotech_lense")
-    	model.sight3:SetTexture("$basetexture","empty")
+    local material = sights[sightnum]
 
-    	model.sight2 = Material("models/weapons/tfa_ins2/optics/aimpoint_lense")
-    	model.sight2:SetTexture("$basetexture","empty")
+    render.UpdateScreenEffectTexture()
+    render.ClearStencil()
+    render.SetStencilEnable(true)
+    render.SetStencilCompareFunction(STENCIL_ALWAYS)
+    render.SetStencilPassOperation(STENCIL_REPLACE)
+    render.SetStencilFailOperation(STENCIL_KEEP)
+    render.SetStencilZFailOperation(STENCIL_REPLACE)
+    render.SetStencilWriteMask(255)
+    render.SetStencilTestMask(255)
 
-        local material = sights[sightnum]
-        if IsValid(model) then
-    		render.UpdateScreenEffectTexture()
-    		render.ClearStencil()
-    		render.SetStencilEnable(true)
-    		render.SetStencilCompareFunction(STENCIL_ALWAYS)
-    		render.SetStencilPassOperation(STENCIL_REPLACE)
-    		render.SetStencilFailOperation(STENCIL_KEEP)
-    		render.SetStencilZFailOperation(STENCIL_REPLACE)
+    render.SetBlend(0)
 
-            render.SetBlend(0)
+    render.SetStencilReferenceValue(56)
 
-			render.SetStencilReferenceValue(56)
+    model:DrawModel()
 
-            model:DrawModel()
+    render.SetBlend(1)
 
-            render.SetBlend(1)
-    		render.SetStencilPassOperation(STENCIL_KEEP)
-    		render.SetStencilCompareFunction(STENCIL_EQUAL)
+    render.SetStencilPassOperation(STENCIL_KEEP)
+    render.SetStencilCompareFunction(STENCIL_EQUAL)
 
-        end
-        render.SetMaterial(material)
-		local sight_upped
-		if sightUp[wep:GetClass()] then
-			sight_upped = sightUp[wep:GetClass()][sightnum]
-		else
-			sight_upped = 0
-		end
+	if wep:GetClass() == "wep_jack_hmcd_assaultrifle" then DepthedWHO(model) end
 
-		local sight_righited
-		if sightRight[wep:GetClass()] then
-			sight_righited = sightRight[wep:GetClass()][sightnum]
-		else
-			sight_righited = 0
-		end
-		local size = size[sightnum]
+    render.SetMaterial(material)
 
-		local pos = LocalPlayer():EyePos()
-        local up = model:GetAngles():Up()
-        local right = model:GetAngles():Right()
-		pos = pos + model:GetAngles():Forward() * 4200 + model:GetAngles():Up() * sight_upped + model:GetAngles():Right() * sight_righited
+	local sight_upped
+	local sight_righited
+	if sightUp[wep:GetClass()] then sight_upped = sightUp[wep:GetClass()][sightnum] else	sight_upped = 0 end
+	if sightRight[wep:GetClass()] then sight_righited = sightRight[wep:GetClass()][sightnum] else sight_righited = 0 end
 
-        render.DrawQuad(pos + (up * size / 2) - (right * size / 2), pos + (up * size / 2) + (right * size / 2), pos - (up * size / 2) + (right * size / 2), pos - (up * size / 2) - (right * size / 2), Color(255,255,255,255))
+	local size = size[sightnum]
 
-    	render.SetStencilEnable(false)
-    end
+	local pos = LocalPlayer():EyePos()
+    local up = model:GetAngles():Up()
+    local right = model:GetAngles():Right()
+	pos = pos + model:GetAngles():Forward() * 4200 + model:GetAngles():Up() * sight_upped + model:GetAngles():Right() * sight_righited
+    render.DrawQuad(pos + (up * size / 2) - (right * size / 2), pos + (up * size / 2) + (right * size / 2), pos - (up * size / 2) + (right * size / 2), pos - (up * size / 2) - (right * size / 2), Color(255,255,255,255))
+    	
+	if wep:GetClass() == "wep_jack_hmcd_assaultrifle" then render.DepthRange(0, 1) end
+
+    render.SetStencilEnable(false)
 end

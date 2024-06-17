@@ -92,6 +92,19 @@ function GetAlivePlayerCount()
     return aliveCount
 end
 
+function GetLastPlayerAlive()
+	local aliveCount = GetAlivePlayerCount()
+	local lastplayer
+    for _, ply in ipairs(player.GetAll()) do
+        if ply:Alive() then
+            if aliveCount == 1 then
+				lastplayer = ply
+			end
+        end
+    end
+    return lastplayer
+end
+
 function GetAliveRoleCount(role)
     local rolealive = 0
     for _, ply in ipairs(player.GetAll()) do

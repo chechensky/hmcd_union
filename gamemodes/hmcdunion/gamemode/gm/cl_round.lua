@@ -1,7 +1,9 @@
 --
 function GM:StartNewRound()
     local ply = LocalPlayer()
-	local sound = HMCD_RoundStartSound[GAMEMODE.RoundType]
+	print(ply:GetNWString("Round"))
+	print(ply:GetNWString("RoundType"))
+	local sound = HMCD_RoundStartSound[ply:GetNWInt("RoundType")]
 	if istable(sound) then sound = table.Random(sound) end
 	ply:EmitSound(sound)
 	local Panel = vgui.Create("DPanel")
@@ -30,7 +32,7 @@ function GM:StartNewRound()
 	RoundLabel:SetColor(Color(ply:GetNWInt("RoleColor_R"),ply:GetNWInt("RoleColor_G"),ply:GetNWInt("RoleColor_B"),255))
 
 	if ply:GetNWString("SecretRole", "") == "Gunman" then
-		local Instructions = Label( (GAMEMODE.RoundType == 2 and "with a large weapon") or "with a lawful concealed firearm", Panel)
+		local Instructions = Label( (ply:GetNWInt("RoundType") == 2 and "with a large weapon") or "with a lawful concealed firearm", Panel)
 		Instructions:SetFont("FontSmall")
 		Instructions:SizeToContents()
 		Instructions:Center()
@@ -46,8 +48,7 @@ function GM:StartNewRound()
 	local fontHeight=draw.GetFontHeight("FontSmall")
 	RoundLabel:SetPos(RoundLabel:GetX(),ScrH()-fontHeight*2)
 	RoundLabel:SetColor(Color(ply:GetNWInt("RoleColor_R"),ply:GetNWInt("RoleColor_G"),ply:GetNWInt("RoleColor_B"),255))
-	
-	local RoundLabel = Label( RoundsNormalise[GAMEMODE.RoundName] .. ": " .. HMCD_RoundsTypeNormalise[GAMEMODE.RoundType], Panel)
+	local RoundLabel = Label( RoundsNormalise[ply:GetNWString("Round")] .. " " .. HMCD_RoundsTypeNormalise[ply:GetNWInt("RoundType")], Panel)
 	RoundLabel:SetFont("FontSmall")
 	RoundLabel:SizeToContents()
 	RoundLabel:CenterHorizontal()
@@ -57,8 +58,6 @@ end
 
 net.Receive("StartRound",function()
 	GAMEMODE:StartNewRound()
-    GAMEMODE.RoundNext = table.Random(Rounds)
-    GAMEMODE.RoundNextType = hmcd_roundtype
 end)
 
 net.Receive("EndRound",function()
@@ -67,7 +66,11 @@ net.Receive("EndRound",function()
 	data.murderer = net.ReadEntity()
 	data.murdererColor = net.ReadVector()
 	data.murdererName = net.ReadString()
-    GAMEMODE.MVP = data.murderer
+    if LocalPlayer():GetNWString("Round", "") == "homicide" then
+		GAMEMODE.MVP = data.murderer
+	else
+		GAMEMODE.MVP = nil
+	end
     GAMEMODE:DisplayEndRoundBoard(data)
 	local pitch = math.random(80, 120)
 	if IsValid(LocalPlayer()) then

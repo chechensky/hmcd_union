@@ -62,15 +62,15 @@ local function ImersiveCam(ply,pos,ang,fov)
 	local plyselect = ply:GetNWEntity("SelectPlayer", Entity(-1))
 	local ragdoll = ply:GetNWEntity("Ragdoll")
 
-	if not ply:Alive() and ply:GetNWBool("Spectating", false) == true and ply:GetNWInt("SpectateMode", 0) == 0 then
-		if !plyselect:GetNWBool("fake") then
+	if not ply:Alive() and ply:GetNWBool("Spectating", false) == true then
+		if !plyselect:GetNWBool("fake") and ply:GetNWInt("SpectateMode", 0) == 0 then
 			local att = plyselect:GetAttachment(plyselect:LookupAttachment("eyes"))
 			local view = {
 				origin = att.Pos + Vector(0,-15,0),
 				angles = att.Ang
 			}
 			return view
-		elseif plyselect:GetNWBool("fake") and IsValid(plyselect:GetNWEntity("Ragdoll")) then
+		elseif plyselect:GetNWBool("fake") and IsValid(plyselect:GetNWEntity("Ragdoll")) and (ply:GetNWInt("SpectateMode", 0) == 0 or ply:GetNWInt("SpectateMode", 0) == 2) then
 			local ragdollselect = plyselect:GetNWEntity("Ragdoll")
 			ragdollselect:ManipulateBoneScale(6,vecZero)
 			local PosAng = ragdollselect:GetAttachment(ragdollselect:LookupAttachment("eyes"))

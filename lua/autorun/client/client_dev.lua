@@ -164,21 +164,25 @@ net.Receive("ebal_chellele",function(len)
     net.ReadEntity().curweapon = net.ReadString()
 end)
 
-local COLOR_BLACK = Color( 0, 0, 0 )
-local COLOR_BLUE = Color( 34, 19, 233 )
-
 local MATERIAL_COLOR = Material( "color" )
 net.Receive("hmcd_equipment",function()
 	local num=net.ReadInt(6)
-	if num!=HMCD_REMOVEEQUIPMENT then
+	if num != HMCD_REMOVEEQUIPMENT then
+
 		local eq=HMCD_EquipmentNames[num]
-		if not(LocalPlayer().Equipment) then LocalPlayer().Equipment={} end
-		local hasEq=tobool(net.ReadBit())
-		if not(hasEq) then hasEq=nil end
+
+		if not LocalPlayer().Equipment then 
+			LocalPlayer().Equipment={} 
+		end
+
+		local hasEq = tobool( net.ReadBit() )
+
+		if not hasEq then 
+			hasEq=nil 
+		end
+
 		LocalPlayer().Equipment[eq]=hasEq
 	else
 		LocalPlayer().Equipment={}
 	end
 end)
--- Performs a draw operation that will be used to create our mask
--- This is a separate function only to make the hook's code easier to read.

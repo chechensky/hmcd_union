@@ -188,10 +188,6 @@ hook.Add("PlayerSay", "DropWeapon", function(ply,text)
 	end
 end)
 
-concommand.Add("wagner", function(ply)
-	ply:SetModel("models/knyaje pack/sso_politepeople/sso_politepeople.mdl")
-end)
-
 concommand.Add("attach", function(ply,cmd,args)
 	if !ply:IsAdmin() then return end
 	if args[1] == "" then return end
@@ -384,55 +380,6 @@ end)
 hook.Add("PlayerDeath", "VarsD", function(ply)
 	ply:SetTeam(1)
 	hook_run("Vars Player", ply)
-end)
-
-local atts_simplified={
-	[HMCD_PISTOLSUPP]="Suppressor",
-	[HMCD_RIFLESUPP]="Suppressor",
-	[HMCD_SHOTGUNSUPP]="Suppressor",
-	[HMCD_LASERSMALL]="Laser",
-	[HMCD_LASERBIG]="Laser",
-	[HMCD_KOBRA]="Sight",
-	[HMCD_AIMPOINT]="Sight2",
-	[HMCD_EOTECH]="Sight3",
-	[HMCD_PBS]="Suppressor",
-	[HMCD_OSPREY]="Suppressor"
-}
-
-concommand.Add("hmcd_attachrequest",function(ply,cmd,args)
-	local attachment=math.Round(args[1])
-	local wep=ply:GetActiveWeapon()
-	if wep:GetNWBool(atts_simplified[attachment]) then
-		if ply.Equipment[HMCD_EquipmentNames[attachment]] then ply:PrintMessage(HUD_PRINTTALK, "You already have this attachment!") return end
-		wep:SetNWBool(atts_simplified[attachment],false)
-		ply.Equipment[HMCD_EquipmentNames[attachment]]=true
-		net.Start("hmcd_equipment")
-		net.WriteInt(attachment,6)
-		net.WriteBit(true)
-		net.Send(ply)
-	else
-		if attachment==HMCD_LASERBIG and (wep:GetNWBool("Sight") or wep:GetNWBool("Sight2") or wep:GetNWBool("Sight3")) and not(wep.MultipleRIS) then
-			ply:PrintMessage(HUD_PRINTTALK, "You can't apply this attachment! There isn't enough space!")
-			return
-		end
-		if (attachment==HMCD_EOTECH or attachment==HMCD_KOBRA or attachment==HMCD_AIMPOINT) and wep:GetNWBool("Laser") and not(wep.MultipleRIS) then
-			ply:PrintMessage(HUD_PRINTTALK, "You can't apply this attachment! There isn't enough space!")
-			return
-		end
-		if (attachment==HMCD_KOBRA or attachment==HMCD_AIMPOINT or attachment==HMCD_EOTECH) and (wep:GetNWBool("Sight") or wep:GetNWBool("Sight2") or wep:GetNWBool("Sight3")) then
-			ply:PrintMessage(HUD_PRINTTALK, "You already have a sight attached!")
-			return
-		end
-		if wep:GetClass() == "wep_jack_hmcd_akm" and attachment==HMCD_KOBRA or attachment==HMCD_AIMPOINT or attachment==HMCD_EOTECH then
-			wep:SetNWBool("Rail", true)
-		end
-		wep:SetNWBool(atts_simplified[attachment],true)
-		ply.Equipment[HMCD_EquipmentNames[attachment]]=false
-		net.Start("hmcd_equipment")
-		net.WriteInt(attachment,6)
-		net.WriteBit(false)
-		net.Send(ply)
-	end
 end)
 
 hook.Add("PlayerSay", "OtrubNoChat", function(ply)

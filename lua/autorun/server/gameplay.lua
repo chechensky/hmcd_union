@@ -15,8 +15,17 @@ hook.Add("PropBreak", "SystemLoot", function(ply, prop)
 	local pos = prop:GetPos()
     local chance_empty = math.random(1,100)
 
-	local hdrop = table.Random(HeavyBox_Drop)
-	local drop = table.Random(Box_Drop)
+	local hdrop
+	local drop
+
+	if ply:GetNWInt("RoundType", 1) == 5 then
+		hdrop = table.Random(HeavyBox_DropGunFreeZone)
+		drop = table.Random(Box_DropGunFreeZone)
+	else
+		hdrop = table.Random(HeavyBox_Drop)
+		drop = table.Random(Box_Drop)
+	end
+
 	if table.HasValue(HeavyBox_Models, prop:GetModel()) and chance_empty > 60 then
 		local heavyloot = ents.Create(hdrop)
 		heavyloot:SetPos(pos+Vector(0,0,5))
@@ -141,7 +150,33 @@ hook.Add("Move", "FakeBecauseHitWall", function(ply,mv)
     end]]--
 end)
 
+hook.Add("Think", "CheckPlayerCollisionSpeed", function()
+    --[[for _, ply in ipairs(player.GetAll()) do
+        if not IsValid(ply) or not ply:Alive() then continue end
+
+        local pos = ply:GetPos()
+        local forward = ply:GetForward()
+        local trace = util.TraceHull({
+            start = pos,
+            endpos = pos + forward * 20 + ply:GetUp() * 8,
+            mins = ply:OBBMins(),
+            maxs = ply:OBBMaxs(),
+            filter = ply
+        })
+
+        if trace.Hit then
+            local speed = ply:GetVelocity():Length()
+			if speed > 300 then
+				if !ply.fake then
+					Faking(ply)
+				end
+			end
+        end
+    end]]--
+end)
+
 concommand.Add("hmcd_holdbreath", function(ply)
+	if not ply:Alive() then return end
 	local breath = ply:GetNWBool("Breath", true)
 	if breath then
 		ply:SetNWBool("Breath", false)

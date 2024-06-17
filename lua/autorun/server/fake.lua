@@ -89,7 +89,6 @@ function GiveAttachments(ply)
     if(!info)then return end
     for name, wepinfo in pairs(info.Weapons or {}) do
 		if wepinfo.Base == "wep_jack_hmcd_firearm_base" then
-			print(name)
 			ply.wep:SetNWBool("Sight", wepinfo.Sight)
 			ply.wep:SetNWBool("Sight2", wepinfo.Sight2)
 			ply.wep:SetNWBool("Sight3", wepinfo.Sight3)

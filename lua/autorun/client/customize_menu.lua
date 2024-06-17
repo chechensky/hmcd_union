@@ -249,7 +249,7 @@ local accsselect = vgui.Create("DModelPanel", Fon)
 	local vector = Vector(Mixer:GetColor().r/255,Mixer:GetColor().g/255,Mixer:GetColor().b/255)
 	function playerModelPanel.Entity:GetPlayerColor() return vector end
 	DermaButton.DoClick = function()
-		local Maudel, R, G, B, Clothes, BystName, rost, Accs = MdlSelect:GetValue(), Mixer:GetColor().r / 255, Mixer:GetColor().g / 255, Mixer:GetColor().b / 255, CSelect:GetValue(), Namey:GetValue(), SistemaRostaModel:GetValue(), ASelect:GetValue()
+		local Maudel, R, G, B, Clothes, BystName, rost, Accs = MdlSelect:GetValue(), Mixer:GetColor().r / 255, Mixer:GetColor().g / 255, Mixer:GetColor().b / 255, CSelect:GetValue(), Namey:GetValue(), 1, ASelect:GetValue()
 		RunConsoleCommand("customize_manual", Maudel, R, G, B, Clothes, BystName, rost, Accs)
 		local RawData = tostring(Maudel) .. "\n" .. tostring(R) .. "\n" .. tostring(G) .. "\n" .. tostring(B) .. "\n" .. tostring(Clothes) .. "\n" .. tostring(BystName) .. "\n" .. tostring(rost) .. "\n" .. tostring(Accs)
 		file.Write("union_appearance.txt", RawData)
