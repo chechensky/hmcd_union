@@ -7,3 +7,6 @@ if nigger
   ply.Give("penis")
   ply.Give("asd")
 end
+
+плыв плыв плыв
+плыв
