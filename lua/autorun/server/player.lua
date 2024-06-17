@@ -309,6 +309,7 @@ hook.Add("Vars Player", "VarsS", function(ply)	-- Alive give
 		["Players"] = {},
 		["Ents"] = {}
 	}
+	ply.temp = "Warm"
 	ply:SetNWBool("Spectating",false)
 	ply:SetNWInt("SpectateMode", 0)
 	ply:SetNWEntity("SelectPlayer", Entity(-1))

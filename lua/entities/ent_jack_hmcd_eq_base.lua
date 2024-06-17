@@ -4,6 +4,7 @@ ENT.PrintName		= "Aimpoint CompM2 Sight"
 ENT.ImpactSound="physics/metal/weapon_impact_soft3.wav"
 ENT.Model="models/weapons/tfa_ins2/upgrades/phy_optic_aimpoint.mdl"
 ENT.EquipmentNum=HMCD_AIMPOINT
+ENT.Spawnable = true
 if(SERVER)then
 	function ENT:Initialize()
 		self.Entity:SetModel(self.Model)

@@ -12,7 +12,7 @@ GM.RoundName = "homicide"
 GM.RoundNext = "homicide"
 GM.RoundType = 2
 GM.RoundState = 3
-GM.Version = "0.0.1"
+GM.Version = "0.0.3"
 GM.Traitor = nil
 GM.MVP = nil
 
@@ -113,7 +113,7 @@ HMCD_Loadout_Firearms = {
 		[1] = {"wep_jack_hmcd_smallpistol"},
 		[2] = {"wep_jack_hmcd_rifle","wep_jack_hmcd_shotgun"},
 		[3] = {"wep_jack_hmcd_smallpistol"},
-		[4] = {"wep_jack_hmcd_smallpistol"},
+		[4] = {"wep_jack_hmcd_revolver"},
 		[5] = {""}
 	},
 	["Bystander"] = {
@@ -218,7 +218,7 @@ HMCD_RoundStartSound = {
 	[2]="snd_jack_hmcd_disaster.mp3",
 	[3]="snd_mann_islam.mp3",
 	[4]="snd_jack_hmcd_wildwest.mp3",
-	[5]="unknownsound.mp3"
+	[5]="snd_jack_hmcd_halloween.mp3",
 }
 
 RoundStartSound = {

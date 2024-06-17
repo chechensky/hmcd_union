@@ -12,12 +12,13 @@ hook.Add( "PlayerFootstep", "CustomFootstep", function( ply, pos, foot, sound, v
 end)
 
 hook.Add("PropBreak", "SystemLoot", function(ply, prop)
+	if not IsValid(ply) or not ply:Alive() then return end
 	local pos = prop:GetPos()
+	print(ply)
     local chance_empty = math.random(1,100)
 
 	local hdrop
 	local drop
-
 	if ply:GetNWInt("RoundType", 1) == 5 then
 		hdrop = table.Random(HeavyBox_DropGunFreeZone)
 		drop = table.Random(Box_DropGunFreeZone)
@@ -126,10 +127,15 @@ hook.Add("SpawnMenuOpen", "RestrictSpawnMenu", function()
     end
 end)
 
+local delaybutton = 0
 hook.Add("PlayerButtonDown", "F1_ShowHelp", function(ply, button)
-    if button == KEY_F1 then
-        ply:ConCommand("gm_showhelp")
-    end
+	ply.delaybutton = ply.delaybutton or delaybutton
+	if ply.delaybutton < CurTime() then
+		ply.delaybutton = ply.delaybutton + 5
+    	if button == KEY_F1 then
+    	    ply:ConCommand("gm_showhelp")
+    	end
+	end
 end)
 
 hook.Add("Move", "FakeBecauseHitWall", function(ply,mv)

@@ -204,7 +204,7 @@ function Faking(ply) -- функция падения
 		end
 
 		local rag = ply:CreateRagdoll()
-
+		rag.eye = true
 		if IsValid(veh) then
 			rag:GetPhysicsObject():SetVelocity(veh:GetPhysicsObject():GetVelocity() * 5)
 		end
@@ -217,7 +217,8 @@ function Faking(ply) -- функция падения
 				SpawnWeapon(ply)
 			end
 			ply.walktime = CurTime()
-			
+			rag.temp = ply.temp
+			rag:SetFlexWeight(9,2)
 			rag.bull = ents.Create("npc_bullseye")
 			rag:SetNWEntity("RagdollController",ply)
 			local bull = rag.bull
@@ -401,9 +402,6 @@ hook.Add("DoPlayerDeath","blad",function(ply,att,dmginfo)
 	end
 	rag=ply:GetNWEntity("Ragdoll")
 	rag:GetPhysicsObject():SetMass(1)
-	timer.Simple(2,function()
-		rag:SetFlexWeight(9, 11)
-	end)
 	rag:SetNWEntity("RagdollController",nil)
 
 	net.Start("pophead")
@@ -450,8 +448,28 @@ hook.Add("DoPlayerDeath","blad",function(ply,att,dmginfo)
 	ply.FakeShooting = false
 	PLYSPAWN_OVERRIDE = nil
 	ply.FakeShooting=false
+	ent.canaccept_dead = true
 	ply:SetNWInt("FakeShooting",false)
 	ent:SetFlexWeight(9, 10)
+	if fs then
+		ent.temp = ply.temp
+		if ply.Otrub then
+			ent.eye = false
+		else
+			ent.eye = true
+		end
+		timer.Create("temperature_1"..ent:EntIndex(),30,1,function()
+			if IsValid(ent) then
+				ent.temp = "Little Cold"
+				timer.Create("temperature_2"..ent:EntIndex(),10,1,function()
+					if IsValid(ent) then
+						ent.temp = "Cold"
+					end
+				end)
+			end
+		end)
+
+	end
 	timer.Create("collision"..ent:EntIndex(),15,1,function()
 		if IsValid(ent) and GAMEMODE.RoundName != "homicide" then rag:SetCollisionGroup(COLLISION_GROUP_WEAPON) end
 	end)

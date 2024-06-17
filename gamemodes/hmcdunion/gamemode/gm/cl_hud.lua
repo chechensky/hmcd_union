@@ -713,7 +713,6 @@ function GM:DisplayEndRoundBoard(data)
 	end
 
 	if data.murdererName then
-		print(data.murdererName)
 		local col = data.murdererColor
 		local msgs={}
 		msgs.text="The traitor was"
@@ -826,7 +825,7 @@ function GM:DisplayEndRoundBoard(data)
 			surface.DrawRect(0,0,Bottom:GetWide(),Bottom:GetTall())
 		end
 		--
-		if Dude then
+		if (Dude) then
 			Bottom:ShowCloseButton(false)
 			Bottom:SetSize(600,75)
 			Bottom:SetPos(ScrW()*.05,ScrH()*.05)
@@ -848,7 +847,7 @@ function GM:DisplayEndRoundBoard(data)
 			av:SetPlayer(Dude,64)
 			local wow=vgui.Create("DLabel",Bottom)
 			wow:SetFont("BigEndRound")
-			wow:SetText((Dude:Nick() and Dude:Nick()) or "Unknown")
+			wow:SetText( Dude:Nick() or "Unknown")
 			local Col=Dude:GetPlayerColor()
 			wow:SetTextColor(Color(255,255,255,255))
 			wow:SetPos(80,100)

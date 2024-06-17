@@ -6,6 +6,8 @@ File Path:   gamemodes/homicide/entities/entities/ent_jack_hmcd_aksuppressor.lua
 --]]
 AddCSLuaFile()
 ENT.Type = "anim"
+ENT.PrintName = "PBS"
+ENT.Category = "HMCD: Union - Attachments"
 ENT.Base = "ent_jack_hmcd_eq_base"
 ENT.ImpactSound = "physics/metal/weapon_impact_soft3.wav"
 ENT.Model = "models/weapons/upgrades/a_suppressor_ak.mdl"

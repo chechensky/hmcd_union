@@ -1,6 +1,6 @@
 "hmcdunion"
 {
-	"base"		"base"
+	"base"		"sandbox"
 	"title"		"Homicide: Union"
 	"maps"		""
 	"menusystem"	"1"
@@ -8,7 +8,7 @@
 	{
 		1
 		{
-			"name"		"checha_features"
+			"name"		"checha_feature"
 			"text"		"Дополнительные механики"
 			"help"		"Добавляет дополнительные механики чечи. Поставьте если хотите так сказать модифицированный недо кэтс хомисайд."
 			"type"		"CheckBox"

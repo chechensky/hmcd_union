@@ -385,6 +385,16 @@ end)
 hook.Add("HOOK_UNION_Damage","BurnDamage",function(ply,hitgroup,dmginfo) 
     if dmginfo:IsDamageType( DMG_BURN ) then
         dmginfo:ScaleDamage( 5 )
+        if fs then
+            ply.temp = "Hot"
+            if not timer.Exists("nohot"..ply:EntIndex()) then
+                timer.Create("nohot"..ply:EntIndex(), 15, 1, function() 
+                    if not ply:IsOnFire() then
+                        ply.temp = "Warm"
+                    end
+                end)
+            end
+        end
     end
 end)
 

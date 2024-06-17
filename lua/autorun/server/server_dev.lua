@@ -1,5 +1,7 @@
 -- функции
 
+fs = GetConVar("checha_feature"):GetBool()
+
 function player.GetListByName(name)
 	local list = {}
 

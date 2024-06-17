@@ -1,4 +1,4 @@
-print("noempty")
+fs = GetConVar("checha_feature"):GetBool()
 
 hook.Add("Think","LipSync",function()
 	for i, ply in pairs(player.GetAll()) do
@@ -16,7 +16,6 @@ hook.Add("Think","LipSync",function()
 
 		for k, v in pairs( flexes ) do
 			ent:SetFlexWeight( v, weight )
-			ent:SetFlexWeight( 9, weight/2)
 		end
 	end
 end)

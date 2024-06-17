@@ -137,6 +137,9 @@ function GM:RadialMousePressed(code, vec)
 				elseif ments[selected].Code == "usemenu" then
 					local lply = LocalPlayer()
 					lply:ConCommand("+menu_use")
+				elseif ments[selected].Code == "attach" then
+					local lply = LocalPlayer()
+					lply:ConCommand("attachmentsmenu")
 				end
 			end
 		end
@@ -165,7 +168,8 @@ concommand.Add(
 			elements = {}
 			addElement("Ammo Menu","hmcd_ammo")
 			addElement("Phrase_Category","phrase")
-			addElement("MenuUse_Category","usemenu")
+			addElement("attach", "attach")
+			if fs then addElement("MenuUse_Category","usemenu") end
 			if IsValid(Wep) then
 				if Wep:GetClass() ~= "wep_jack_hmcd_hands" then addElement("Drop", "drop") end
 				if Wep:GetNWBool("Laser", false) then addElement("LaserOn","laser") end
@@ -304,6 +308,9 @@ function GM:DrawRadialMenu()
 			elseif ment.TransCode == "MenuUse_Category" then
 				Main = "Actions Menu"
 				Sub = "action menu, interacts with the environment"
+			elseif ment.TransCode == "attach" then
+				Main = "Attachments"
+				Sub = "attachments menu, WHAT THE FUCK OH SHIT..."
 			else
     			Main = "?"
     			Sub = "?"

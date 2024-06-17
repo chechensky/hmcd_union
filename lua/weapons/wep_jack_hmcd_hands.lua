@@ -278,6 +278,17 @@ function SWEP:SetCarrying(ent, bone, pos, dist)
 		self.CarryDist = nil
 	end
 end
+function SWEP:CheckStatus(ply)
+	if CLIENT then return end
+	if self.NextPulseCheck >= CurTime() then return end
+	local owner = RagdollOwner(ply)
+	self.NextPulseCheck = CurTime() + 1
+	self:GetOwner():PrintMessage(HUD_PRINTTALK, "Body is " .. self.CarryEnt.temp)
+	self:GetOwner():PrintMessage(HUD_PRINTTALK, "Eyes is " .. (self.CarryEnt.eye == true and "open") or "close")
+	if self.CarryEnt.temp == "Cold" then
+		self.CarryEnt.canaccept_dead = true
+	end
+end
 
 function SWEP:CheckPulse(ply)
 	if CLIENT then return end
@@ -285,19 +296,22 @@ function SWEP:CheckPulse(ply)
 	local owner = RagdollOwner(ply)
 	local name = self.CarryEnt:GetNWString("Character_Name") or ""
 	self.NextPulseCheck = CurTime() + 1
+
 	if not IsValid(owner) then
 		self:GetOwner():PrintMessage(HUD_PRINTTALK, "" .. name .. " has no pulse.")
+		self.CarryEnt.canaccept_dead = true
 
 		return
 	end
 
 	if not owner:Alive() then
 		self:GetOwner():PrintMessage(HUD_PRINTTALK, "" .. name .. " has no pulse.")
-
+		self.CarryEnt.canaccept_dead = true
 		return
 	end
 	if owner.heartstop then
 		self:GetOwner():PrintMessage(HUD_PRINTTALK, "" .. name .. " has no pulse.")
+		self.CarryEnt.canaccept_dead = true
 
 		return
 	end
@@ -384,6 +398,9 @@ function SWEP:Think()
 			local Rprhand = self.CarryEnt:LookupBone("ValveBiped.Bip01_R_Forearm")
 			if self:GetOwner():KeyDown(IN_RELOAD) and (bone == Lhand or bone == Rhand or bone == Lprhand or bone == Rprhand) then
 				self:CheckPulse(self.CarryEnt)
+			end
+			if fs and self:GetOwner():KeyDown(IN_RELOAD) then
+				self:CheckStatus(self.CarryEnt)
 			end
 		end
 		self:SetHoldType(HoldType)

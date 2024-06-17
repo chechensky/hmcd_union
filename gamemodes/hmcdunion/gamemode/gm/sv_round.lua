@@ -1,8 +1,10 @@
 local ply_GetAll = player.GetAll
 
-hook.Add("PlayerPostThink", "roundsynch", function(ply)
-    ply:SetNWString("Round", GAMEMODE.RoundName)
-    ply:SetNWInt("RoundType", GAMEMODE.RoundType)
+hook.Add("Think", "roundsynch", function(ply)
+    for _, who in pairs(ply_GetAll()) do
+        who:SetNWString("Round", GAMEMODE.RoundName)
+        who:SetNWInt("RoundType", GAMEMODE.RoundType)
+    end
 end)
 
 concommand.Add("union_gamemode", function(ply,cmd,args)
@@ -23,7 +25,7 @@ concommand.Add("union_gamemode", function(ply,cmd,args)
     elseif args[1] == "sandbox" then
         GAMEMODE.RoundNext = "sandbox"
         GAMEMODE.RoundNextType = 0
-        PrintMessage(HUD_PRINTTALK, "Next gamemode: Half Life 2 - Deathmatch")
+        PrintMessage(HUD_PRINTTALK, "Next gamemode: SandBox")
     end
 end)
 
@@ -46,19 +48,17 @@ end)
 local pitch = math.random(80, 120)
 
 function GM:StartRound()
+	if #ply_GetAll()<2 then return end
     local hmcd_roundtype = math.random(1,5)
     local roundt = table.Random(Rounds)
     GAMEMODE.RoundName = GAMEMODE.RoundNext
-    LocalPlayer():SetNWString("Round", GAMEMODE.RoundNext)
     GAMEMODE.RoundNext = roundt
     if GAMEMODE.RoundName == "homicide" then
         GAMEMODE.RoundType = GAMEMODE.RoundNextType
-        LocalPlayer():SetNWInt("RoundType", GAMEMODE.RoundNextType)
         GAMEMODE.RoundNextType = math.random(1, 5)
 
     else
         GAMEMODE.RoundType = 0
-        LocalPlayer():SetNWInt("RoundType", 0)
         GAMEMODE.RoundNextType = math.random(1, 5)
     end
     game.CleanUpMap(false, { "env_fire", "entityflame", "_firesmoke" })
@@ -124,24 +124,25 @@ function GM:StartRound()
 	        end
         end)
     end
-	for _,ply in pairs(ply_GetAll())do
-	    net.Start("StartRound")
-	    net.Send(ply)
-	end
+    timer.Simple(.5, function()
+	    for _,ply in pairs(ply_GetAll())do
+	        net.Start("StartRound")
+	        net.Send(ply)
+	    end
+    end)
 end
 
 -- win traitor 1
 -- lost traitor 2 
 function GM:EndRound(reason, mvp)
     PrintMessage(HUD_PRINTTALK, "Round end")
-    
     net.Start("EndRound")
 
 	    net.WriteUInt(reason, 8)
 	    net.WriteEntity(mvp or Entity(-1))
-        if GAMEMODE.Traitor then
-	        net.WriteVector(GAMEMODE.Traitor:GetPlayerColor())
-	        net.WriteString(GAMEMODE.Traitor:GetNWString("Character_Name"))
+        if mvp then
+	        net.WriteVector(mvp:GetPlayerColor())
+	        net.WriteString(mvp:GetNWString("Character_Name"))
         else
 	        net.WriteVector(Vector(0,0,0))
 	        net.WriteString("?")
@@ -157,7 +158,7 @@ end
 
 function GM:Think()
     if GAMEMODE.RoundName == "sandbox" then return end
-    if #ply_GetAll() < 2 then GAMEMODE.RoundState = 2 return end
+    if #ply_GetAll() < 2 then GAMEMODE.RoundState = 2 end
     if GAMEMODE.RoundState == 0 or GAMEMODE.RoundState == 2 then 
         if GAMEMODE.RoundState == 2 and #ply_GetAll() > 1 then 
             GAMEMODE:EndRound(1, table.Random(player.GetAll())) 
@@ -238,6 +239,10 @@ hook.Add("PlayerPostThink", "Spectating", function(ply)
 end)
 
 hook.Add("PlayerDeathThink", "DeathThink", function(ply)
-    ply:SetNWBool("Spectating",true)
+    if GAMEMODE.RoundState == 1 and GAMEMODE.RoundName != "sandbox" then return false end
     if GAMEMODE.RoundName != "sandbox" then return false end
+end)
+
+hook.Add("PlayerDeath", "SpectateWHO", function(ply)
+    ply:SetNWBool("Spectating", true)
 end)
