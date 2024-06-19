@@ -115,7 +115,6 @@ SWEP.Holster = false
 SWEP.ShellEffect = "eff_jack_hmcd_919"
 SWEP.NextBipodTime = 0
 SWEP.BipodDeployed = false
-
 SWEP.BipodSensitivity = {
 	x = -0.3,
 	z = 0.3,
@@ -126,13 +125,9 @@ SWEP.BipodSensitivity = {
 SWEP.ShellDelay = 0
 SWEP.ShellAttachment = 2
 SWEP.ReloadMul = 1
-
 SWEP.MagPos = {10, -30, 0}
-
 SWEP.MagDelay = .7
-
-SWEP.MuzzlePos = {0,0,0}
-
+SWEP.MuzzlePos = {0, 0, 0}
 SWEP.SmokeEffect = "pcf_jack_mf_barrelsmoke"
 SWEP.DrawRate = .5
 SWEP.ReloadAdd = 1
@@ -153,14 +148,12 @@ SWEP.BipodAmt = 0
 SWEP.FrontBlockedPerc = 0
 SWEP.FrontBlocked = 0
 SWEP.InertiaScale = 1
-
 SWEP.Temper = 0
 if SERVER then
 	concommand.Add("suicide", function(ply, cmd, args)
 		if not (ply or IsValid(ply) or ply:Alive()) then return end
 		local wep = ply:GetActiveWeapon()
 		if not (wep.SuicidePos and wep.SuicideAng) or wep:GetNWBool("GhostSuiciding") or not wep:GetReady() then return end
-
 		if IsValid(wep) and wep.GetSuiciding then
 			if wep:GetSuiciding() then
 				wep:SetSuiciding(false)
@@ -180,25 +173,21 @@ end
 function SWEP:Shell()
 	if self.ShellEffect == "" then return end
 	if not IsValid(self:GetOwner()) then return end
-	if not IsFirstTimePredicted() or !self:GetOwner():Alive() then return end
+	if not IsFirstTimePredicted() or not self:GetOwner():Alive() then return end
 	local effectdata = EffectData()
 	effectdata:SetEntity(self.Weapon)
 	effectdata:SetNormal(self:GetOwner():GetAimVector())
 	effectdata:SetAttachment(self.ShellAttachment)
 	util.Effect(self.ShellEffect, effectdata)
-
-	if self.ShellEffect2 then
-		util.Effect(self.ShellEffect2, effectdata)
-	end
+	if self.ShellEffect2 then util.Effect(self.ShellEffect2, effectdata) end
 end
 
 function SWEP:ShellReload()
 	if self.ShellEffectReload == "" then return end
 	if not IsValid(self:GetOwner()) then return end
-	if not IsFirstTimePredicted() or !self:GetOwner():Alive() then return end
+	if not IsFirstTimePredicted() or not self:GetOwner():Alive() then return end
 	local effectdata = EffectData()
 	local ent = self.Weapon
-
 	if IsValid(self:GetOwner().FakeWep) then
 		ent = self:GetOwner().FakeWep
 		local ang = ent:GetAngles()
@@ -219,7 +208,6 @@ local npcAim = {
 
 function SWEP:Initialize()
 	self.NextFrontBlockCheckTime = CurTime()
-
 	if not self:GetOwner():IsNPC() then
 		self:SetHoldType(self.HipHoldType)
 	else
@@ -229,23 +217,13 @@ function SWEP:Initialize()
 	self:SetReady(true)
 	self:SetSuiciding(false)
 	self:SetLaserEnabled(false)
-
-	if self.CustomColor then
-		self:SetColor(self.CustomColor)
-	end
+	if self.CustomColor then self:SetColor(self.CustomColor) end
 	self.Primary.Ammo = self.AmmoType
 	self:SetReloading(false)
-
-	timer.Simple(.1, function()
-		if IsValid(self) then
-			self:EnforceHolsterRules(self)
-		end
-	end)
-
+	timer.Simple(.1, function() if IsValid(self) then self:EnforceHolsterRules(self) end end)
 	if self:GetOwner():IsNPC() and SERVER then
 		self.NPCAltFireTime = CurTime() + math.random(30, 60)
 		self:GetOwner().Elite = self:GetOwner():GetModel() == "models/combine_super_soldier.mdl"
-
 		if npcAim[self:GetOwner():GetClass()] then
 			timer.Simple(0, function()
 				if IsValid(self) then
@@ -255,36 +233,23 @@ function SWEP:Initialize()
 			end)
 		end
 
-		if self.NPCAnims then
-			self.ActivityTranslateAI = self.NPCAnims
-		end
-
+		if self.NPCAnims then self.ActivityTranslateAI = self.NPCAnims end
 		hook.Add("Think", self, function()
 			if IsValid(self:GetOwner()) then
 				local enemy = self:GetOwner():GetEnemy()
-
 				if IsValid(enemy) then
 					local body
-
-					if enemy.GetRagdollEntity then
-						body = enemy:GetRagdollEntity()
-					end
-
+					if enemy.GetRagdollEntity then body = enemy:GetRagdollEntity() end
 					if IsValid(body) then
 						local ang = (body:GetPos() - self:GetOwner():GetPos()):Angle()
 						ang.r = 0
 						ang.p = 0
 						self:GetOwner():SetAngles(ang)
-
 						if not self.Reloading and self:GetNextPrimaryFire() <= CurTime() and self:Clip1() > 0 and self:GetOwner():Visible(body) then
 							self:SetAnimation(PLAYER_ATTACK1)
 							self:PrimaryAttack()
 							local delay = self.TriggerDelay * 2
-
-							if self:Clip1() == 0 then
-								delay = self.ReloadTime
-							end
-
+							if self:Clip1() == 0 then delay = self.ReloadTime end
 							self:SetNextPrimaryFire(CurTime() + delay)
 						end
 					end
@@ -295,22 +260,16 @@ function SWEP:Initialize()
 							local aimvector = self:GetOwner():EyeAngles():Forward()
 							local DotProduct = aimvector:DotProduct(posnormal)
 							local ApproachAngle = -math.deg(math.asin(DotProduct)) + 90
-
 							if ApproachAngle <= 60 then
 								local ang = (enemy:GetShootPos() - self:GetOwner():GetPos()):Angle()
 								ang.r = 0
 								ang.p = 0
 								self:GetOwner():SetAngles(ang)
-
 								if not self.Reloading and self:GetNextPrimaryFire() <= CurTime() and self:Clip1() > 0 then
 									self:SetAnimation(PLAYER_ATTACK1)
 									self:PrimaryAttack()
 									local delay = self.TriggerDelay * 2
-
-									if self:Clip1() == 0 then
-										delay = self.ReloadTime
-									end
-
+									if self:Clip1() == 0 then delay = self.ReloadTime end
 									self:SetNextPrimaryFire(CurTime() + delay)
 								end
 							end
@@ -324,22 +283,16 @@ function SWEP:Initialize()
 								local aimvector = self:GetOwner():EyeAngles():Forward()
 								local DotProduct = aimvector:DotProduct(posnormal)
 								local ApproachAngle = -math.deg(math.asin(DotProduct)) + 90
-
 								if ApproachAngle <= 60 then
 									local ang = (ply:GetShootPos() - self:GetOwner():GetPos()):Angle()
 									ang.r = 0
 									ang.p = 0
 									self:GetOwner():SetAngles(ang)
-
 									if not self.Reloading and self:GetNextPrimaryFire() <= CurTime() and self:Clip1() > 0 then
 										self:SetAnimation(PLAYER_ATTACK1)
 										self:PrimaryAttack()
 										local delay = self.TriggerDelay * 2
-
-										if self:Clip1() == 0 then
-											delay = self.ReloadTime
-										end
-
+										if self:Clip1() == 0 then delay = self.ReloadTime end
 										self:SetNextPrimaryFire(CurTime() + delay)
 									end
 
@@ -355,15 +308,10 @@ function SWEP:Initialize()
 			if not self.Reloading and self:GetOwner().GetActivity and self:GetOwner():GetActivity() == ACT_RELOAD then
 				self.Reloading = true
 				self.RoundsInMag = nil
-
 				if self.ReloadSounds then
 					local TacticalReload = self:Clip1() > 0
 					local mul = 1
-
-					if self:GetOwner():GetCurrentWeaponProficiency() > 2 then
-						mul = 0.5
-					end
-
+					if self:GetOwner():GetCurrentWeaponProficiency() > 2 then mul = 0.5 end
 					for i, sound in pairs(self.ReloadSounds) do
 						timer.Simple(self.ReloadSounds[i][2] * mul, function()
 							if IsValid(self) and self.NextReload and IsValid(self:GetOwner()) and (self.ReloadSounds[i][3] == "Both" or (self.ReloadSounds[i][3] == "EmptyOnly" and not TacticalReload) or (self.ReloadSounds[i][3] == "FullOnly" and TacticalReload)) then
@@ -377,52 +325,45 @@ function SWEP:Initialize()
 				end
 
 				local dur = self:GetOwner():SequenceDuration(self:GetOwner():SelectWeightedSequence(ACT_RELOAD))
-
-				if dur < 0.2 then
-					dur = self:GetOwner():SequenceDuration(self:GetOwner():SelectWeightedSequence(self.ReloadSequence or ACT_RELOAD_SMG1))
-				end
-
-				timer.Simple(dur, function()
-					if IsValid(self) then
-						self.Reloading = false
-					end
-				end)
+				if dur < 0.2 then dur = self:GetOwner():SequenceDuration(self:GetOwner():SelectWeightedSequence(self.ReloadSequence or ACT_RELOAD_SMG1)) end
+				timer.Simple(dur, function() if IsValid(self) then self.Reloading = false end end)
 			end
 		end)
 	end
 end
 
-local sights={
-    [1]=Material( "models/weapons/tfa_ins2/optics/kobra_dot", "noclamp nocull smooth"),
-    [2]=Material( "models/weapons/tfa_ins2/optics/eotech_reticule", "noclamp nocull smooth"),
-    [3]=Material( "scope/aimpoint", "noclamp nocull smooth")
+local sights = {
+	[1] = Material("models/weapons/tfa_ins2/optics/kobra_dot", "noclamp nocull smooth"),
+	[2] = Material("models/weapons/tfa_ins2/optics/eotech_reticule", "noclamp nocull smooth"),
+	[3] = Material("scope/aimpoint", "noclamp nocull smooth")
 }
 
-local sightMuls={
-    ["wep_jack_hmcd_mp7"]={
-        [1]=0.4,
-        [2]=0.4,
-        [3]=0.7
-    },
-    ["wep_jack_hmcd_shotgun"]={
-        [1]=0.33,
-        [2]=0.33
-    },
-    ["wep_jack_hmcd_m249"]={
-        [1]=0.33,
-        [2]=0.33
-    },
-    ["wep_jack_hmcd_sr25"]={
-        [3]=0.75
-    },
-    ["wep_jack_hmcd_assaultrifle"]={
-        [1]=0.25,
-        [2]=0.25
-    },
-    ["wep_jack_hmcd_akm"]={
-        [3]=0.75
-    }
+local sightMuls = {
+	["wep_jack_hmcd_mp7"] = {
+		[1] = 0.4,
+		[2] = 0.4,
+		[3] = 0.7
+	},
+	["wep_jack_hmcd_shotgun"] = {
+		[1] = 0.33,
+		[2] = 0.33
+	},
+	["wep_jack_hmcd_m249"] = {
+		[1] = 0.33,
+		[2] = 0.33
+	},
+	["wep_jack_hmcd_sr25"] = {
+		[3] = 0.75
+	},
+	["wep_jack_hmcd_assaultrifle"] = {
+		[1] = 0.25,
+		[2] = 0.25
+	},
+	["wep_jack_hmcd_akm"] = {
+		[3] = 0.75
+	}
 }
+
 function SWEP:PreDrawViewModel()
 	local vm = self:GetOwner():GetViewModel()
 	if self:GetClass() == "wep_jack_hmcd_ar2" then
@@ -462,13 +403,11 @@ function SWEP:PrimaryAttack()
 	if not self:GetReady() then return end
 	if self.SprintingWeapon > 10 then return end
 	if self.Reloading then return end
-
 	if self:GetClass() == "wep_jack_hmcd_ar2" and ((self:GetOwner().KeyDown and self:GetOwner():KeyDown(IN_USE)) or (self:GetOwner().Elite and self.NPCAltFireTime < CurTime())) and self.NextAltFireTime < CurTime() then
 		if not self:GetOwner().Elite then
 			if not (self:GetOwner():GetAmmoCount(self.AltAmmoType) > 0) then
 				self:EmitSound("snd_jack_hmcd_click.wav", 55, 100)
 				self:SetNextPrimaryFire(CurTime() + 0.1)
-
 				return
 			end
 
@@ -481,7 +420,6 @@ function SWEP:PrimaryAttack()
 
 		self.NextAltFireTime = CurTime() + 2
 		self:EmitSound("weapons/ar2/ar2_charge.wav", 55, 100)
-
 		timer.Simple(0.75, function()
 			if IsValid(self) then
 				self:DoBFSAnimation("IR_fire2")
@@ -489,23 +427,17 @@ function SWEP:PrimaryAttack()
 			end
 		end)
 
-		timer.Simple(1.5, function()
-			if IsValid(self) then
-				self:GetOwner():EmitSound("weapons/ar2/ar2_boltpull.wav", 55, 100)
-			end
-		end)
-
+		timer.Simple(1.5, function() if IsValid(self) then self:GetOwner():EmitSound("weapons/ar2/ar2_boltpull.wav", 55, 100) end end)
 		timer.Simple(0.8, function()
 			if IsValid(self) then
 				self:AltFire()
 				self:GetOwner():SetAnimation(PLAYER_ATTACK1)
 			end
 		end)
-
 		return
 	end
-	if self.NextAltFireTime and self.NextAltFireTime > CurTime() then return end
 
+	if self.NextAltFireTime and self.NextAltFireTime > CurTime() then return end
 	if not (IsFirstTimePredicted() or self.Primary.Automatic) then
 		if (self:Clip1() == 1) and self.LastFireAnim then
 			if not (self.AimPerc > 99) or not self.LastIronFireAnim then
@@ -538,41 +470,25 @@ function SWEP:PrimaryAttack()
 				end
 			end)
 		end
-
 		return
 	end
 
 	if SERVER and (self:Clip1() == 1 or self:Clip1() == math.Round(self.Primary.ClipSize / 4)) and (string.find(self:GetOwner():GetModel(), "combine") or string.find(self:GetOwner():GetModel(), "police")) then
-
-			local snd = "npc/metropolice/vo/backmeupimout.wav"
-
-			if self:Clip1() > 1 then
-				snd = "npc/metropolice/vo/runninglowonverdicts.wav"
-			end
-
-			self:GetOwner().tauntsound = snd
-			self:GetOwner():EmitSound(snd)
-			self:GetOwner().NextTaunt = CurTime() + SoundDuration(snd)
-			local BeepTime = SoundDuration(snd)
-			self:GetOwner().NextTaunt = CurTime() + BeepTime
-
-			self:GetOwner():EmitSound("npc/metropolice/vo/on" .. math.random(1, 2) .. ".wav")
-			local owner = self:GetOwner()
-
-			timer.Simple(BeepTime, function()
-				if IsValid(owner) and owner:Alive() then
-					owner:EmitSound("npc/metropolice/vo/off" .. math.random(1, 4) .. ".wav")
-				end
-			end)
+		local snd = "npc/metropolice/vo/backmeupimout.wav"
+		if self:Clip1() > 1 then snd = "npc/metropolice/vo/runninglowonverdicts.wav" end
+		self:GetOwner().tauntsound = snd
+		self:GetOwner():EmitSound(snd)
+		self:GetOwner().NextTaunt = CurTime() + SoundDuration(snd)
+		local BeepTime = SoundDuration(snd)
+		self:GetOwner().NextTaunt = CurTime() + BeepTime
+		self:GetOwner():EmitSound("npc/metropolice/vo/on" .. math.random(1, 2) .. ".wav")
+		local owner = self:GetOwner()
+		timer.Simple(BeepTime, function() if IsValid(owner) and owner:Alive() then owner:EmitSound("npc/metropolice/vo/off" .. math.random(1, 4) .. ".wav") end end)
 	end
 
 	self.CurrentDamage = self.Damage
 	self.LastFire = CurTime()
-
-	if self.AnimRandomiser and self.AnimRandomiser == true then
-		self:RandomIronFireAnim()
-	end
-
+	if self.AnimRandomiser and self.AnimRandomiser == true then self:RandomIronFireAnim() end
 	if not (self:Clip1() > 0) then
 		if self.NextFireTime then
 			if self.NextFireTime < CurTime() then
@@ -583,33 +499,19 @@ function SWEP:PrimaryAttack()
 			self:EmitSound("snd_jack_hmcd_click.wav", 55, 100)
 		end
 
-		if CLIENT then
-			self:GetOwner().AmmoShow = CurTime() + 2
-		end
-
+		if CLIENT then self:GetOwner().AmmoShow = CurTime() + 2 end
 		return
 	end
 
 	local suppressed = self:GetNWBool("Suppressor")
 	local WaterMul = 1
 	local Hippy = self.HipFireInaccuracy
-	if self:GetOwner():WaterLevel() >= 3 then
-		WaterMul = .5
-	end
-
+	if self:GetOwner():WaterLevel() >= 3 then WaterMul = .5 end
 	local dmgAmt, InAcc = self.Damage * WaterMul, 1 - self.Accuracy
-
-	if not (self.AimPerc > 99 or (self:GetNWBool("Laser") and self:GetNWBool("LaserStatus", false)) or self.BipodAmt > 99 or self:GetOwner():IsNPC()) then
-		InAcc = InAcc + Hippy
-	end
-
+	if not (self.AimPerc > 99 or (self:GetNWBool("Laser") and self:GetNWBool("LaserStatus", false)) or self.BipodAmt > 99 or self:GetOwner():IsNPC()) then InAcc = InAcc + Hippy end
 	local ang = self:GetOwner():GetAimVector():Angle()
 	local dirMul = 1
-
-	if self.ViewModelFlip then
-		dirMul = -1
-	end
-
+	if self.ViewModelFlip then dirMul = -1 end
 	local Right, Up, Forward = ang:Right(), ang:Up(), ang:Forward()
 	ang:RotateAroundAxis(Right, self.SprintAng.p * self.FrontBlockedPerc)
 	ang:RotateAroundAxis(Up, self.SprintAng.y * self.FrontBlockedPerc * dirMul)
@@ -617,7 +519,6 @@ function SWEP:PrimaryAttack()
 	local BulletTraj = (ang:Forward() + VectorRand() * InAcc):GetNormalized()
 	local bullet = {}
 	bullet.Num = self.NumProjectiles
-
 	if self.BipodAmt == 100 then
 		local offset = self.BipodAimOffset
 		local bipodPos, bipodAng = self:GetNWVector("BipodPos") + Vector(0, 0, self.BipodOffset), self:GetOwner():EyeAngles()
@@ -631,10 +532,8 @@ function SWEP:PrimaryAttack()
 		local posHead = self:GetOwner():GetBonePosition(self:GetOwner():LookupBone("ValveBiped.Bip01_Head1"))
 		bullet.Src = posHand + (posHead - posHand):GetNormalized() * 5
 		bullet.Dir = (posHead - posHand):GetNormalized()
-
 		if self.SuicideAmt > 90 then
 			local tr = util.QuickTrace(bullet.Src, bullet.Dir * 100, {self:GetOwner()})
-
 			util.Decal("Blood", tr.HitPos + tr.HitNormal, tr.HitPos - tr.HitNormal)
 			local edata = EffectData()
 			edata:SetStart(posHead)
@@ -642,22 +541,19 @@ function SWEP:PrimaryAttack()
 			edata:SetNormal(posHead)
 			edata:SetEntity(self:GetOwner())
 			util.Effect("BloodImpact", edata, true, true)
-
-			if SERVER then
-				self:GetOwner():Kill()
-			end
+			if SERVER then self:GetOwner():Kill() end
 		end
 	end
-	
-	dev = GetConVar( "developer" )
+
+	dev = GetConVar("developer")
 	--local vm = self:GetOwner():GetViewModel()
 	--bullet.Dir = (vm:GetAngles():Forward()*self.BulletDir[1]+vm:GetAngles():Right()*self.BulletDir[2]+vm:GetAngles():Up()*self.BulletDir[3]+VectorRand()*InAcc):GetNormalized()
 	bullet.Spread = Vector(self.Spread, self.Spread, 0)
 	bullet.Tracer = 0
 	bullet.Force = dmgAmt / 10
 	bullet.Damage = dmgAmt / 4
-	bullet.Callback=function(ply,tr,dmgInfo)
-		self:BulletCallbackFunc(dmgAmt,ply,tr,dmgAmt,false,true,false)
+	bullet.Callback = function(ply, tr, dmgInfo)
+		self:BulletCallbackFunc(dmgAmt, ply, tr, dmgAmt, false, true, false)
 		--[[if CLIENT then 
 			local modifierEndPos = tr.HitPos + tr.Normal * 30
 			hook.Add("PostDrawOpaqueRenderables", "Shoot", function()
@@ -669,29 +565,22 @@ function SWEP:PrimaryAttack()
 					render.DrawWireframeBox(modifierEndPos, Angle(0, 0, 0), Vector(-2, -2, -2), Vector(3, 3, 3), Color(255, 0, 0, 255), true)
 				end
 			end)
-		end]]--
+		end]]
+		--
 	end
 
 	if self.AltPrimaryFire then
 		self:AltPrimaryFire()
 	else
 		self:GetOwner():FireBullets(bullet)
-
 		if self.ShellDelay > 0 then
-			timer.Simple(self.ShellDelay, function()
-				if IsValid(self) then
-					self:Shell()
-				end
-			end)
+			timer.Simple(self.ShellDelay, function() if IsValid(self) then self:Shell() end end)
 		else
 			self:Shell()
 		end
 	end
 
-	if self.Supersonic then
-		self:BallisticSnap(BulletTraj)
-	end
-
+	if self.Supersonic then self:BallisticSnap(BulletTraj) end
 	if (self:Clip1() == 1) and self.LastFireAnim then
 		if not (self.AimPerc > 99) or not self.LastIronFireAnim then
 			self:DoBFSAnimation(self.LastFireAnim)
@@ -726,64 +615,34 @@ function SWEP:PrimaryAttack()
 
 	if self.FireAnimRate and self:GetOwner().GetViewModel then
 		self:GetOwner():GetViewModel():SetPlaybackRate(self.FireAnimRate)
-
-		if self:GetClass() == "wep_jack_hmcd_combinesniper" then
-			timer.Simple(.015, function()
-				if IsValid(self) then
-					self:GetOwner():GetViewModel():SetPlaybackRate(1)
-				end
-			end)
-		end
+		if self:GetClass() == "wep_jack_hmcd_combinesniper" then timer.Simple(.015, function() if IsValid(self) then self:GetOwner():GetViewModel():SetPlaybackRate(1) end end) end
 	end
 
 	self:GetOwner():SetAnimation(PLAYER_ATTACK1)
 	local Pitch = self.ShotPitch * math.Rand(.9, 1.1)
-
-	if self:GetClass() == "wep_jack_hmcd_taser" then
-		Pitch = 100
-	end
-
+	if self:GetClass() == "wep_jack_hmcd_taser" then Pitch = 100 end
 	if SERVER then
 		local Dist = 75
-
 		if suppressed and self.SuppressedFireSound then
 			self:GetOwner():EmitSound(self.SuppressedFireSound)
 		else
 			self:GetOwner():EmitSound(self.CloseFireSound, Dist, Pitch)
 			self:GetOwner():EmitSound(self.FarFireSound, Dist * 2, Pitch)
-
-			if self.ExtraFireSound then
-				sound.Play(self.ExtraFireSound, self:GetOwner():GetShootPos() + VectorRand(), Dist - 5, Pitch)
-			end
+			if self.ExtraFireSound then sound.Play(self.ExtraFireSound, self:GetOwner():GetShootPos() + VectorRand(), Dist - 5, Pitch) end
 		end
 
-		if self.CycleType == "manual" then
-			timer.Simple(.1, function()
-				if IsValid(self) and IsValid(self:GetOwner()) then
-					self:EmitSound(self.CycleSound, 55, 100)
-				end
-			end)
-		end
+		if self.CycleType == "manual" then timer.Simple(.1, function() if IsValid(self) and IsValid(self:GetOwner()) then self:EmitSound(self.CycleSound, 55, 100) end end) end
 	end
 
 	if self.MuzzleEffect ~= "" then
 		local eff = self.MuzzleEffect
-
-		if suppressed then
-			eff = self.MuzzleEffectSuppressed
-		end
-
+		if suppressed then eff = self.MuzzleEffectSuppressed end
 		if CLIENT then
 			local info = self.MuzzleInfo
-
 			if info then
 				local vm = self:GetOwner():GetViewModel()
 				local pos, ang = vm:GetBonePosition(vm:LookupBone(info.Bone))
-
-				if info.reverseangle then
-					ang.r = -ang.r
-				end
-
+				if info.reverseangle then ang.r = -ang.r end
 				ParticleEffect(eff, pos + ang:Forward() * info.Offset[1] + ang:Right() * info.Offset[2] + ang:Up() * info.Offset[3], self:GetOwner():EyeAngles(), self)
 			end
 		end
@@ -791,99 +650,68 @@ function SWEP:PrimaryAttack()
 		if SERVER then
 			local pos, ang = self:GetOwner():GetBonePosition(self:GetOwner():LookupBone("ValveBiped.Bip01_R_Hand"))
 			local position = pos + ang:Forward() * self.MuzzlePos[1] + ang:Up() * self.MuzzlePos[2] + ang:Right() * self.MuzzlePos[3]
-
-			if suppressed then
-				position = position + ang:Forward() * 6
-			end
-
+			if suppressed then position = position + ang:Forward() * 6 end
 			ParticleEffect(eff, position, ang, self)
 		end
 	end
 
 	self.BarrelMustSmoke = true
-	local Ang, Rec = self:GetOwner():EyeAngles(), self.Recoil
-
-	if self:GetNWBool("Suppressor") then
-		Rec = Rec * .5
-	end
-
-	if not self:GetOwner():IsOnGround() then
-		Rec = Rec * 2
-	end
-
-	if self.BipodAmt == 100 then
-		Rec = Rec * .01
-	end
-
+	local Ang, Rec = self:GetOwner():EyeAngles(), self.Recoil * 3
+	if self:GetNWBool("Suppressor") then Rec = Rec * .5 end
+	if not self:GetOwner():IsOnGround() then Rec = Rec * 2 end
+	if self.BipodAmt == 100 then Rec = Rec * .01 end
 	if Rec >= 10 then
 		if SERVER then
 			self:GetOwner().lastRagdollEndTime = nil
 			self:TakePrimaryAmmo(1)
 			self:GetOwner():ConCommand("fake")
-			timer.Simple(0.3,function() if IsValid(self:GetOwner():GetNWEntity("Ragdoll")) then self:GetOwner():GetNWEntity("Ragdoll"):GetPhysicsObject():SetVelocity(-self:GetOwner():GetAimVector() * 500) end end)
-
+			timer.Simple(0.3, function() if IsValid(self:GetOwner():GetNWEntity("Ragdoll")) then self:GetOwner():GetNWEntity("Ragdoll"):GetPhysicsObject():SetVelocity(-self:GetOwner():GetAimVector() * 500) end end)
 			return
 		end
 	else
 		local RecoilY = math.Rand(.02, .08) * Rec
 		local RecoilX = math.Rand(-.01, .04) * Rec
-		if self:GetOwner():EyeAngles().p <= -87 then
-			RecoilY = 0
-		end
-
+		if self:GetOwner():EyeAngles().p <= -87 then RecoilY = 0 end
 		if ((SERVER and game.SinglePlayer()) or CLIENT) and self.BipodAmt < 100 then
-			local newAng = (Ang:Forward() + RecoilY * Ang:Up() /5  + Ang:Right() * RecoilX):Angle()
+			local newAng = (Ang:Forward() + RecoilY * Ang:Up() / 5 + Ang:Right() * RecoilX):Angle()
 			self:GetOwner():SetEyeAngles(newAng)
+			self:GetOwner():ViewPunch(newAng)
 		end
 
-		if not self:GetOwner():OnGround() then
-			self:GetOwner():SetVelocity(-self:GetOwner():GetAimVector() * 10)
-		end
-
+		if not self:GetOwner():OnGround() then self:GetOwner():SetVelocity(-self:GetOwner():GetAimVector() * 10) end
 		if self:GetOwner():IsPlayer() then
 		else
 			if not self.BurstFire then
 				self.BurstFire = true
 				local rand = math.random(1, 6)
-
 				for i = 1, rand do
 					timer.Simple(self.TriggerDelay * i * 2, function()
 						if IsValid(self) and self:GetNextPrimaryFire() <= CurTime() and not self.Reloading then
 							self:SetAnimation(PLAYER_ATTACK1)
 							self:PrimaryAttack()
-
-							if i == rand then
-								self.BurstFire = nil
-							end
+							if i == rand then self.BurstFire = nil end
 						end
 					end)
 				end
 			end
 
-			if not self.RoundsInMag then
-				self.RoundsInMag = self:Clip1()
-			end
-
+			if not self.RoundsInMag then self.RoundsInMag = self:Clip1() end
 			self.RoundsInMag = self.RoundsInMag - 1
 		end
 	end
 
 	self:TakePrimaryAmmo(1)
 	local Extra = 0
-
-	if self:GetOwner():WaterLevel() >= 3 then
-		Extra = 1
-	end
-
+	if self:GetOwner():WaterLevel() >= 3 then Extra = 1 end
 	self:SetNextPrimaryFire(CurTime() + self.TriggerDelay + self.CycleTime + Extra)
 end
 
 function SWEP:BarrelSmoke()
 	local ent = self:GetOwner():GetViewModel()
 	local ent2 = self.WorldModel
-	ParticleEffectAttach("pcf_jack_mf_barrelsmoke",PATTACH_POINT_FOLLOW,self,self:LookupAttachment("muzzle"))
+	ParticleEffectAttach("pcf_jack_mf_barrelsmoke", PATTACH_POINT_FOLLOW, self, self:LookupAttachment("muzzle"))
 	if ent then
-		for i = 1,math.random(1,3) do
+		for i = 1, math.random(1, 3) do
 			ParticleEffectAttach(self.SmokeEffect, PATTACH_POINT_FOLLOW, ent, 1)
 		end
 	end
@@ -895,7 +723,6 @@ end
 --print(HMCD_WhomILookinAt(self:GetOwner(),.3,50):GetModel())
 local nextBipodCheck = 0
 local primaryShoot = 0
-
 function SWEP:Think()
 	local Time = CurTime()
 	local ply = self:GetOwner()
@@ -903,31 +730,24 @@ function SWEP:Think()
 	if self:GetClass() == "wep_jack_hmcd_m249" and SERVER then
 		local vm = self:GetOwner():GetViewModel()
 		local curBodygroup = vm:GetBodygroup(1)
-
-		if self:Clip1() < 17 and not self.NextReload and curBodygroup ~= self:Clip1() then
-			vm:SetBodygroup(1, self:Clip1())
-		end
-
-		if self:Clip1() > 16 and not self.NextReload and curBodygroup ~= 16 then
-			vm:SetBodygroup(1, 16)
-		end
+		if self:Clip1() < 17 and not self.NextReload and curBodygroup ~= self:Clip1() then vm:SetBodygroup(1, self:Clip1()) end
+		if self:Clip1() > 16 and not self.NextReload and curBodygroup ~= 16 then vm:SetBodygroup(1, 16) end
 	end
 
 	if self.BarrelMustSmoke then
-		if self:GetClass() == "wep_jack_hmcd_m249" and math.random(1, 5) != 3 then return end
+		if self:GetClass() == "wep_jack_hmcd_m249" and math.random(1, 5) ~= 3 then return end
 		self:BarrelSmoke()
 		self.BarrelMustSmoke = false
 	end
+
 	local ply = self:GetOwner()
 	if nextBipodCheck < Time then
 		nextBipodCheck = Time + 0.1
-
 		if self.BipodEntity then
 			if not IsValid(self.BipodEntity) then
 				self:ToggleBipods()
 			else
 				local entFound = false
-
 				for i, ent in pairs(ents.FindInSphere(self.BipodPos, 25)) do
 					if ent == self.BipodEntity then
 						entFound = true
@@ -935,35 +755,24 @@ function SWEP:Think()
 					end
 				end
 
-				if not entFound then
-					self:ToggleBipods()
-				end
+				if not entFound then self:ToggleBipods() end
 			end
 		end
 
-		if self.BipodPos then
-			if math.abs(self.BipodPos.z - self:GetOwner():EyePos().z) > 25 then
-				self:ToggleBipods()
-			end
-		end
+		if self.BipodPos then if math.abs(self.BipodPos.z - self:GetOwner():EyePos().z) > 25 then self:ToggleBipods() end end
 	end
 
 	if SERVER then
 		if self.NextReload and self.NextReload < Time then
 			self.NextReload = nil
-
 			if IsValid(self) and IsValid(self:GetOwner()) then
 				if self.SetRocketGone then
 					self:SetRocketGone(false)
-
-					if IsValid(self:GetOwner().FakeWep) then
-						self:GetOwner().FakeWep:SetBodygroup(1, 0)
-					end
+					if IsValid(self:GetOwner().FakeWep) then self:GetOwner().FakeWep:SetBodygroup(1, 0) end
 				end
 
 				self:SetReady(true)
 				local Missing, Have = self.Primary.ClipSize - self:Clip1(), self:GetOwner():GetAmmoCount(self.Primary.Ammo)
-
 				if Missing <= Have then
 					if self:Clip1() <= 0 and not self.NoBulletInChamber then
 						self:GetOwner():RemoveAmmo(Missing - 1, self.Primary.Ammo)
@@ -990,34 +799,19 @@ function SWEP:Think()
 					self:SetClip1(self:Clip1() + 1)
 					self:GetOwner():RemoveAmmo(1, self.Primary.Ammo)
 					self:StallAnimation(self.StallAnim, self.StallTime)
-
-					timer.Simple(.01, function()
-						self:ReadyAfterAnim(self.LoadAnim)
-					end)
-
+					timer.Simple(.01, function() self:ReadyAfterAnim(self.LoadAnim) end)
 					if self.ReloadSoundDelay then
-						timer.Simple(self.ReloadSoundDelay, function()
-							if IsValid(self) then
-								sound.Play(self.ReloadSound, self:GetOwner():GetShootPos(), 55, 100)
-							end
-						end)
+						timer.Simple(self.ReloadSoundDelay, function() if IsValid(self) then sound.Play(self.ReloadSound, self:GetOwner():GetShootPos(), 55, 100) end end)
 					else
 						sound.Play(self.ReloadSound, self:GetOwner():GetShootPos(), 55, 100)
 					end
 				else
 					self:SetReloading(false)
 					self:ReadyAfterAnim(self.LoadFinishAnim)
-
-					timer.Simple(.25, function()
-						if (IsValid(self) and IsValid(self:GetOwner())) and self.CycleSound and not self.NoCocking then
-							self:EmitSound(self.CycleSound, 55, 90)
-						end
-					end)
-
+					timer.Simple(.25, function() if (IsValid(self) and IsValid(self:GetOwner())) and self.CycleSound and not self.NoCocking then self:EmitSound(self.CycleSound, 55, 90) end end)
 					timer.Simple(.5, function()
 						if IsValid(self) and IsValid(self:GetOwner()) then
 							self:SetReady(true)
-
 							if IsValid(self:GetOwner().FakeWep) then
 								self:GetOwner().FakeWep.RoundsInMag = self:Clip1()
 								self:GetOwner().FakeWep.Reloading = false
@@ -1029,7 +823,6 @@ function SWEP:Think()
 		end
 
 		local HoldType = self.HipHoldType
-
 		if self:GetOwner():KeyDown(IN_SPEED) or self:GetSuiciding() or self.FrontBlockedPerc > 0.1 then
 			HoldType = self.DownHoldType
 		elseif (self.AimPerc > 50) and not self:GetOwner():Crouching() then
@@ -1052,7 +845,6 @@ function SWEP:Think()
 	local Cycling = self.Cycling or false
 	local GroundChanged = IsChanged(self:GetOwner():OnGround(), "grounded", self)
 	self.changed = GroundChanged or BlockedChanged or DeployTimeChanged or IsChanged(self.Reloading, "reload", self) or IsChanged(Cycling, "cycling", self)
-
 	--Long as duck
 	if AimChanged or SprintChanged or self.changed then
 		if AimChanged or GroundChanged or BlockedChanged then
@@ -1072,7 +864,6 @@ function SWEP:Think()
 	end
 
 	self.changed = IsChanged(self:GetSuiciding(), "suiciding", self)
-
 	if self.changed then
 		self.SuicideStartTime = Time
 		self.SuicideOnChange = self.SuicideAmt or 0
@@ -1080,11 +871,9 @@ function SWEP:Think()
 	end
 
 	local bipodPos = self:GetNWVector("BipodPos")
-
 	if IsChanged(bipodPos, "bipod", self) then
 		self.BipodStartTime = Time
 		self.BipodOnChange = self.BipodAmt or 0
-
 		if bipodPos ~= Vector() then
 			self.BipodAngle = self:GetOwner():EyeAngles()
 		else
@@ -1094,28 +883,20 @@ function SWEP:Think()
 
 	local Suiciding = self:GetSuiciding()
 	local AimDiff = Time - self.AimStartTime
-
 	if AimDiff > 0 then
 		if InAttack and not Reloading and not Blocked and not Cycling and not Suiciding and Sprinting < 100 and not InSpeed and self:GetOwner():OnGround() then
-			if not (AimPerc >= 100) then
-				self.AimPerc = math.Clamp(AimDiff * self.AimAddMul, 0, 100)
-			end
+			if not (AimPerc >= 100) then self.AimPerc = math.Clamp(AimDiff * self.AimAddMul, 0, 100) end
 		elseif not (AimPerc <= 0) then
 			self.AimPerc = math.Clamp(self.AimingOnChange - AimDiff * self.AimAddMul, 0, 100)
 		end
 	end
 
 	local SprintDiff = Time - self.SprintStartTime
-
 	if SprintDiff > 0 then
 		if InSpeed and not (Reloading or Cycling or Suiciding) and ready then
 			if Sprinting ~= 100 then
 				local diff = SprintDiff
-
-				if self.FrontBlockedPerc and self.FrontBlockedPerc > diff then
-					diff = self.FrontBlockedPerc
-				end
-
+				if self.FrontBlockedPerc and self.FrontBlockedPerc > diff then diff = self.FrontBlockedPerc end
 				self.SprintingWeapon = math.Clamp(diff * self.SprintAddMul, 0, 100)
 			end
 		elseif Sprinting ~= 0 then
@@ -1124,14 +905,9 @@ function SWEP:Think()
 	end
 
 	local SuicideDiff = Time - self.SuicideStartTime
-
 	if Suiciding then
 		local mul = self.SuicideAddMul
-
-		if self:GetOwner():GetNWBool("GhostSuiciding") then
-			mul = mul * .1
-		end
-
+		if self:GetOwner():GetNWBool("GhostSuiciding") then mul = mul * .1 end
 		self.SuicideAmt = math.Clamp(SuicideDiff * mul, 0, 100)
 	else
 		self.SuicideAmt = math.Clamp(self.SuicideOnChange - SuicideDiff * self.SuicideAddMul, 0, 100)
@@ -1139,7 +915,6 @@ function SWEP:Think()
 
 	if self.BipodUsable then
 		local BipodDiff = Time - self.BipodStartTime
-
 		if bipodPos ~= Vector() then
 			self.BipodAmt = math.Clamp(BipodDiff * 150, 0, 100)
 		else
@@ -1154,97 +929,112 @@ function SWEP:RandomIronFireAnim()
 	self.IronFireAnim = "iron_fire_" .. RandLetter
 end
 
-HMCD_SurfaceHardness={
-    [MAT_METAL]=.95,[MAT_COMPUTER]=.95,[MAT_VENT]=.95,[MAT_GRATE]=.95,[MAT_FLESH]=2,[MAT_ALIENFLESH]=.3,
-    [MAT_SAND]=.1,[MAT_DIRT]=.3,[74]=.1,[85]=.2,[MAT_WOOD]=.5,[MAT_FOLIAGE]=.5,
-    [MAT_CONCRETE]=.9,[MAT_TILE]=.8,[MAT_SLOSH]=.05,[MAT_PLASTIC]=.3,[MAT_GLASS]=.6
+HMCD_SurfaceHardness = {
+	[MAT_METAL] = .95,
+	[MAT_COMPUTER] = .95,
+	[MAT_VENT] = .95,
+	[MAT_GRATE] = .95,
+	[MAT_FLESH] = 2,
+	[MAT_ALIENFLESH] = .3,
+	[MAT_SAND] = .1,
+	[MAT_DIRT] = .3,
+	[74] = .1,
+	[85] = .2,
+	[MAT_WOOD] = .5,
+	[MAT_FOLIAGE] = .5,
+	[MAT_CONCRETE] = .9,
+	[MAT_TILE] = .8,
+	[MAT_SLOSH] = .05,
+	[MAT_PLASTIC] = .3,
+	[MAT_GLASS] = .6
 }
 
-function SWEP:BulletCallbackFunc(dmgAmt,ply,tr,dmg,tracer,hard,multi)
+function SWEP:BulletCallbackFunc(dmgAmt, ply, tr, dmg, tracer, hard, multi)
 	if tr.Entity:IsPlayer() then return end
 	if tr.MatType == MAT_FLESH then
 		local vPoint = tr.HitPos
 		local effectdata = EffectData()
-		effectdata:SetOrigin( vPoint )
-		effectdata:SetRadius(2)
-		effectdata:SetFlags(7)
-		effectdata:SetNormal(tr.HitNormal)
-		util.Effect("BloodImpact", effectdata)
+		effectdata:SetOrigin(vPoint)
 	end
+
 	if tr.HitSky then return end
 	if hard then self:RicochetOrPenetrate(tr) end
 end
 
 function SWEP:RicochetOrPenetrate(initialTrace)
-	local AVec,IPos,TNorm,SMul=initialTrace.Normal,initialTrace.HitPos,initialTrace.HitNormal,HMCD_SurfaceHardness[initialTrace.MatType]
-	if not(SMul)then SMul=.5 end
-	local ApproachAngle=-math.deg(math.asin(TNorm:DotProduct(AVec)))
-	local MaxRicAngle=60*SMul
-	if(ApproachAngle>(MaxRicAngle*1.25))then -- all the way through
-		local MaxDist,SearchPos,SearchDist,Penetrated=(self.Damage/SMul)*.15,IPos,5,false
-		while((not(Penetrated))and(SearchDist<MaxDist))do
-			SearchPos=IPos+AVec*SearchDist
-			local PeneTrace=util.QuickTrace(SearchPos,-AVec*SearchDist)
-			if((not(PeneTrace.StartSolid))and(PeneTrace.Hit))then
-				Penetrated=true
+	local AVec, IPos, TNorm, SMul = initialTrace.Normal, initialTrace.HitPos, initialTrace.HitNormal, HMCD_SurfaceHardness[initialTrace.MatType]
+	if not SMul then SMul = .5 end
+	local ApproachAngle = -math.deg(math.asin(TNorm:DotProduct(AVec)))
+	local MaxRicAngle = 60 * SMul
+	if ApproachAngle > (MaxRicAngle * 1.25) then -- all the way through
+		local MaxDist, SearchPos, SearchDist, Penetrated = (self.Damage / SMul) * .15, IPos, 5, false
+		while (not Penetrated) and (SearchDist < MaxDist) do
+			SearchPos = IPos + AVec * SearchDist
+			local PeneTrace = util.QuickTrace(SearchPos, -AVec * SearchDist)
+			if (not PeneTrace.StartSolid) and PeneTrace.Hit then
+				Penetrated = true
 			else
-				SearchDist=SearchDist+5
+				SearchDist = SearchDist + 5
 			end
 		end
+
 		if Penetrated then
-			local StopMul=SearchDist/MaxDist
+			local StopMul = SearchDist / MaxDist
 			self:FireBullets({
-				Attacker=self.Owner,
-				Damage=1,
-				Force=1,
-				Num=1,
-				Tracer=0,
-				TracerName="",
-				Dir=-AVec,
-				Spread=Vector(0,0,0),
-				Src=SearchPos+AVec
+				Attacker = self.Owner,
+				Damage = 1,
+				Force = 1,
+				Num = 1,
+				Tracer = 0,
+				TracerName = "",
+				Dir = -AVec,
+				Spread = Vector(0, 0, 0),
+				Src = SearchPos + AVec
 			})
+
 			self:FireBullets({
-				Attacker=self.Owner,
-				Damage=self.CurrentDamage*math.Clamp((1-StopMul)*1.2,0.01,1),
-				Force=self.Damage/15,
-				Num=1,
-				Tracer=0,
-				TracerName="",
-				Dir=AVec,
-				Spread=Vector(0,0,0),
-				Src=SearchPos+AVec,
-				Callback=function(ply,tr)
-					local trace=util.QuickTrace(SearchPos+AVec,AVec*1000000)
-					ply:GetActiveWeapon():BulletCallbackFunc(self.CurrentDamage*math.Clamp((1-StopMul)*1.2,0.01,1),ply,trace,dmg,false,true,false)
+				Attacker = self.Owner,
+				Damage = self.CurrentDamage * math.Clamp((1 - StopMul) * 1.2, 0.01, 1),
+				Force = self.Damage / 15,
+				Num = 1,
+				Tracer = 0,
+				TracerName = "",
+				Dir = AVec,
+				Spread = Vector(0, 0, 0),
+				Src = SearchPos + AVec,
+				Callback = function(ply, tr)
+					local trace = util.QuickTrace(SearchPos + AVec, AVec * 1000000)
+					ply:GetActiveWeapon():BulletCallbackFunc(self.CurrentDamage * math.Clamp((1 - StopMul) * 1.2, 0.01, 1), ply, trace, dmg, false, true, false)
 				end
 			})
-			self.CurrentDamage=self.CurrentDamage*math.Clamp((1-StopMul)*1.2,0.01,1)
-		end
 
-	elseif(ApproachAngle<(MaxRicAngle*.75))then -- ping whiiiizzzz
-		sound.Play("snd_jack_hmcd_ricochet_"..math.random(1,22)..".wav",IPos,70,math.random(90,100))
-		local NewVec=AVec:Angle()
-		NewVec:RotateAroundAxis(TNorm,180)
-		local AngDiffNormal=math.deg(math.acos(NewVec:Forward():Dot(TNorm)))-90
-		NewVec:RotateAroundAxis(NewVec:Right(),AngDiffNormal*.7) -- bullets actually don't ricochet elastically
-		NewVec=NewVec:Forward()
+			self.CurrentDamage = self.CurrentDamage * math.Clamp((1 - StopMul) * 1.2, 0.01, 1)
+		end
+	elseif ApproachAngle < (MaxRicAngle * .75) then
+		-- ping whiiiizzzz
+		sound.Play("snd_jack_hmcd_ricochet_" .. math.random(1, 22) .. ".wav", IPos, 70, math.random(90, 100))
+		local NewVec = AVec:Angle()
+		NewVec:RotateAroundAxis(TNorm, 180)
+		local AngDiffNormal = math.deg(math.acos(NewVec:Forward():Dot(TNorm))) - 90
+		NewVec:RotateAroundAxis(NewVec:Right(), AngDiffNormal * .7) -- bullets actually don't ricochet elastically
+		NewVec = NewVec:Forward()
 		self:FireBullets({
-			Attacker=self.Owner,
-			Damage=self.Damage*.5,
-			Force=self.Damage/15,
-			Num=1,
-			Tracer=0,
-			TracerName="",
-			Dir=-NewVec,
-			Spread=Vector(0,0,0),
-			Src=IPos+TNorm
+			Attacker = self.Owner,
+			Damage = self.Damage * .5,
+			Force = self.Damage / 15,
+			Num = 1,
+			Tracer = 0,
+			TracerName = "",
+			Dir = -NewVec,
+			Spread = Vector(0, 0, 0),
+			Src = IPos + TNorm
 		})
-		if CLIENT then 
+
+		if CLIENT then
 			hook.Add("PostDrawOpaqueRenderables", "Shoot", function()
 				if dev:GetInt() >= 2 then
 					render.SetMaterial(Material("effects/flashlight/tech"))
-					render.DrawLine(IPos+TNorm, -NewVec, Color(255,255,255,255), true) 
+					render.DrawLine(IPos + TNorm, -NewVec, Color(255, 255, 255, 255), true)
 				end
 			end)
 		end
@@ -1258,28 +1048,17 @@ function SWEP:Reload()
 	if not self:GetReady() then return end
 	if self.SprintingWeapon > 0 then return end
 	if self.SuicideAmt > 0 then return end
-
-	if CLIENT then
-		self:GetOwner().AmmoShow = CurTime() + 2
-	end
+	if CLIENT then self:GetOwner().AmmoShow = CurTime() + 2 end
+	print(self:GetOwner():GetAmmoCount("AR2"))
 	if (self:Clip1() < self.Primary.ClipSize) and (self:GetOwner():GetAmmoCount(self.Primary.Ammo) > 0) then
 		local TacticalReload = self:Clip1() > 0
-
-		if self:GetClass() == "wep_jack_hmcd_dbarrel" then
-			TacticalReload = self:Clip1() >= 1 or self:GetOwner():GetAmmoCount("Buckshot") == 1
-		end
-
+		if self:GetClass() == "wep_jack_hmcd_dbarrel" then TacticalReload = self:Clip1() >= 1 or self:GetOwner():GetAmmoCount("Buckshot") == 1 end
 		self:SetReady(false)
 		self:GetOwner():SetAnimation(PLAYER_RELOAD)
 		local Mul = 1
 		local ReloadAdd = 0
-
-		if not TacticalReload then
-			ReloadAdd = self.ReloadAdd
-		end
-
+		if not TacticalReload then ReloadAdd = self.ReloadAdd end
 		local ReloadTime = (self.ReloadTime + ReloadAdd) * Mul
-
 		if self:GetClass() == "wep_jack_hmcd_revolver" then
 			timer.Simple(self.MagDelay, function()
 				if IsValid(self) then
@@ -1292,22 +1071,14 @@ function SWEP:Reload()
 			timer.Simple(self.MagDelay, function()
 				if IsValid(self) then
 					local amt = 1
-
-					if not TacticalReload then
-						amt = 2
-					end
-
+					if not TacticalReload then amt = 2 end
 					for i = 1, amt do
 						self:ShellReload()
 					end
 				end
 			end)
 		elseif self.ShellEffectReload then
-			timer.Simple(self.MagDelay * Mul, function()
-				if IsValid(self) then
-					self:ShellReload()
-				end
-			end)
+			timer.Simple(self.MagDelay * Mul, function() if IsValid(self) then self:ShellReload() end end)
 		end
 
 		if (self:Clip1() < 2 or self:GetClass() == "wep_jack_hmcd_rifle") and self.MagEntity then
@@ -1316,7 +1087,6 @@ function SWEP:Reload()
 					local Mag = ents.Create(self.MagEntity)
 					Mag.HmcdSpawned = self.HmcdSpawned
 					Mag:SetAngles(VectorRand():Angle())
-
 					if IsValid(self:GetOwner().fakeragdoll) then
 						Mag:SetPos(self:GetOwner().fakeragdoll:GetBonePosition(self:GetOwner().fakeragdoll:LookupBone("ValveBiped.Bip01_R_Hand")))
 					else
@@ -1331,27 +1101,14 @@ function SWEP:Reload()
 		end
 
 		if SERVER then
-			if IsValid(self:GetOwner().FakeWep) then
-				self:GetOwner().FakeWep.Reloading = true
-			end
-
+			if IsValid(self:GetOwner().FakeWep) then self:GetOwner().FakeWep.Reloading = true end
 			if self.ReloadSounds then
 				for i, sound in pairs(self.ReloadSounds) do
-					timer.Simple(self.ReloadSounds[i][2] * Mul, function()
-						if IsValid(self) and self.NextReload and self:GetOwner():GetActiveWeapon() == self and (self.ReloadSounds[i][3] == "Both" or (self.ReloadSounds[i][3] == "EmptyOnly" and not TacticalReload) or (self.ReloadSounds[i][3] == "FullOnly" and TacticalReload)) then
-							self.Weapon:EmitSound(self.ReloadSounds[i][1], 65, 100)
-						end
-					end)
+					timer.Simple(self.ReloadSounds[i][2] * Mul, function() if IsValid(self) and self.NextReload and self:GetOwner():GetActiveWeapon() == self and (self.ReloadSounds[i][3] == "Both" or (self.ReloadSounds[i][3] == "EmptyOnly" and not TacticalReload) or (self.ReloadSounds[i][3] == "FullOnly" and TacticalReload)) then self.Weapon:EmitSound(self.ReloadSounds[i][1], 65, 100) end end)
 				end
 			end
 
-			if self:GetClass() == "wep_jack_hmcd_crossbow" then
-				timer.Simple(3.2 * Mul, function()
-					if IsValid(self) then
-						self:GetOwner():GetViewModel():SetSkin(1)
-					end
-				end)
-			end
+			if self:GetClass() == "wep_jack_hmcd_crossbow" then timer.Simple(3.2 * Mul, function() if IsValid(self) then self:GetOwner():GetViewModel():SetSkin(1) end end) end
 		end
 
 		if (self.ReloadType == "clip") or (self.ReloadType == "magazine") then
@@ -1367,10 +1124,7 @@ function SWEP:Reload()
 
 			self:GetOwner():GetViewModel():SetPlaybackRate(self.ReloadRate / Mul)
 			self.Weapon:EmitSound(self.ReloadSound, 65, 100)
-
-			if SERVER then
-				self.NextReload = CurTime() + ReloadTime
-			end
+			if SERVER then self.NextReload = CurTime() + ReloadTime end
 		elseif self.ReloadType == "individual" then
 			self:SetReloading(true)
 			self:ReadyAfterAnim(self.StartReloadAnim)
@@ -1381,7 +1135,6 @@ end
 function SWEP:ReadyAfterAnim(anim)
 	self:DoBFSAnimation(anim)
 	local mul = 1
-
 	local reloadRate = self.ReloadRate * mul
 	self:GetOwner():GetViewModel():SetPlaybackRate(reloadRate)
 	local Time = (self:GetOwner():GetViewModel():SequenceDuration() / reloadRate) + .01
@@ -1394,64 +1147,36 @@ function SWEP:Deploy()
 	self.SuicideAmt = 0
 	self.BipodAmt = 0
 	self:SetSuiciding(false)
-
 	if self.Bodygroups and SERVER then
 		local vm = self:GetOwner():GetViewModel()
-
 		for i, bgroup in pairs(self.Bodygroups) do
 			self.PreviousBodygroups[i] = vm:GetBodygroup(i)
 			vm:SetBodygroup(i, bgroup)
 		end
 	end
 
-	if self:GetOwner().GetViewModel and IsValid(self:GetOwner():GetViewModel()) then
-		self:GetOwner():GetViewModel():SetSkin(0)
-	end
-
-	if self:GetOwner().DamagedArms and self.HolsterSlot == 1 then
-		self:GetOwner():DropWeapon(self)
-	end
-
+	if self:GetOwner().GetViewModel and IsValid(self:GetOwner():GetViewModel()) then self:GetOwner():GetViewModel():SetSkin(0) end
+	if self:GetOwner().DamagedArms and self.HolsterSlot == 1 then self:GetOwner():DropWeapon(self) end
 	if IsValid(self) and IsValid(self:GetOwner()) then
 		if not IsFirstTimePredicted() then
 			self:DoBFSAnimation(self.DrawAnim)
 			self:GetOwner():GetViewModel():SetPlaybackRate(.1)
-
 			return
 		end
 
 		if self:Clip1() > 0 then
 			self:DoBFSAnimation(self.DrawAnim)
-
-			if self:GetClass() == "wep_jack_hmcd_crossbow" then
-				self:GetOwner():GetViewModel():SetSkin(1)
-			end
+			if self:GetClass() == "wep_jack_hmcd_crossbow" then self:GetOwner():GetViewModel():SetSkin(1) end
 		elseif self.DrawAnimEmpty then
 			self:DoBFSAnimation(self.DrawAnimEmpty)
-
-			if self:GetClass() == "wep_jack_hmcd_crossbow" then
-				self:GetOwner():GetViewModel():SetSkin(0)
-			end
+			if self:GetClass() == "wep_jack_hmcd_crossbow" then self:GetOwner():GetViewModel():SetSkin(0) end
 		end
 
-		if self:GetOwner().GetViewModel then
-			self:GetOwner():GetViewModel():SetPlaybackRate(self.DrawRate)
-		end
-
+		if self:GetOwner().GetViewModel then self:GetOwner():GetViewModel():SetPlaybackRate(self.DrawRate) end
 		self:SetReady(false)
-
-		if not self.SilentDeploy then
-			self:EmitSound("snd_jack_hmcd_pistoldraw.wav", self.DeployVolume or 70, self.HandlingPitch)
-		end
-
+		if not self.SilentDeploy then self:EmitSound("snd_jack_hmcd_pistoldraw.wav", self.DeployVolume or 70, self.HandlingPitch) end
 		self:EnforceHolsterRules(self)
-
-		timer.Simple(1.5, function()
-			if IsValid(self) then
-				self:SetReady(true)
-			end
-		end)
-
+		timer.Simple(1.5, function() if IsValid(self) then self:SetReady(true) end end)
 		return true
 	end
 end
@@ -1460,11 +1185,12 @@ function SWEP:EnforceHolsterRules(newWep)
 	self.NextReload = nil
 	if CLIENT then return end
 	if IsValid(self:GetOwner().fakeragdoll) then return end
-	if not (newWep == self) then return end -- only enforce rules for us
+	if not (newWep == self) then -- only enforce rules for us
+		return
+	end
+
 	for key, wep in ipairs(self:GetOwner():GetWeapons()) do
-		if wep.HolsterSlot and self.HolsterSlot and (wep.HolsterSlot == self.HolsterSlot) and not (wep == self) then
-			self:GetOwner():DropWeapon(wep)
-		end
+		if wep.HolsterSlot and self.HolsterSlot and (wep.HolsterSlot == self.HolsterSlot) and not (wep == self) then self:GetOwner():DropWeapon(wep) end
 	end
 end
 
@@ -1483,17 +1209,9 @@ end
 
 function SWEP:Holster(newWep)
 	if self:GetOwner():GetNWBool("GhostSuiciding") then return false end
-
-	if self:GetClass() == "wep_jack_hmcd_ar2" then
-		if self:GetOwner().GetViewModel and IsValid(self:GetOwner():GetViewModel()) then
-			self:GetOwner():GetViewModel():SetSkin(0)
-		end
-	end
-
+	if self:GetClass() == "wep_jack_hmcd_ar2" then if self:GetOwner().GetViewModel and IsValid(self:GetOwner():GetViewModel()) then self:GetOwner():GetViewModel():SetSkin(0) end end
 	for i, bgroup in pairs(self.PreviousBodygroups) do
-		if IsValid(self:GetOwner():GetViewModel()) then
-			self:GetOwner():GetViewModel():SetBodygroup(i, bgroup)
-		end
+		if IsValid(self:GetOwner():GetViewModel()) then self:GetOwner():GetViewModel():SetBodygroup(i, bgroup) end
 	end
 
 	self:SetNWVector("BipodPos", Vector())
@@ -1504,11 +1222,7 @@ function SWEP:Holster(newWep)
 	self:CleanLaser()
 	self:SetReloading(false)
 	self:SetReady(false)
-
-	if self:GetSuiciding() then
-		self:GetOwner():SetDSP(0)
-	end
-
+	if self:GetSuiciding() then self:GetOwner():SetDSP(0) end
 	return true
 end
 
@@ -1523,24 +1237,16 @@ function SWEP:Precache()
 end
 
 function SWEP:OwnerChanged()
-	if not self.FirstOwner then
-		self.FirstOwner = self:GetOwner()
-	end
+	if not self.FirstOwner then self.FirstOwner = self:GetOwner() end
 end
 
 SWEP.BlockOnChange = 0
 SWEP.FrontBlockTime = 0
-
 function SWEP:EnforceFrontBlock()
 	local ShootVec, Ang, ShootPos = self:GetOwner():GetAimVector(), self:GetOwner():GetAngles(), self:GetOwner():GetShootPos()
 	local OverallLength = self.BarrelLength
-
-	if self:GetNWBool("Suppressor") then
-		OverallLength = OverallLength + 3
-	end
-
+	if self:GetNWBool("Suppressor") then OverallLength = OverallLength + 3 end
 	ShootPos = ShootPos + ShootVec * 15
-
 	local trace = util.TraceLine({
 		start = ShootPos - Ang:Forward() * 5,
 		endpos = ShootPos + (ShootVec * OverallLength) + Ang:Forward() * 15,
@@ -1548,14 +1254,8 @@ function SWEP:EnforceFrontBlock()
 	})
 
 	if trace.Hit and self.BipodAmt < 1 then
-		if trace.StartSolid then
-			trace.Fraction = 0
-		end
-
-		if self.FrontBlocked == 0 then
-			self.FrontBlockTime = CurTime()
-		end
-
+		if trace.StartSolid then trace.Fraction = 0 end
+		if self.FrontBlocked == 0 then self.FrontBlockTime = CurTime() end
 		self.FrontBlocked = 1
 		self.FrontBlockedPerc = math.Clamp((CurTime() - self.FrontBlockTime) * self.SprintAddMul / 100, 0, 1 - trace.Fraction)
 	else
@@ -1570,16 +1270,12 @@ function SWEP:EnforceFrontBlock()
 end
 
 function SWEP:OnDrop()
-	if self:GetSuiciding() and IsValid(self:GetOwner()) then
-		self:GetOwner():SetDSP(0)
-	end
-
+	if self:GetSuiciding() and IsValid(self:GetOwner()) then self:GetOwner():SetDSP(0) end
 	self.NextReload = nil
 	local Ent = ents.Create(self.ENT)
 	Ent.HmcdSpawned = self.HmcdSpawned
 	Ent:SetPos(self:GetPos())
 	Ent:SetAngles(self:GetAngles())
-
 	if self.Attachments and self.Attachments["Owner"] then
 		for attachment, info in pairs(self.Attachments["Owner"]) do
 			Ent:SetNWBool(attachment, self:GetNWBool(attachment))
@@ -1598,7 +1294,6 @@ function SWEP:BallisticSnap(traj)
 	if not self.Supersonic then return end
 	if self.NumProjectiles > 1 then return end
 	local Src = self:GetOwner():GetShootPos()
-
 	local TrDat = {
 		start = Src,
 		endpos = Src + traj * 20000,
@@ -1606,21 +1301,14 @@ function SWEP:BallisticSnap(traj)
 	}
 
 	local Tr, EndPos = util.TraceLine(TrDat), Src + traj * 20000
-
-	if Tr.Hit or Tr.HitSky then
-		EndPos = Tr.HitPos
-	end
-
+	if Tr.Hit or Tr.HitSky then EndPos = Tr.HitPos end
 	local Dist = (EndPos - Src):Length()
-
 	if Dist > 1000 then
 		for i = 1, math.floor(Dist / 500) do
 			local SoundSrc = Src + traj * i * 500
-
 			for key, ply in player.Iterator() do
 				if not (ply == self:GetOwner()) then
 					local PlyPos = ply:GetPos()
-
 					if (PlyPos - SoundSrc):Length() < 1000 then
 						local Snd = "snd_jack_hmcd_bc_" .. math.random(1, 7) .. ".wav"
 						local Pitch = math.random(90, 110)
@@ -1636,14 +1324,10 @@ function SWEP:ToggleBipods()
 	if self.BipodUsable and SERVER then
 		if not self.BipodPos then
 			if (self.NextBipodTime and self.NextBipodTime > CurTime()) or self.FrontBlockedPerc > 0.1 then return end
-
 			for i = 0.5, 1.5, 0.25 do
 				local tr = util.QuickTrace(self:GetOwner():GetShootPos(), self:GetOwner():GetAimVector() * self.BarrelLength * i, {self:GetOwner()})
-
 				if tr.Hit then return end
-
 				tr = util.QuickTrace(tr.HitPos, -vector_up * 20, {self:GetOwner()})
-
 				if tr.Hit and self:GetOwner():GetShootPos().z - tr.HitPos.z <= 25 then
 					local vec = tr.HitPos
 					vec.x = math.Round(vec.x)
@@ -1652,16 +1336,12 @@ function SWEP:ToggleBipods()
 					self:SetNWVector("BipodPos", vec)
 					self.BipodStartTime = CurTime()
 					self.BipodPos = vec
-
 					if self.NextReload then
 						self.NextReload = nil
 						self:SetReady(true)
 					end
 
-					if IsValid(tr.Entity) then
-						self.BipodEntity = tr.Entity
-					end
-
+					if IsValid(tr.Entity) then self.BipodEntity = tr.Entity end
 					if self.BipodPlaceAnim then
 						if not (self.BipodPlaceAnimEmpty and self:Clip1() == 0) then
 							self:DoBFSAnimation(self.BipodPlaceAnim)
@@ -1694,12 +1374,7 @@ function SWEP:ToggleBipods()
 						self.ReloadSounds = temp
 					end
 
-					if self.BipodDeploySound then
-						timer.Simple(self.BipodDeploySound[1], function()
-							self:GetOwner():EmitSound(self.BipodDeploySound[2], 55, 100)
-						end)
-					end
-
+					if self.BipodDeploySound then timer.Simple(self.BipodDeploySound[1], function() self:GetOwner():EmitSound(self.BipodDeploySound[2], 55, 100) end) end
 					self:SetNextPrimaryFire(CurTime() + 1.25)
 					break
 				end
@@ -1710,7 +1385,6 @@ function SWEP:ToggleBipods()
 			self.BipodStartTime = CurTime()
 			self.BipodPos = nil
 			self.BipodEntity = nil
-
 			if self.NextReload then
 				self.NextReload = nil
 				self:SetReady(true)
@@ -1748,29 +1422,19 @@ function SWEP:ToggleBipods()
 				self.ReloadSounds = temp
 			end
 
-			if self.BipodRemoveSound then
-				timer.Simple(self.BipodRemoveSound[1], function()
-					if IsValid(self) then
-						self:GetOwner():EmitSound(self.BipodRemoveSound[2], 55, 100)
-					end
-				end)
-			end
-
+			if self.BipodRemoveSound then timer.Simple(self.BipodRemoveSound[1], function() if IsValid(self) then self:GetOwner():EmitSound(self.BipodRemoveSound[2], 55, 100) end end) end
 			self:SetNextPrimaryFire(CurTime() + 1.25)
 		end
 	end
 end
 
 if CLIENT then
-
-
 	local LastAimGotten = 0
 	local LastSuicideGotten = 0
 	local LastSprintGotten = 0
 	local LastBipodGotten = 0
 	local LastBipodPos = Vector(0, 0, 0)
 	local LastAngGotten = Angle(0, 0, 0)
-
 	function SWEP:ViewModelDrawn(vm)
 		if self.Attachments and self.Attachments["Owner"] then
 			for attachment, info in pairs(self.Attachments["Owner"]) do
@@ -1780,74 +1444,33 @@ if CLIENT then
 						self.DrawnAttachments[attachment]:SetPos(vm:GetPos())
 						self.DrawnAttachments[attachment]:SetParent(vm)
 						self.DrawnAttachments[attachment]:SetNoDraw(true)
-
-						if info.scale then
-							self.DrawnAttachments[attachment]:SetModelScale(info.scale, 0)
-						end
-
-						if info.material then
-							self.DrawnAttachments[attachment]:SetMaterial(info.material)
-						end
-
-						if info.aimpos then
-							self.AttAimPos = info.aimpos
-						end
-						if info.sightpos then
-							if not self.SightInfo then
-								self.SightInfo = {14 - info.num, self.DrawnAttachments[attachment]}
-							end
-						end
-
-						if info.bipodpos then
-							self.AttBipodPos = info.bipodpos
-						end
+						if info.scale then self.DrawnAttachments[attachment]:SetModelScale(info.scale, 0) end
+						if info.material then self.DrawnAttachments[attachment]:SetMaterial(info.material) end
+						if info.aimpos then self.AttAimPos = info.aimpos end
+						if info.sightpos then if not self.SightInfo then self.SightInfo = {14 - info.num, self.DrawnAttachments[attachment]} end end
+						if info.bipodpos then self.AttBipodPos = info.bipodpos end
 					else
 						local matr = vm:GetBoneMatrix(vm:LookupBone(info.bone))
 						if matr then
 							local pos, ang = matr:GetTranslation(), matr:GetAngles()
-
-							if info.reverseangle then
-								ang.r = -ang.r
-							end
+							if info.reverseangle then ang.r = -ang.r end
 							self.DrawnAttachments[attachment]:SetRenderOrigin(pos + ang:Right() * info.pos.right + ang:Forward() * info.pos.forward + ang:Up() * info.pos.up)
-
 							if info.sightang then
 								local angCopy = matr:GetAngles()
-
-								if info.sightang.up then
-									angCopy:RotateAroundAxis(angCopy:Up(), info.sightang.up)
-								end
-
-								if info.sightang.forward then
-									angCopy:RotateAroundAxis(angCopy:Forward(), info.sightang.forward)
-								end
-
-								if info.sightang.right then
-									angCopy:RotateAroundAxis(angCopy:Right(), info.sightang.right)
-								end
-
-								self.ScopeDotAngle=angCopy
-								self.ScopeDotPosition=pos+angCopy:Right()*info.sightpos.right+angCopy:Forward()*info.sightpos.forward+angCopy:Up()*info.sightpos.up
+								if info.sightang.up then angCopy:RotateAroundAxis(angCopy:Up(), info.sightang.up) end
+								if info.sightang.forward then angCopy:RotateAroundAxis(angCopy:Forward(), info.sightang.forward) end
+								if info.sightang.right then angCopy:RotateAroundAxis(angCopy:Right(), info.sightang.right) end
+								self.ScopeDotAngle = angCopy
+								self.ScopeDotPosition = pos + angCopy:Right() * info.sightpos.right + angCopy:Forward() * info.sightpos.forward + angCopy:Up() * info.sightpos.up
 							end
 
 							if info.ang then
-								if info.ang.up then
-									ang:RotateAroundAxis(ang:Up(), info.ang.up)
-								end
-
-								if info.ang.forward then
-									ang:RotateAroundAxis(ang:Forward(), info.ang.forward)
-								end
-
-								if info.ang.right then
-									ang:RotateAroundAxis(ang:Right(), info.ang.right)
-								end
+								if info.ang.up then ang:RotateAroundAxis(ang:Up(), info.ang.up) end
+								if info.ang.forward then ang:RotateAroundAxis(ang:Forward(), info.ang.forward) end
+								if info.ang.right then ang:RotateAroundAxis(ang:Right(), info.ang.right) end
 							end
-							if info.sightpos then
-								timer.Simple(.5, function()
-									self.rt_s = 1
-								end)
-							end
+
+							if info.sightpos then timer.Simple(.5, function() self.rt_s = 1 end) end
 							self.DrawnAttachments[attachment]:SetRenderAngles(ang)
 							self.DrawnAttachments[attachment]:DrawModel()
 						end
@@ -1855,31 +1478,19 @@ if CLIENT then
 				else
 					if self.DrawnAttachments[attachment] then
 						self.DrawnAttachments[attachment] = nil
-
-						if info.aimpos then
-							self.AttAimPos = nil
-						end
-
-						if info.sightang then
-							self.SightInfo = nil
-						end
-
-						if info.bipodpos then
-							self.AttBipodPos = nil
-						end
+						if info.aimpos then self.AttAimPos = nil end
+						if info.sightang then self.SightInfo = nil end
+						if info.bipodpos then self.AttBipodPos = nil end
 					end
 				end
 			end
 		end
-		if self.SightInfo then
-			GAMEMODE:DrawScopeDot(self, self.SightInfo[1], self.SightInfo[2], vm)
-		end
+
+		if self.SightInfo then GAMEMODE:DrawScopeDot(self, self.SightInfo[1], self.SightInfo[2], vm) end
 	end
 
 	function SWEP:GetViewModelPosition(pos, ang)
-		if LocalPlayer() ~= self:GetOwner() then
-			self:Think()
-		end
+		if LocalPlayer() ~= self:GetOwner() then self:Think() end
 		local FrontBlocked = self.FrontBlocked or 0
 		local FrontBlockedPerc = self.FrontBlockedPerc or 0
 		local Sprint = math.Clamp(self.SprintingWeapon / 100, 0, 1)
@@ -1896,13 +1507,8 @@ if CLIENT then
 		LastSprintGotten = SprintGotten
 		local Sprint = SprintGotten
 		if self.InertiaScale ~= 0 then
-			if oldAng == nil then
-				oldAng = ang
-			end
-
-			if angDiff == nil then
-				angDiff = Angle(0, 0, 0)
-			end
+			if oldAng == nil then oldAng = ang end
+			if angDiff == nil then angDiff = Angle(0, 0, 0) end
 			local sensitivity, strength = self.CarryWeight / 714, self.CarryWeight / 300
 			angDiff = LerpAngle(math.Clamp(FrameTime(), 0.03, 1), angDiff, ang - oldAng)
 			oldAng = ang
@@ -1914,7 +1520,6 @@ if CLIENT then
 		ang:RotateAroundAxis(Right, self.SprintAng.p * Sprint)
 		ang:RotateAroundAxis(Up, self.SprintAng.y * Sprint)
 		ang:RotateAroundAxis(Forward, self.SprintAng.r * Sprint)
-
 		if self.SuicideAng then
 			ang:RotateAroundAxis(ang:Right(), self.SuicideAng.p * Suicide)
 			ang:RotateAroundAxis(ang:Up(), self.SuicideAng.y * Suicide)
@@ -1928,34 +1533,24 @@ if CLIENT then
 		end
 
 		local kposAdd = Vector(0, 0, 0)
-
-		if self:GetNWBool("Suppressor") and self.SuicideSuppr then
-			kposAdd = self.SuicideSuppr
-		end
-
+		if self:GetNWBool("Suppressor") and self.SuicideSuppr then kposAdd = self.SuicideSuppr end
 		local aimPos = self.AttAimPos or self.AimPos
-
-		if Bipod > 0.1 then
-			aimPos = Vector(0, 0, 0)
-		end
-
+		if Bipod > 0.1 then aimPos = Vector(0, 0, 0) end
 		local npos = LerpVector(Aim, Vector(0, 0, 0), aimPos)
 		local spos = LerpVector(Sprint, Vector(0, 0, 0), self.SprintPos)
 		local kpos = LerpVector(Suicide, Vector(0, 0, 0), (self.SuicidePos or Vector(0, 0, 0)) + kposAdd)
 		local curbipodPos = self:GetNWVector("BipodPos")
 		local bipodPos = LerpVector(Bipod, Vector(0, 0, 0), LastBipodPos + Vector(0, 0, self.BipodOffset) - self:GetOwner():GetAimVector() * self.BarrelLength - pos)
-
 		if curbipodPos ~= Vector() then
 			LastBipodPos = curbipodPos
 			self.CurVmPos = pos + Right * (npos[1] + spos[1] + kpos[1]) + Forward * (npos[2] + spos[2] + kpos[2]) + Up * (npos[3] + spos[3] + kpos[3]) + bipodPos
 			self.CurVmAng = ang
 		end
-
 		return pos + Right * (npos[1] + spos[1] + kpos[1]) + Forward * (npos[2] + spos[2] + kpos[2]) + Up * (npos[3] + spos[3] + kpos[3]) + bipodPos, ang
 	end
 
 	function SWEP:DrawHUD()
-    	--[[ply = self:GetOwner()
+		--[[ply = self:GetOwner()
 		if self:GetNWBool("Sight") or self:GetNWBool("Sight2") or self:GetNWBool("Sight3") or self:GetNWBool("Scope1") then
 		local rt = {
     	    x = 0,
@@ -2104,7 +1699,8 @@ if CLIENT then
         		cam.End2D()
         		DisableClipping(old)
     		render.PopRenderTarget()
-		end]]--
+		end]]
+		--
 	end
 
 	function SWEP:DrawWorldModel()
@@ -2116,7 +1712,6 @@ if CLIENT then
 						self.WModel:SetPos(self:GetOwner():GetPos())
 						self.WModel:SetParent(self:GetOwner())
 						self.WModel:SetNoDraw(true)
-
 						if self.Attachments["Viewer"]["Weapon"].bodygroups then
 							for i, val in pairs(self.Attachments["Viewer"]["Weapon"].bodygroups) do
 								self.WModel:SetBodygroup(i, val)
@@ -2124,11 +1719,9 @@ if CLIENT then
 						end
 					else
 						local pos, ang = self:GetOwner():GetBonePosition(self:GetOwner():LookupBone("ValveBiped.Bip01_R_Hand"))
-
 						if pos and ang then
 							local info = self.Attachments["Viewer"]["Weapon"]
 							self.WModel:SetRenderOrigin(pos + ang:Right() * info.pos.right + ang:Forward() * info.pos.forward + ang:Up() * info.pos.up)
-
 							local angList = {
 								["forward"] = ang:Forward(),
 								["right"] = ang:Right(),
@@ -2164,22 +1757,12 @@ if CLIENT then
 							self.WDrawnAttachments[attachment]:SetPos(self:GetOwner():GetPos())
 							self.WDrawnAttachments[attachment]:SetParent(self:GetOwner())
 							self.WDrawnAttachments[attachment]:SetNoDraw(true)
-
-							if info.scale then
-								self.WDrawnAttachments[attachment]:SetModelScale(info.scale, 0)
-							end
-
-							if info.material then
-								self.WDrawnAttachments[attachment]:SetMaterial(info.material)
-							end
+							if info.scale then self.WDrawnAttachments[attachment]:SetModelScale(info.scale, 0) end
+							if info.material then self.WDrawnAttachments[attachment]:SetMaterial(info.material) end
 						else
-							if attachment == "Laser" then
-								self:DrawLaser()
-							end
-
+							if attachment == "Laser" then self:DrawLaser() end
 							local pos, ang = self:GetOwner():GetBonePosition(self:GetOwner():LookupBone("ValveBiped.Bip01_R_Hand"))
 							self.WDrawnAttachments[attachment]:SetRenderOrigin(pos + ang:Right() * info.pos.right + ang:Forward() * info.pos.forward + ang:Up() * info.pos.up)
-
 							local angList = {
 								["forward"] = ang:Forward(),
 								["right"] = ang:Right(),
@@ -2188,7 +1771,6 @@ if CLIENT then
 
 							for i, rot in pairs(info.ang) do
 								ang:RotateAroundAxis(angList[i], rot)
-
 								angList = {
 									["forward"] = ang:Forward(),
 									["right"] = ang:Right(),
@@ -2200,9 +1782,7 @@ if CLIENT then
 							self.WDrawnAttachments[attachment]:DrawModel()
 						end
 					else
-						if self.WDrawnAttachments[attachment] then
-							self.WDrawnAttachments[attachment] = nil
-						end
+						if self.WDrawnAttachments[attachment] then self.WDrawnAttachments[attachment] = nil end
 					end
 				end
 			end
@@ -2214,19 +1794,16 @@ if CLIENT then
 	end
 	-- I do all this, bitch
 end
+
 local laserline = Material("cable/smoke")
 local laserdot = Material("effects/tfalaserdot")
 SWEP.LaserDistance = 6000
 SWEP.LaserFOV = 1.5
 SWEP.LaserColor = Color(255, 0, 0, 255)
-
 function SWEP:DrawLaser()
 end
 
 function SWEP:CleanLaser()
 	local own = self:GetOwner()
-
-	if IsValid(own) and IsValid(own.HMCDLaserDot) then
-		own.HMCDLaserDot:Remove()
-	end
+	if IsValid(own) and IsValid(own.HMCDLaserDot) then own.HMCDLaserDot:Remove() end
 end
