@@ -157,7 +157,7 @@ hook.Add("PlayerSay", "DropWeapon", function(ply,text)
 			if IsValid(ply:GetActiveWeapon()) and ply:GetActiveWeapon():GetClass() != "wep_jack_hmcd_hands" and ply:GetActiveWeapon().PinOut != true then
 				ply:DropWeapon()
 				ply:ViewPunch(Angle(5,0,0))
-				ply:AddGesture(48)
+				ply:DoAnimationEvent(ACT_GMOD_GESTURE_ITEM_DROP)
             	return ""
 			end
         else
@@ -322,6 +322,10 @@ hook.Add("Vars Player", "VarsS", function(ply)	-- Alive give
 	ply.heartstop = false
 	ply.pain = 0
 	ply.pain_add = 0
+	ply:SetNWString("Helmet", "")
+	ply:SetNWString("Bodyvest", "")
+	ply:SetNWString("Mask", "")
+
 
 	ply.IsBleeding = false
 	ply.o2 = 1

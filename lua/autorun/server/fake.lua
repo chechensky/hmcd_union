@@ -76,7 +76,7 @@ function SavePlyInfo(ply) -- Сохранение игрока перед его
     info.AllAmmo={}
     local i
     for ammo, amt in pairs(ply:GetAmmo())do
-        i = i or 0
+		i = i or 0
         i = i + 1
         info.AllAmmo[ammo]={i,amt}
     end
@@ -409,16 +409,7 @@ hook.Add("DoPlayerDeath","blad",function(ply,att,dmginfo)
 	net.Send(ply)
 	if IsValid(rag.bull) then rag.bull:Remove() end
 	rag:SetNWBool("Dead", true)
-	if rag.ez_armor_ent != nil then 
-		for id,info in pairs(ply.EZarmor.items) do
-			local ent = CreateArmor(rag,info)
-			rag.ez_armor_ent = ent
-			rag.ez_armor_ent.deadbody = true
-			rag.ez_armor_ent.Owner = nil
-			ent:SetNWBool("Dead", true)
-			ent.Owner = nil
-		end
-	end
+
 	if checkAllBleedOuts_bolshe(ply, 0) then
 		rag.IsBleeding=true
 		rag.bloodNext = CurTime()
@@ -573,47 +564,6 @@ hook.Add("PreCleanupMap","cleannoobs",function() --все игроки вста�
 
 end)
 
-function CreateArmor(ragdoll,info)
-	local item = JMod.ArmorTable[info.name]
-	if not item then return end
-
-	local Index = ragdoll:LookupBone(item.bon)
-	if not Index then return end
-
-	local Pos,Ang = (ply or ragdoll):GetBonePosition(Index)
-	if not Pos then return end
-
-	local ent = ents.Create(item.ent)
-
-	local Right,Forward,Up = Ang:Right(),Ang:Forward(),Ang:Up()
-	Pos = Pos + Right * item.pos.x + Forward * item.pos.y + Up * item.pos.z
-
-	Ang:RotateAroundAxis(Right,item.ang.p)
-	Ang:RotateAroundAxis(Up,item.ang.y)
-	Ang:RotateAroundAxis(Forward,item.ang.r)
-
-	ent.IsArmor = true
-	ent:SetPos(Pos)
-	ent:SetAngles(Ang)
-
-	local color = info.col
-
-	ent:SetColor(Color(color.r,color.g,color.b,color.a))
-
-	ent:Spawn()
-	ent:SetCollisionGroup(COLLISION_GROUP_DEBRIS)
-
-	if IsValid(ent:GetPhysicsObject()) then
-		ent:GetPhysicsObject():SetMaterial("plastic")
-	end
-
-	constraint.Weld(ent,ragdoll,0,ragdoll:TranslateBoneToPhysBone(Index),0,true,false)
-
-	ragdoll:DeleteOnRemove(ent)
-
-	return ent
-end
-
 local function Remove(self,ply)
 end
 
@@ -698,7 +648,6 @@ function PlayerMeta:CreateRagdoll(attacker,dmginfo) --изменение фун�
 	local rag = ents.Create( "prop_ragdoll" )
 	duplicator.DoGeneric( rag, Data )
 	rag:SetModel(self:GetModel())
-	--rag:SetColor(self:GetColor()) --huy sosi garry
 	rag:SetNWVector("plycolor",self:GetPlayerColor())
 	rag:SetSkin(self:GetSkin())
 	rag:BetterSetPlayerColor(self:GetPlayerColor())
@@ -711,7 +660,122 @@ function PlayerMeta:CreateRagdoll(attacker,dmginfo) --изменение фун�
 			RagdollOwner(rag):KillSilent()
 		end
 	end)
-	
+	if self:GetNWString("Bodyvest", "") == "Level IIIA" or self:GetNWString("Bodyvest", "") == "Level III" then
+
+		--local ent = ents.Create((self:GetNWString("Bodyvest", "") == "Level IIIA" and "ent_jack_hmcd_softarmor") or "ent_jack_hmcd_hardarmor")
+		local ent = ents.Create("prop_physics")
+		local Pos,Ang = rag:GetBonePosition(rag:LookupBone("ValveBiped.Bip01_Spine4"))
+		local Right,Forward,Up = Ang:Right(),Ang:Forward(),Ang:Up()
+		if self.ModelSex == "male" then
+			Pos = Pos + Right * -15 + Forward * -55 + Up * 0
+		else
+			Pos = Pos + Right * -8 + Forward * -58 + Up * 0
+		end
+
+		ent.IsArmor = true
+		rag.Bodyvest = ent
+		rag:SetNWEntity("ENT_Bodyvest", ent)
+		ent:SetPos(Pos)
+		ent:SetAngles(Angle(0,0,0))
+		ent:SetModel("models/sal/acc/armor01.mdl")
+
+		if self:GetNWString("Bodyvest","") == "Level III" then
+			ent:SetColor(Color(5,0,5))
+		else
+			ent:SetColor(Color(255,255,255))
+		end
+
+		ent:Spawn()
+		ent:SetCollisionGroup(COLLISION_GROUP_WORLD)
+
+		if IsValid(ent:GetPhysicsObject()) then
+			ent:GetPhysicsObject():SetMaterial("plastic")
+			ent:GetPhysicsObject():SetMass(4)
+		end
+
+		constraint.Weld(ent,rag,0,rag:TranslateBoneToPhysBone(rag:LookupBone("ValveBiped.Bip01_Spine4")),0,true,false)
+
+		rag:DeleteOnRemove(ent)
+		ent:CallOnRemove("BodyvestNo",function()
+			if IsValid(rag) then
+				rag.Bodyvest = nil
+			end
+		end)
+	end
+
+	if self:GetNWString("Helmet", "") == "ACH" then
+
+		--local ent = ents.Create((self:GetNWString("Bodyvest", "") == "Level IIIA" and "ent_jack_hmcd_softarmor") or "ent_jack_hmcd_hardarmor")
+		local ent = ents.Create("prop_physics")
+		local Pos,Ang = rag:GetBonePosition(rag:LookupBone("ValveBiped.Bip01_Head1"))
+		local Right,Forward,Up = Ang:Right(),Ang:Forward(),Ang:Up()
+		if self.ModelSex == "male" then
+			Pos = Pos + Right * 2 + Forward * 0 + Up * 0
+		else
+			Pos = Pos + Right * 2 + Forward * 0 + Up * 0
+		end
+
+		ent.IsArmor = true
+		rag.Helmet = ent
+		rag:SetNWEntity("ENT_Helmet", ent)
+		ent:SetPos(Pos)
+		ent:SetAngles(Angle(0,0,0))
+		ent:SetModel("models/barney_helmet.mdl")
+		ent:SetMaterial("models/mat_jack_hmcd_armor")
+
+		ent:SetColor(Color(255,255,255))
+
+		ent:Spawn()
+		ent:SetCollisionGroup(COLLISION_GROUP_WORLD)
+
+		if IsValid(ent:GetPhysicsObject()) then
+			ent:GetPhysicsObject():SetMaterial("plastic")
+			ent:GetPhysicsObject():SetMass(0)
+		end
+
+		constraint.Weld(ent,rag,0,rag:TranslateBoneToPhysBone(rag:LookupBone("ValveBiped.Bip01_Head1")),0,true,false)
+
+		rag:DeleteOnRemove(ent)
+		ent:CallOnRemove("HelmetNo",function()
+			if IsValid(rag) then
+				rag.Helmet = nil
+			end
+		end)
+	end
+	if self:GetNWString("Mask", "") == "NVG" then
+
+		--local ent = ents.Create((self:GetNWString("Bodyvest", "") == "Level IIIA" and "ent_jack_hmcd_softarmor") or "ent_jack_hmcd_hardarmor")
+		local ent = ents.Create("prop_physics")
+		local Pos,Ang = rag:GetBonePosition(rag:LookupBone("ValveBiped.Bip01_Head1"))
+		local Right,Forward,Up = Ang:Right(),Ang:Forward(),Ang:Up()
+		Pos = Pos + Right * 2 + Forward * 0 + Up * 0
+
+		ent.IsArmor = true
+		rag.Mask = ent
+		rag:SetNWEntity("ENT_Mask", ent)
+		ent:SetPos(Pos)
+		ent:SetAngles(Angle(0,0,0))
+		ent:SetModel("models/arctic_nvgs/nvg_gpnvg.mdl")
+
+		ent:SetColor(Color(255,255,255))
+
+		ent:Spawn()
+		ent:SetCollisionGroup(COLLISION_GROUP_WORLD)
+
+		if IsValid(ent:GetPhysicsObject()) then
+			ent:GetPhysicsObject():SetMaterial("plastic")
+			ent:GetPhysicsObject():SetMass(0)
+		end
+
+		constraint.Weld(ent,rag,0,rag:TranslateBoneToPhysBone(rag:LookupBone("ValveBiped.Bip01_Head1")),0,true,false)
+
+		rag:DeleteOnRemove(ent)
+		ent:CallOnRemove("MaskNo",function()
+			if IsValid(rag) then
+				rag.Mask = nil
+			end
+		end)
+	end
 	rag:AddEFlags(EFL_NO_DAMAGE_FORCES)
 	if IsValid(rag:GetPhysicsObject()) then
 		rag:GetPhysicsObject():SetMass(CustomWeight[rag:GetModel()] or 15)
@@ -1269,6 +1333,11 @@ end
 concommand.Add("checha_getotrub",function(ply,cmd,args)
 	local huyply = args[1] and player.GetListByName(args[1])[1] or ply
 	print(huyply.Otrub)
+end)
+
+concommand.Add("checha_setarmor",function(ply,cmd,args)
+	local huyply = args[1] and player.GetListByName(args[1])[1] or ply
+	huyply:SetNWString(args[2], args[3])
 end)
 
 hook.Add("PlayerSay","dropweaponhuy",function(ply,text)

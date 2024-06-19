@@ -140,6 +140,16 @@ function GM:RadialMousePressed(code, vec)
 				elseif ments[selected].Code == "attach" then
 					local lply = LocalPlayer()
 					lply:ConCommand("attachmentsmenu")
+				elseif ments[selected].Code == "nvg" then
+					local lply = LocalPlayer()
+					local nvgstat = lply:GetNWBool("NVG_Up", false)
+					if nvgstat then
+						lply:SetNWBool("NVG_Up", false)
+						lply:SetNWBool("NVG_WereOn", false)
+					else
+						lply:SetNWBool("NVG_Up", true)
+						lply:SetNWBool("NVG_WereOn", true)
+					end
 				end
 			end
 		end
@@ -169,6 +179,7 @@ concommand.Add(
 			addElement("Ammo Menu","hmcd_ammo")
 			addElement("Phrase_Category","phrase")
 			addElement("attach", "attach")
+			if client:GetNWBool("Mask", "") == "NVG" then 			addElement("nvg", "nvg") end
 			if fs then addElement("MenuUse_Category","usemenu") end
 			if IsValid(Wep) then
 				if Wep:GetClass() ~= "wep_jack_hmcd_hands" then addElement("Drop", "drop") end
@@ -311,6 +322,9 @@ function GM:DrawRadialMenu()
 			elseif ment.TransCode == "attach" then
 				Main = "Attachments"
 				Sub = "attachments menu, WHAT THE FUCK OH SHIT..."
+			elseif ment.TransCode == "nvg" then
+				Main = "NVG"
+				Sub = "up or down nvg"
 			else
     			Main = "?"
     			Sub = "?"

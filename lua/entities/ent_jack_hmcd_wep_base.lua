@@ -99,6 +99,42 @@ if SERVER then
 		end
 	end
 
+function ENT:ReloadSound()
+	local weptable = weapons.Get(self.SWEP)
+	if weptable.ReloadSounds then
+		for i, sound in pairs(weptable.ReloadSounds) do
+			timer.Simple(weptable.ReloadSounds[i][2], function()
+				if IsValid(self) then
+					self:EmitSound(weptable.ReloadSounds[i][1], 65, 100)
+					self:GetPhysicsObject():ApplyForceCenter(self:GetAngles():Up()*100+self:GetAngles():Forward()*-200)
+				end
+			end)
+		end
+	end
+end
+
+function ENT:Reload()
+if IsValid(self) then
+
+	local ply = self:GetOwner()
+	local weptable = weapons.Get(self.SWEP)
+	print(weptable.Primary.Ammo)
+	if !self.Reloading and self.RoundsInMag < weptable.Primary.ClipSize and ply:GetAmmoCount(weptable.AmmoType) > 0 then
+		self:ReloadSound()
+		self.Reloading = true
+		timer.Create("reload"..self:EntIndex(), weptable.ReloadTime, 1, function()
+			local need = weptable.Primary.ClipSize - self.RoundsInMag
+			self:GetOwner():RemoveAmmo(need, weptable.Primary.Ammo)
+			self.RoundsInMag = self.RoundsInMag - need
+			if IsValid(self.Owner:GetWeapon(self.SWEP)) then
+				self.Owner:GetWeapon(self.SWEP):SetClip1(self.RoundsInMag)
+			end
+			self.Reloading = false
+		end)
+	end
+end
+end
+
 	function ENT:PhysicsCollide(data, ent)
 		if data.DeltaTime > .1 then
 			self:EmitSound(self.ImpactSound, math.Clamp(data.Speed / 3, 20, 65), math.random(100, 120))
@@ -142,20 +178,12 @@ if SERVER then
 					if suppressed and weapons.Get(self.SWEP).SuppressedFireSound then
 						self:EmitSound(weapons.Get(self.SWEP).SuppressedFireSound)
 					else
-						self:EmitSound(weapons.Get(self.SWEP).CloseFireSound, Dist, 100)
-						self:EmitSound(weapons.Get(self.SWEP).FarFireSound, Dist * 2, 100)
+						self:EmitSound(weapons.Get(self.SWEP).CloseFireSound, 75, 100)
+						self:EmitSound(weapons.Get(self.SWEP).FarFireSound, 75 * 2, 100)
 
 						if self.ExtraFireSound then
 							sound.Play(self.ExtraFireSound, self:GetShootPos() + VectorRand(), Dist - 5, 100)
 						end
-					end
-
-					if self.CycleSound and IsValid(self.Owner) and self.Owner:Alive() then
-						timer.Simple(.1, function()
-							if IsValid(self) and IsValid(self.Owner) and self.Owner:Alive() then
-								self:EmitSound(self.CycleSound, 55, 100)
-							end
-						end)
 					end
 
 					if self.Damage > 0 then
@@ -212,6 +240,9 @@ if SERVER then
 		if IsValid(self.Owner) and self.Owner:Alive() and not self.Owner.Otrub and self.OwnerAlive then
 			local attacking = self.Owner:KeyDown(IN_ATTACK)
 			self.Owner = nil
+			if self.Owner:KeyDown(IN_RELOAD) then
+				self:Reload()
+			end
 			if ((weapons.Get(self.SWEP).Primary.Automatic and self.RoundsInMag > 0) or IsChanged(attacking, "attacking", self)) and attacking then
 				self:Shoot()
 			end

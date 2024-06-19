@@ -406,7 +406,6 @@ local function addPlayerItem(self, mlist, ply, pteam)
 			draw.DrawText(ply:Ping(), "ScoreboardPlayer", w - 10, 8, color_white, 2)
 			draw.DrawText(ply:Nick() .. " " .. show_charactername, "ScoreboardPlayer", s + 11, 9, color_black, 0)
 			draw.DrawText(ply:Nick() .. " " .. show_charactername, "ScoreboardPlayer", s + 10, 8, color_white, 0)
-
 			
 		end
 	end
@@ -611,7 +610,6 @@ function GM:ScoreboardShow()
 		menu.Credits:Dock(TOP)
 		menu.Credits:DockPadding(8,6,8,0)
 		function menu.Credits:Paint() end
-
 		local name = Label(GAMEMODE.Name or "derp errors", menu.Credits)
 		name:Dock(LEFT)
 		name:SetFont("DefaultFont")
@@ -627,7 +625,6 @@ function GM:ScoreboardShow()
 		lab:SetFont("FontSmall")
 		lab.PerformLayout = name.PerformLayout
 		lab:SetTextColor(team.GetColor(1))
-
 		function menu.Credits:PerformLayout()
 			surface.SetFont(name:GetFont())
 			local w,h = surface.GetTextSize(name:GetText())
@@ -847,7 +844,7 @@ function GM:DisplayEndRoundBoard(data)
 			av:SetPlayer(Dude,64)
 			local wow=vgui.Create("DLabel",Bottom)
 			wow:SetFont("BigEndRound")
-			wow:SetText( Dude:Nick() or "Unknown")
+			wow:SetText( "Unknown")
 			local Col=Dude:GetPlayerColor()
 			wow:SetTextColor(Color(255,255,255,255))
 			wow:SetPos(80,100)

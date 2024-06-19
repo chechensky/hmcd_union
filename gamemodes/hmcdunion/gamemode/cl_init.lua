@@ -137,7 +137,7 @@ hook.Add("DrawDeathNotice","NoDrawDeathNotificate",function() return false end)
 function GM:RenderAccessories(ply)
 	local Mod=ply:GetModel()
 	if ply.Accessory == nil or !ply.Accessory then return end
-	if((ply.Accessory)and not(ply.Accessory=="none")and not((ply.HeadArmor)and(ply.HeadArmor=="ACH")and(AccessoryListWithoutEmpty[ply.Accessory][5])))then
+	if ply.Accessory and not ply.Accessory=="none" and not (ply:GetNWString("Helmet") and ply:GetNWString("Mask") and AccessoryListWithoutEmpty[ply.Accessory][5]) then
 		local AccInfo=AccessoryListWithoutEmpty[ply.Accessory]
 		if AccInfo[1] == nil or AccInfo[1] == "" then return end
 		if(ply.AccessoryModel)then
@@ -171,16 +171,140 @@ function GM:RenderAccessories(ply)
 	end
 end
 
+function GM:RenderArmor(ply)
+	local Mod=ply:GetModel()
+	if ply:GetNWString("Bodyvest", "") == "Level IIIA" or ply:GetNWString("Bodyvest", "") == "Level III" then
+		if ply.ArmorModel then
+			local Pos, Ang = ply:GetBonePosition(ply:LookupBone("ValveBiped.Bip01_Spine4"))
+			if Pos and Ang then
+				local Dist, Down = 10, 46
+				if ply.ModelSex == "male" then
+					Dist = 12.5
+					Down = 50
+				end
+
+				Pos = Pos - Ang:Forward() * Down - Ang:Right() * Dist + Ang:Up() * 0
+				ply.ArmorModel:SetRenderOrigin(Pos)
+				Ang:RotateAroundAxis(Ang:Up(), 80)
+				Ang:RotateAroundAxis(Ang:Forward(), 90)
+				ply.ArmorModel:SetRenderAngles(Ang)
+				local R, G, B = render.GetColorModulation()
+				if ply:GetNWString("Bodyvest", "") == "Level III" then
+					render.SetColorModulation(.3, .3, .3)
+				end
+
+				ply.ArmorModel:DrawModel()
+				render.SetColorModulation(R, G, B)
+			end
+		else
+			ply.ArmorModel = ClientsideModel("models/sal/acc/armor01.mdl")
+			--ply.ArmorModel:SetMaterial("models/mat_jack_hmcd_armor")
+			ply.ArmorModel:SetPos(ply:GetPos())
+			ply.ArmorModel:SetParent(ply)
+			ply.ArmorModel:SetNoDraw(true)
+			local Scale = 1
+			if ply.ModelSex == "female" then
+				Scale = Scale * .8
+			else
+				Scale = Scale * .9
+			end
+
+			ply.ArmorModel:SetModelScale(Scale, 0)
+		end
+	else
+		ply.ArmorModel = nil
+	end
+
+	if ply:GetNWString("Helmet", "") == "ACH" then
+		if ply.HelmetModel then
+			local Pos, Ang = ply:GetBonePosition(ply:LookupBone("ValveBiped.Bip01_Head1"))
+			if Pos and Ang then
+				if ply.ModelSex == "male" then
+					Dist = 6
+				end
+
+				Pos = Pos + Ang:Forward() * 1 + Ang:Right()
+				ply.HelmetModel:SetRenderOrigin(Pos)
+				Ang:RotateAroundAxis(Ang:Up(), -80)
+				Ang:RotateAroundAxis(Ang:Forward(), -90)
+				ply.HelmetModel:SetRenderAngles(Ang)
+				local R, G, B = render.GetColorModulation()
+				render.SetColorModulation(.7, .7, .7)
+				ply.HelmetModel:DrawModel()
+				render.SetColorModulation(R, G, B)
+			end
+		else
+			ply.HelmetModel = ClientsideModel("models/barney_helmet.mdl")
+			ply.HelmetModel:SetMaterial("models/mat_jack_hmcd_armor")
+			ply.HelmetModel:SetPos(ply:GetPos())
+			ply.HelmetModel:SetParent(ply)
+			ply.HelmetModel:SetNoDraw(true)
+			local Scale = 1
+			if ply.ModelSex == "female" then
+				Scale = Scale * .9
+			end
+
+			ply.HelmetModel:SetModelScale(Scale, 0)
+		end
+	else
+		ply.HelmetModel = nil
+	end
+
+	if ply:GetNWString("Mask", "") == "NVG" then
+		if ply.NVGModel then
+			local Pos, Ang = ply:GetBonePosition(ply:LookupBone("ValveBiped.Bip01_Head1"))
+			if Pos and Ang then
+				if ply.ModelSex == "male" then
+					Dist = 6
+				end
+
+				Pos = Pos + Ang:Forward() * 1 + Ang:Right() * 0
+				ply.NVGModel:SetRenderOrigin(Pos)
+				if ply:GetNWBool("NVG_Up", false) then
+					Ang:RotateAroundAxis(Ang:Up(), -70)
+					Ang:RotateAroundAxis(Ang:Forward(), -90)
+				else
+					Ang:RotateAroundAxis(Ang:Up(), -80)
+					Ang:RotateAroundAxis(Ang:Forward(), -90)
+				end
+				ply.NVGModel:SetRenderAngles(Ang)
+				local R, G, B = render.GetColorModulation()
+				render.SetColorModulation(.7, .7, .7)
+				ply.NVGModel:DrawModel()
+				render.SetColorModulation(R, G, B)
+			end
+		else
+			ply.NVGModel = ClientsideModel("models/arctic_nvgs/nvg_gpnvg.mdl")
+			ply.NVGModel:SetPos(ply:GetPos())
+			ply.NVGModel:SetParent(ply)
+			ply.NVGModel:SetNoDraw(true)
+			local Scale = 1
+			if ply.ModelSex == "female" then
+				Scale = Scale * .9
+			end
+
+			ply.NVGModel:SetModelScale(Scale, 0)
+		end
+	else
+		ply.NVGModel = nil
+	end
+end
+
 function GM:PostPlayerDraw(ply)
 	if !AccessoryListWithoutEmpty[ply.Accessory] then return end
 	if ply:Alive() then
 		self:RenderAccessories(ply)
+		self:RenderArmor(ply)
 	end
 end
 
 function GM:PostDrawOpaqueRenderables(drawingDepth, drawingSkybox)
-	for key, ply in pairs(ents.FindByClass("prop_ragdoll")) do
-		self:RenderAccessories(ply)
+	for key, ply in pairs(player.GetAll()) do
+		if ply ~= LocalPlayer() then
+			if !ply:GetNWBool("fake") then
+				self:RenderArmor(ply)
+			end
+		end
 	end
 end
 
@@ -224,3 +348,87 @@ net.Receive(
 		end
 	end
 )
+
+hook.Add("Think", "Effects", function()
+	local Time = CurTime()
+	local ply, DrawNVGlamp = LocalPlayer(), false
+
+		if ply:Alive() then
+			if ply:GetNWString("Mask") == "NVG" and !ply:GetNWBool("NVG_Up") then
+				DrawNVGlamp = true
+				if not IsValid(ply.NVGLamp) then
+					ply.NVGLamp = ProjectedTexture()
+					ply.NVGLamp:SetTexture("effects/flashlight001")
+					ply.NVGLamp:SetBrightness(.025)
+				else
+					local Dir = ply:GetAimVector()
+					local Ang = Dir:Angle()
+					ply.NVGLamp:SetPos(EyePos() + Dir * 60)
+					ply.NVGLamp:SetAngles(Ang)
+					local FoV = 120
+					ply.NVGLamp:SetFOV(FoV)
+					ply.NVGLamp:SetFarZ(FoV)
+					ply.NVGLamp:Update()
+				end
+			end
+		end
+
+	if not DrawNVGlamp then
+		if IsValid(ply.NVGLamp) then
+			ply.NVGLamp:Remove()
+		end
+	end
+end)
+
+hook.Add("RenderScreenspaceEffects", "Effects", function()
+	local ply, FT, SelfPos, Time, W, H = LocalPlayer(), FrameTime(), EyePos(), CurTime(), ScrW(), ScrH()	
+	if ply:GetNWString("Mask") == "NVG" and !ply:GetNWBool("NVG_Up") then
+		if !ply:GetNWBool("NVG_WereOn") then
+			ply:EmitSound("snds_jack_gmod/tinycapcharge.wav", 55,100,1,CHAN_AUTO)
+			ply:SetNWBool("NVG_WereOn", true)
+			GoggleDarkness = 100
+		end
+		DrawColorModify({
+			["$pp_colour_addr"] = 0,
+			["$pp_colour_addg"] = 0,
+			["$pp_colour_addb"] = 0,
+			["$pp_colour_brightness"] = .02,
+			["$pp_colour_contrast"] = 6.5,
+			["$pp_colour_colour"] = 0,
+			["$pp_colour_mulr"] = 0,
+			["$pp_colour_mulg"] = 0,
+			["$pp_colour_mulb"] = 0
+		})
+
+		DrawColorModify({
+			["$pp_colour_addr"] = 0,
+			["$pp_colour_addg"] = .05,
+			["$pp_colour_addb"] = 0,
+			["$pp_colour_brightness"] = 0,
+			["$pp_colour_contrast"] = 1,
+			["$pp_colour_colour"] = 1,
+			["$pp_colour_mulr"] = 0,
+			["$pp_colour_mulg"] = 0,
+			["$pp_colour_mulb"] = 0
+		})
+		if GoggleDarkness > 0 then
+			local Alpha = 255 * (GoggleDarkness / 100)
+			surface.SetDrawColor(0, 0, 0, Alpha)
+			surface.DrawRect(-1, -1, W + 2, H + 2)
+			surface.DrawRect(-1, -1, W + 2, H + 2)
+			surface.DrawRect(-1, -1, W + 2, H + 2)
+			GoggleDarkness = math.Clamp(GoggleDarkness - FT * 100, 0, 100)
+		end
+	end
+end)
+
+hook.Add("HUDPaintBackground", "Effects", function()
+	local ply = LocalPlayer()
+	if ply:Alive() and ply:GetNWString("Mask") == "NVG" and !ply:GetNWBool("NVG_Up") then
+		surface.SetMaterial(Material("mats_jack_gmod_sprites/hard_vignette.png"))
+		surface.SetDrawColor(255, 255, 255, 255)
+		surface.DrawTexturedRect(-1, -1, ScrW() + 2, ScrH() + 2)
+		surface.DrawTexturedRect(-1, -1, ScrW() + 2, ScrH() + 2)
+		surface.DrawTexturedRect(-1, -1, ScrW() + 2, ScrH() + 2)
+	end
+end)

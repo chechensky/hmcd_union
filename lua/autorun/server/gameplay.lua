@@ -131,7 +131,7 @@ local delaybutton = 0
 hook.Add("PlayerButtonDown", "F1_ShowHelp", function(ply, button)
 	ply.delaybutton = ply.delaybutton or delaybutton
 	if ply.delaybutton < CurTime() then
-		ply.delaybutton = ply.delaybutton + 5
+		ply.delaybutton = ply.delaybutton + 120
     	if button == KEY_F1 then
     	    ply:ConCommand("gm_showhelp")
     	end

@@ -39,7 +39,7 @@ concommand.Add("union_homicidetype", function(ply,cmd,args)
     print("Homicide Types: " .. "\n" .. "1 = Standart" .. "\n" .. "2 = SOE" .. "\n" .. "3 = JIHAD" .. "\n" .. "4 = Wild west")
     if args[1] == "1" or args[1] == "2" or args[1] == "3" or args[1] == "4" then
         local pizda = tonumber(args[1])
-        GAMEMODE.RoundType = pizda
+        GAMEMODE.RoundNextType = pizda
         PrintMessage(HUD_PRINTTALK, "Next Homicide roundtype: " .. HMCD_RoundsTypeNormalise[pizda])
     end
 end)
@@ -96,6 +96,7 @@ function GM:StartRound()
 	            if HMCD_Loadout_Firearms[ply:GetNWString("RoleShow", "")][GAMEMODE.RoundType] then
 		            for i,wep in pairs(HMCD_Loadout_Firearms[ply:GetNWString("RoleShow", "")][GAMEMODE.RoundType]) do
                         if wep != "" then
+                            print(ply, wep)
 				            ply:Give(wep)
                             ply:GiveAmmo(weapons.Get(wep).Primary.ClipSize, weapons.Get(wep).Primary.Ammo, true)
                             if GAMEMODE.RoundType == 2 and ply.Role == "Traitor" then
@@ -121,6 +122,22 @@ function GM:StartRound()
 	        for _,ply in pairs(ply_GetAll())do
                 ply.Role = "Fighter"
                 ply:SetNWString("RoleShow", "Fighter")
+	        end
+        end)
+    elseif GAMEMODE.RoundName == "hl2" then
+        timer.Simple(.3, function()
+	        for _,ply in pairs(ply_GetAll())do
+
+                local numPlayers = #ply_GetAll()
+                local halfNumPlayers = math.floor(numPlayers / 2)
+                table.Shuffle(ply)
+
+                if i <= halfNumPlayers then
+                    ply.Role = "Rebel"                
+                else
+                    ply.Role = "Combine"
+                end
+                ply:SetNWString("RoleShow", ply.Role)
 	        end
         end)
     end

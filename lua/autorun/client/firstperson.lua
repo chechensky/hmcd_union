@@ -89,7 +89,7 @@ local function ImersiveCam(ply,pos,ang,fov)
 		ragdoll:ManipulateBoneScale(6,vecZero)
 		local PosAng = ragdoll:GetAttachment(ragdoll:LookupAttachment("eyes"))
 		local camfake = {
-			origin = PosAng.Pos - Vector(2,0,0),
+			origin = PosAng.Pos + Vector(0,-5,0),
 			angles = PosAng.Ang,
 			znear = 1,
 			zfar = 26000,

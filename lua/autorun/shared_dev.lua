@@ -1,0 +1,1 @@
+fs = GetConVar("checha_feature"):GetBool()

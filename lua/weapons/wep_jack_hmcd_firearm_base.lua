@@ -1166,6 +1166,10 @@ function SWEP:BulletCallbackFunc(dmgAmt,ply,tr,dmg,tracer,hard,multi)
 		local vPoint = tr.HitPos
 		local effectdata = EffectData()
 		effectdata:SetOrigin( vPoint )
+		effectdata:SetRadius(2)
+		effectdata:SetFlags(7)
+		effectdata:SetNormal(tr.HitNormal)
+		util.Effect("BloodImpact", effectdata)
 	end
 	if tr.HitSky then return end
 	if hard then self:RicochetOrPenetrate(tr) end
@@ -1238,7 +1242,7 @@ function SWEP:RicochetOrPenetrate(initialTrace)
 		})
 		if CLIENT then 
 			hook.Add("PostDrawOpaqueRenderables", "Shoot", function()
-				if dev:GetInt() >= 2 and ply:IsAdmin() then
+				if dev:GetInt() >= 2 then
 					render.SetMaterial(Material("effects/flashlight/tech"))
 					render.DrawLine(IPos+TNorm, -NewVec, Color(255,255,255,255), true) 
 				end
@@ -1258,7 +1262,6 @@ function SWEP:Reload()
 	if CLIENT then
 		self:GetOwner().AmmoShow = CurTime() + 2
 	end
-	print(self:GetOwner():GetAmmoCount("AR2"))
 	if (self:Clip1() < self.Primary.ClipSize) and (self:GetOwner():GetAmmoCount(self.Primary.Ammo) > 0) then
 		local TacticalReload = self:Clip1() > 0
 

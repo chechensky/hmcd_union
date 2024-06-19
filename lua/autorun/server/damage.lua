@@ -95,6 +95,21 @@ end)
 hook.Add("HOOK_UNION_Damage","Hit",function(ply,hitgroup,dmginfo,rag)
     local ent = rag or ply
     local inf = dmginfo:GetInflictor()
+    if ply:GetNWString("Bodyvest", "") == "Level IIIA" then
+        if hitgroup == HITGROUP_STOMACH or hitgroup == HITGROUP_CHEST then
+            dmginfo:ScaleDamage(1 / 5)
+        end
+    end
+    if ply:GetNWString("Bodyvest", "") == "Level III" then
+        if hitgroup == HITGROUP_STOMACH or hitgroup == HITGROUP_CHEST then
+            dmginfo:ScaleDamage(1 / 8)
+        end
+    end
+    if ply:GetNWString("Helmet", "") == "ACH" then
+        if hitgroup == HITGROUP_HEAD then
+            dmginfo:ScaleDamage(1 / 3)
+        end
+    end
     if dmginfo:IsDamageType(DMG_BULLET+DMG_BUCKSHOT+DMG_SNIPER+DMG_SLASH+DMG_CRUSH+DMG_BLAST) then
         ply.adrenaline = ply.adrenaline + dmginfo:GetDamage() / 2.5
     end
@@ -402,7 +417,18 @@ end)
 
 hook.Add("ScalePlayerDamage","FallPain", function(ply,hit,dmg)
     ply.lasthitgroup = hit
-    print(ply.bullet_force)
+    if hit == HITGROUP_HEAD then
+        if ply:GetNWString("Helmet", "") == "ACH" then
+            dmg:ScaleDamage(2)
+        else
+            dmg:ScaleDamage(5)
+        end
+        if ply.bullet_force > 3 or ply.pain > 50 then
+            if !ply.fake then
+                Faking(ply)
+            end
+        end
+    end
     if hit == HITGROUP_LEFTLEG or hit == HITGROUP_RIGHTLEG then
         if ply.bullet_force > 20 or ply.pain > 100 then
             if !ply.fake then
