@@ -320,7 +320,7 @@ function GM:DrawRadialMenu()
 				Main = "Actions Menu"
 				Sub = "action menu, interacts with the environment"
 			elseif ment.TransCode == "attach" then
-				Main = "Attachments"
+				Main = "Modify weapon"
 				Sub = "attachments menu, WHAT THE FUCK OH SHIT..."
 			elseif ment.TransCode == "nvg" then
 				Main = "NVG"
