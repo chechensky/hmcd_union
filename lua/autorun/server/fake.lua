@@ -249,29 +249,6 @@ function Faking(ply) -- функция падения
 	else
 		local rag = ply:GetNWEntity("Ragdoll")
 		local pos = rag:GetPos()
-
-		local trace = {
-			start = pos + Vector(0,0,-5),
-			endpos = pos + Vector(0,0,-15),
-			mins = Vector( -10, -10, 0 ),
-			maxs = Vector( 10, 10, 32 ),
-			filter = function(ent)
-				if ent:IsRagdoll() or ent:GetCollisionGroup() == COLLISION_GROUP_WEAPON or ent:IsPlayer() then
-					return ent
-				end
-			end,
-		}
-		
-		local trhull = util.TraceHull(trace)
-
-		pos = trhull.HitPos
-
-		print(trhull.Fraction)
-
-		if trhull.Fraction <= 0.05 then
-			ply:ChatPrint("You can't get up")
-			return
-		end
 		if ply.Otrub then
 			ply:ChatPrint("You're unconscious")
 		return false end
@@ -565,6 +542,7 @@ end
 
 zeroAng = Angle(0,0,0)
 concommand.Add("fake",function(ply)
+	if ply:GetNWString("Round","") == "dm" and ply:GetNWInt("DMTime", 10) >= 1 then return nil end
 	if ply.Otrub then return nil end
 	if ply.in_handcuff then return nil end
 	if ply.Stunned then return nil end
@@ -727,7 +705,56 @@ function PlayerMeta:CreateRagdoll(attacker,dmginfo) --изменение фун�
 			end
 		end)
 	end
+	if self:GetNWBool("Headcrab", false) == true then
 
+		--local ent = ents.Create((self:GetNWString("Bodyvest", "") == "Level IIIA" and "ent_jack_hmcd_softarmor") or "ent_jack_hmcd_hardarmor")
+		local ent = ents.Create("prop_physics")
+		local Pos,Ang = rag:GetBonePosition(rag:LookupBone("ValveBiped.Bip01_Head1"))
+		local Right,Forward,Up = Ang:Right(),Ang:Forward(),Ang:Up()
+		if self.ModelSex == "male" then
+			Pos = Pos + Right * 4 + Forward * -5 + Up * 0
+		else
+			Pos = Pos + Right * 4 + Forward * -5 + Up * 0
+		end
+
+		ent.IsArmor = false
+		rag.HeadcrabEnt = ent
+		rag:SetNWEntity("ENT_Helmet", ent)
+		ent:SetPos(Pos)
+		ent:SetAngles(Angle(0,0,0))
+		ent:SetModel("models/headcrabclassic.mdl")
+		timer.Create("HeadcrabVelocity"..rag:EntIndex(), 2, 0, function()
+			if IsValid(rag) and IsValid(rag.HeadcrabEnt) then
+				rag.HeadcrabEnt:GetPhysicsObject():SetVelocity(rag:GetBonePosition(rag:LookupBone("ValveBiped.Bip01_Head1"))*math.random(1, 6))
+				if rag:GetNWBool("Dead", false) == true then
+					rag.HeadcrabEnt:GetPhysicsObject():SetVelocity(rag:GetBonePosition(rag:LookupBone("ValveBiped.Bip01_Head1"))*25)
+					local headcrab = ents.Create("npc_headcrab")
+					headcrab:SetPos(rag.HeadcrabEnt:GetPos()+Vector(0,0,15))
+					headcrab:SetAngles(rag.HeadcrabEnt:GetAngles())
+					headcrab:Activate()
+					headcrab:Spawn()
+					rag.HeadcrabEnt:Remove()
+				end
+			end
+		end)
+		ent:SetColor(Color(255,255,255))
+
+		ent:Spawn()
+		ent:SetCollisionGroup(COLLISION_GROUP_WORLD)
+
+		if IsValid(ent:GetPhysicsObject()) then
+			ent:GetPhysicsObject():SetMaterial("plastic")
+			ent:GetPhysicsObject():SetMass(0)
+		end
+
+		local pizdahelmet = constraint.Weld(ent,rag,0,rag:TranslateBoneToPhysBone(rag:LookupBone("ValveBiped.Bip01_Head1")),0,true,false)
+		rag:DeleteOnRemove(ent)
+		ent:CallOnRemove("HelmetNo",function()
+			if IsValid(rag) then
+				rag.Helmet = nil
+			end
+		end)
+	end
 	if self:GetNWString("Helmet", "") == "ACH" then
 
 		--local ent = ents.Create((self:GetNWString("Bodyvest", "") == "Level IIIA" and "ent_jack_hmcd_softarmor") or "ent_jack_hmcd_hardarmor")
@@ -758,8 +785,8 @@ function PlayerMeta:CreateRagdoll(attacker,dmginfo) --изменение фун�
 			ent:GetPhysicsObject():SetMass(0)
 		end
 
-		constraint.Weld(ent,rag,0,rag:TranslateBoneToPhysBone(rag:LookupBone("ValveBiped.Bip01_Head1")),0,true,false)
-
+		local pizdahelmet = constraint.Weld(ent,rag,0,rag:TranslateBoneToPhysBone(rag:LookupBone("ValveBiped.Bip01_Head1")),0,true,false)
+		rag.helmetweld = pizdahelmet
 		rag:DeleteOnRemove(ent)
 		ent:CallOnRemove("HelmetNo",function()
 			if IsValid(rag) then
@@ -1028,8 +1055,8 @@ hook.Add("Player Think","FakeControl",function(ply,time) --управление 
 
 
 			local shadowparams = {
-				secondstoarrive=0.5,
-				pos=head:GetPos()+eyeangs:Forward()*(180/math.Clamp(rag:GetVelocity():Length()/300,1,6)),
+				secondstoarrive=0.1,
+				pos=rag:GetAttachment(rag:LookupAttachment("anim_attachment_rh")).Pos+eyeangs:Forward()*(180/math.Clamp(rag:GetVelocity():Length()/150,1,6)),
 				angle=ang,
 				maxangular=370,
 				maxangulardamp=100,
@@ -1048,7 +1075,7 @@ hook.Add("Player Think","FakeControl",function(ply,time) --управление 
 					ply.wep:GetPhysicsObject():ComputeShadowControl(shadowparams)
 					--shadowparams.maxspeed=20
 					phys:ComputeShadowControl(shadowparams) --if 2handed
-					shadowparams.pos=rag:GetPhysicsObjectNum(0):GetPos()
+					shadowparams.pos=head:GetPos()
 					shadowparams.angle=ang
 					ply.wep:GetPhysicsObject():ComputeShadowControl(shadowparams)
 				else
@@ -1056,6 +1083,7 @@ hook.Add("Player Think","FakeControl",function(ply,time) --управление 
 				end
 			else
 				if ply.FakeShooting and IsValid(ply.wep) then
+					print("Pizda")
 					shadowparams.maxspeed=500
 					shadowparams.maxangular=500
 					shadowparams.pos=head:GetPos()-ply.wep:GetAngles():Forward()*12
@@ -1101,7 +1129,7 @@ hook.Add("Player Think","FakeControl",function(ply,time) --управление 
 			angs:RotateAroundAxis(angs:Forward(),90)
 			angs:RotateAroundAxis(angs:Up(),90)
 			local shadowparams = {
-				secondstoarrive=0.7,
+				secondstoarrive=0.2,
 				pos=head:GetPos()+vector_up*(20/math.Clamp(rag:GetVelocity():Length()/300,1,12)),
 				angle=angs,
 				maxangulardamp=10,
@@ -1314,6 +1342,7 @@ end)
 
 util.AddNetworkString("ebal_chellele")
 hook.Add("PlayerSwitchWeapon","wep",function(ply,oldwep,newwep)
+	if timer.Exists("DM_Timer") then return true end
 	if ply.in_handcuff then return true end
 	if ply.Otrub then return true end
 

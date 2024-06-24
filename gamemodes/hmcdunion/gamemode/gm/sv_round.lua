@@ -4,6 +4,7 @@ hook.Add("Think", "roundsynch", function(ply)
     for _, who in pairs(ply_GetAll()) do
         who:SetNWString("Round", GAMEMODE.RoundName)
         who:SetNWInt("RoundType", GAMEMODE.RoundType)
+        who:SetNWInt("DMTime", GAMEMODE.DMTime)
     end
 end)
 
@@ -31,7 +32,7 @@ end)
 
 concommand.Add("union_gamemode_end", function(ply,cmd,args)
     if not ply:IsAdmin() then return end
-    GAMEMODE:EndRound(1, ply)
+    GAMEMODE:EndRound(3, ply)
 end)
 
 concommand.Add("union_homicidetype", function(ply,cmd,args)
@@ -46,7 +47,6 @@ end)
 
 ---------- round logics???)())))))))
 local pitch = math.random(80, 120)
-
 function GM:StartRound()
 	if #ply_GetAll()<2 then return end
     local hmcd_roundtype = math.random(1,5)
@@ -120,10 +120,21 @@ function GM:StartRound()
         end)
     elseif GAMEMODE.RoundName == "dm" then
         timer.Simple(.3, function()
+            GAMEMODE.DMTime = 10
             local bodyvest = {
                 "Level IIIA",
                 "Level III"
             }
+
+        timer.Simple(12,function()
+            timer.Create("DM_Timer", 1, 10, function()
+                GAMEMODE.DMTime = GAMEMODE.DMTime - 1
+                if timer.RepsLeft("DM_Timer") <= 0 then
+                    timer.Remove("DM_Timer")
+                end
+            end)
+        end)
+
 	        for _,ply in pairs(ply_GetAll())do
                 ply.Role = "Fighter"
                 ply:SetNWString("RoleShow", "Fighter")
@@ -188,6 +199,7 @@ function GM:StartRound()
                     else
                         ply:SetModel(table.Random(Fighter_RebelModels[ply.ModelSex]))
                     end
+                    ply:SetPos(ents.FindByClass("info_player_terrorist")[table.Random(1,10)]:GetPos())
                 else
                     ply.Role = "Combine"
                     ply.ModelSex = "combine"
@@ -201,6 +213,7 @@ function GM:StartRound()
                         ply:SetBodygroup(0, 1)
                     end
                     ply:SetupHands()
+                    ply:SetPos(ents.FindByClass("info_player_counterterrorist")[table.Random(1,10)]:GetPos())
                 end
 
 		        for i,wep in pairs(HL2_Loadout[ply.Role][ply:GetNWString("HL2_Class")]) do
@@ -227,9 +240,18 @@ function GM:StartRound()
     end)
 end
 
+hook.Add("PlayerPostThink", "IncreaseFOVOnSprint", function(ply)
+    if !IsValid(ply) or !ply:Alive() then return end
+    if ply:KeyDown(IN_SPEED) then
+        ply:SetFOV(100, 0.08)
+    else
+        ply:SetFOV(90, 0.08)
+    end
+end)
+
 -- win traitor 1
 -- lost traitor 2 
-function GM:EndRound(reason, mvp)
+function GM:EndRound(reason, mvp, survived)
     PrintMessage(HUD_PRINTTALK, "Round end")
     net.Start("EndRound")
 
@@ -241,6 +263,11 @@ function GM:EndRound(reason, mvp)
         else
 	        net.WriteVector(Vector(0,0,0))
 	        net.WriteString("?")
+        end
+        if !survived then
+            net.WriteString("?")
+        else
+            net.WriteString(survived:GetNWString("Character_Name", ""))        
         end
 
     net.Broadcast()
@@ -270,7 +297,7 @@ function GM:Think()
 
     if GAMEMODE.RoundName == "dm" then
         if alive_ply == 1 then
-            GAMEMODE:EndRound(1, GetLastPlayerAlive())
+            GAMEMODE:EndRound(6, nil, GetLastPlayerAlive())
         end
     return end
 

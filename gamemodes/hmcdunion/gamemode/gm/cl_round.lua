@@ -91,7 +91,7 @@ function GM:DisplayEndRoundBoard(data)
 		menu:Close()
 	end
 	local Showin,Dude=false,GAMEMODE.MVP
-	if Dude then Showin=true end
+	if Dude and LocalPlayer():GetNWString("Round") == "homicide" then Showin=true end
 	menu = vgui.Create("DFrame")
 	menu:SetSize(ScrW() * 0.8, ScrH() * 0.8)
 	menu:Center()
@@ -140,6 +140,9 @@ function GM:DisplayEndRoundBoard(data)
 	elseif data.reason==5 then
 		winner:SetText("Rebels win!")
 		winner:SetTextColor(Color(178, 119, 17))
+	elseif data.reason==6 then
+		winner:SetText(data.survived  .. " survived.")
+		winner:SetTextColor(Color(178, 119, 17))
 	end
 	local murdererPnl = vgui.Create("DPanel", winnerPnl)
 	murdererPnl:Dock(TOP)
@@ -148,7 +151,7 @@ function GM:DisplayEndRoundBoard(data)
 		--
 	end
 
-	if data.murdererName and LocalPlayer():GetNWString("Round") == "homicide" then
+	if data.murdererName and LocalPlayer():GetNWString("Round") == "homicide" and data.reason != 3 then
 		local col = data.murdererColor
 		local msgs={}
 		msgs.text="The traitor was"
@@ -196,7 +199,12 @@ function GM:DisplayEndRoundBoard(data)
 			if self.NamePnl then
 				self.NamePnl:SetWidth(self:GetWide() * 0.4)
 			end
-
+			if self.BNamePnl then
+				self.BNamePnl:SetWidth(self:GetWide() * 0.3)
+			end
+			if self.SNamePnl then
+				self.SNamePnl:SetWidth(self:GetWide() * 0.4)
+			end
 			self:SizeToChildren(false, true)
 		end
 
@@ -216,6 +224,24 @@ function GM:DisplayEndRoundBoard(data)
 				GAMEMODE:DoScoreboardActionPopup(v)
 			end
 		end
+
+		local bname = vgui.Create("DButton", pnl)
+		pnl.BNamePnl = bname
+		bname:Dock(LEFT)
+		bname:SetAutoStretchVertical(true)
+		local col
+		if(v.MurdererIdentityHidden)then
+			bname:SetText(v.TrueIdentity[5])
+			col=v.TrueIdentity[7]
+		else
+			bname:SetText(v:GetNWString("Character_Name", ""))
+			col=v:GetPlayerColor()
+		end
+		bname:SetFont("FontSmall")
+		bname:SetTextColor(Color(col.x * 255, col.y * 255, col.z * 255))
+		bname:SetContentAlignment(4)
+		function bname:Paint() end
+		bname.DoClick = name.DoClick
 
 		lootList:AddItem(pnl)
 
@@ -305,6 +331,7 @@ net.Receive("EndRound",function()
 	data.murderer = net.ReadEntity()
 	data.murdererColor = net.ReadVector()
 	data.murdererName = net.ReadString()
+	data.survived = net.ReadString()
 	GAMEMODE.MVP = data.murderer
     GAMEMODE:DisplayEndRoundBoard(data)
 	local pitch = math.random(80, 120)

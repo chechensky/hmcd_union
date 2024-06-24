@@ -36,7 +36,7 @@ SWEP.Primary.Ammo = "AR2"
 SWEP.TriggerDelay = .1
 SWEP.CycleTime = 0.035
 
-SWEP.TPIK = true
+SWEP.TPIK = false
 
 SWEP.TPIK_PosAngles = {
     ["ValveBiped.Bip01_R_Upperarm"] = Angle(-5, 0, 0),

@@ -57,7 +57,7 @@ SWEP.Spawnable = true
 SWEP.TPIK = true
 
 SWEP.TPIK_PosAngles = {
-    ["ValveBiped.Bip01_R_Forearm"] = Angle(5, -5, 0),
+    ["ValveBiped.Bip01_R_Forearm"] = Angle(0, 0, -30),
 	["ValveBiped.Bip01_L_Forearm"] = Angle(0, 0, 0),
 	["ValveBiped.Bip01_R_Hand"] = Angle(-5, 0, 0)
 }

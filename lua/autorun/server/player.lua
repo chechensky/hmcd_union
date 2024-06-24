@@ -309,11 +309,11 @@ hook.Add("Vars Player", "VarsS", function(ply)	-- Alive give
 		["Players"] = {},
 		["Ents"] = {}
 	}
+
 	ply.temp = "Warm"
 	ply:SetNWInt("SpectateMode", 0)
 	ply:SetNWEntity("SelectPlayer", Entity(-1))
 	ply.Equipment = {}
-
 	ply.lasthitgroup = nil
 	ply.capsicum = 0
 	ply.MurdererIdentityHidden = false
@@ -343,6 +343,7 @@ hook.Add("Vars Player", "VarsS", function(ply)	-- Alive give
 	ply.adrenaline = 0
 	ply.adrenaline_use = 0
 
+	ply.Guilt_Sentence = nil
 	ply.mutejaw = false
 	ply.msgLeftArm = 0
 	ply.msgRightArm = 0
@@ -360,6 +361,9 @@ hook.Add("Vars Player", "VarsS", function(ply)	-- Alive give
 	-- arms
 	ply.ane_ra = false
 	ply.ane_la = false
+
+	ply:SetNWBool("Headcrab", false)
+	timer.Remove("HeadCrabEbashit"..ply:EntIndex())
 
 	-- THink wokrs
 
@@ -393,6 +397,16 @@ hook.Add("Vars Player", "VarsS", function(ply)	-- Alive give
 		['RightLeg']=1,
 		['Jaw']=1
 	}
+	-- guilt sys
+	if ply:GetNWInt("Guilt", 0) > 0 then
+		ply:SetNWInt("Guilt", ply:GetNWInt("Guilt", 0) - math.random(1, 20))
+	end
+
+	if ply:GetNWInt("Guilt") < 0 then ply:SetNWInt("Guilt", 0) end
+
+	timer.Simple(.3, function() ply:ChatPrint("You guilt: " .. ply:GetPData("U_Guilt", 0) .. "%") end)
+
+	--
 	hook_run("Identity", ply)
 	---------------------------------
 end)
@@ -419,27 +433,4 @@ hook.Add("PlayerCanHearPlayersVoice", "OtrubNoVoice", function(list, talk)
 	if talk.Otrub or talk.mutejaw then
 		return false,false
 	end
-end)
-
-local startAngle = Angle(0, 0, 0)
-local targetAngle = Angle(0, 0, 0)
-local transitionDuration = 0.5
-local transitionStartTime = CurTime()
-
-hook.Add("Think", "SmoothBoneAngleTransition", function()
-for _, ply in ipairs(player.GetAll()) do
-    local currentTime = CurTime()
-    local elapsedTime = currentTime - transitionStartTime
-    local t = math.Clamp(elapsedTime / transitionDuration, 0, 1)
-
-    local newAngle = LerpAngle(t, startAngle, targetAngle)
-
-    if ply:IsValid() then
-        ply:ManipulateBoneAngles(ply:LookupBone("ValveBiped.Bip01_R_Forearm"), newAngle)
-    end
-
-    if t >= 1 then
-        hook.Remove("Think", "SmoothBoneAngleTransition")
-    end
-end
 end)

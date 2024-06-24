@@ -80,6 +80,13 @@ net.Receive("inventory",function()
 	local items_ammo = net.ReadTable()
 
 	items.weapon_hands = nil
+	armor = vgui.Create("DFrame")
+	armor:SetAlpha(255)
+	armor:SetSize(500, 200)
+	armor:SetPos(ScrW()*.396, ScrH()*.13)
+	armor:SetDraggable(false)
+	armor:MakePopup()
+	armor:SetTitle( nickname.. "'s armor")
 
 	panel = vgui.Create("DFrame")
 	panel:SetAlpha(255)
@@ -99,9 +106,24 @@ net.Receive("inventory",function()
 		net.Start("inventory")
 		net.WriteEntity(lootEnt)
 		net.SendToServer()
+		armor:Remove()
+	end
+
+	function armor:OnRemove()
+		panel:Remove()
 	end
 
 	panel.Paint = function(self, w, h)
+		if not IsValid(lootEnt) or not LocalPlayer():Alive() then panel:Remove() return end
+
+		draw.RoundedBox(0,0,0,w,h,black)
+		surface.SetDrawColor(0,0,0,0)
+		surface.DrawOutlinedRect(1,1,w - 2,h - 2)
+
+		draw.SimpleText("","Trebuchet18",6,6,color_white)
+	end
+
+	armor.Paint = function(self, w, h)
 		if not IsValid(lootEnt) or not LocalPlayer():Alive() then panel:Remove() return end
 
 		draw.RoundedBox(0,0,0,w,h,black)
@@ -118,13 +140,13 @@ net.Receive("inventory",function()
 	if lootEnt:IsPlayer() then
 
 		--bodyvest
-		local bodyvest = vgui.Create("DButton",panel)
-		bodyvest:SetPos(445,245)
+		local bodyvest = vgui.Create("DButton",armor)
+		bodyvest:SetPos(5,40)
 		bodyvest:SetSize(150,150)
 		bodyvest.Armor = lootEnt:GetNWString("Bodyvest", "")
 		bodyvest:SetText("")
 		bodyvest.Paint = function(self,w,h)
-			draw.RoundedBox(0,0,0,w,h,self:IsHovered() and black2 or black)
+			draw.RoundedBox(0,0,0,w,h,self:IsHovered() and black2 or Color(0,0,0,0))
 			surface.SetDrawColor(0,0,0,0)
 			surface.DrawOutlinedRect(1,1,w - 2,h - 2)
 			surface.SetMaterial(bodyvestIcons[bodyvest.Armor])
@@ -135,14 +157,14 @@ net.Receive("inventory",function()
 		end
 
 		--helmet
-		local helmet = vgui.Create("DButton",panel)
-		helmet:SetPos(353,305)
+		local helmet = vgui.Create("DButton",armor)
+		helmet:SetPos(160,100)
 		helmet:SetSize(90,90)
 		helmet.Armor = lootEnt:GetNWString("Helmet", "")
 		helmet:SetText("")
 
 		helmet.Paint = function(self,w,h)
-			draw.RoundedBox(0,0,0,w,h,self:IsHovered() and black2 or black)
+			draw.RoundedBox(0,0,0,w,h,self:IsHovered() and black2 or Color(0,0,0,0))
 			surface.SetDrawColor(0,0,0,0)
 			surface.DrawOutlinedRect(1,1,w - 2,h - 2)
 			--surface.SetMaterial(Material(helmetIcons[lootEnt:GetNWString("Helmet", "")]))
@@ -154,14 +176,14 @@ net.Receive("inventory",function()
 		end
 
 		--mask
-		local mask = vgui.Create("DButton",panel)
-		mask:SetPos(260,305)
+		local mask = vgui.Create("DButton",armor)
+		mask:SetPos(255,100)
 		mask:SetSize(90,90)
 		mask.Armor = lootEnt:GetNWString("Mask", "")
 		mask:SetText("")
 
 		mask.Paint = function(self,w,h)
-			draw.RoundedBox(0,0,0,w,h,self:IsHovered() and black2 or black)
+			draw.RoundedBox(0,0,0,w,h,self:IsHovered() and black2 or Color(0,0,0,0))
 			surface.SetDrawColor(0,0,0,0)
 			surface.DrawOutlinedRect(1,1,w - 2,h - 2)
 			--surface.SetMaterial(Material(helmetIcons[lootEnt:GetNWString("Helmet", "")]))
@@ -218,7 +240,7 @@ net.Receive("inventory",function()
 		end
 		local button = vgui.Create("DButton",panel)
 		button:SetPos(x,y)
-		button:SetSize((CarryWeight >= 3000 and 50*3) or 65,(CarryWeight >= 3000 and 50*1.5) or 50)
+		button:SetSize((CarryWeight >= 3000 and 50*4) or 65,(CarryWeight >= 3000 and 50*2) or 50)
 
 		x = x + button:GetWide() + 6
 		if x + button:GetWide() >= panel:GetWide() then
@@ -291,7 +313,7 @@ net.Receive("inventory",function()
 		if blackListedAmmo[ammo] then continue end
 		local button = vgui.Create("DButton",panel)
 		button:SetPos(x,y)
-		button:SetSize(64,64)
+		button:SetSize(50,50)
 
 		x = x + button:GetWide() + 6
 		if x + button:GetWide() >= panel:GetWide() then
@@ -313,7 +335,7 @@ net.Receive("inventory",function()
 			surface.DrawTexturedRect(2,2,w - 4,h - 4)
 
 			for i,text in pairs(text) do
-				draw.SimpleText(amt,"Trebuchet18",corner+40,corner + 42 + (i - 1) * 3,color_white)
+				draw.SimpleText(amt,"Trebuchet18",corner+28,corner + 24 + (i - 1) * 3,color_white)
 			end
 		end
 		button.DoRightClick = function()

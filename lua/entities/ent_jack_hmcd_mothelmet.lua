@@ -10,6 +10,7 @@ ENT.Model = "models/dean/gtaiv/helmet.mdl"
 
 ENT.Skins = {0, 1, 3, 7, 11, 14}
 
+ENT.Spawnable = true
 ENT.EquipmentNum = HMCD_MOTHELMET
 ENT.Armor = "Motorcycle"
 ENT.ArmorType = "Helmet"

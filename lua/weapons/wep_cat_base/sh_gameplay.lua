@@ -1,6 +1,11 @@
 if SERVER then
 concommand.Add("suicide", function(ply, cmd, args)
 	if not (ply or IsValid(ply) or ply:Alive()) then return end
+	if ply.suiciding then
+		ply.suiciding = false
+	else
+		ply.suiciding = true
+	end
 	local wep = ply:GetActiveWeapon()
 	if not (wep.SuicidePos and wep.SuicideAng) or wep:GetNWBool("GhostSuiciding") or not wep:GetReady() then return end
 	if IsValid(wep) and wep.GetSuiciding then

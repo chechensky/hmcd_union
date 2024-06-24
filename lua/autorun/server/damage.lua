@@ -35,8 +35,7 @@ local NULLENTITY = Entity(-1)
 hook.Add("EntityTakeDamage","ragdamage",function(ent,dmginfo)
 	if IsValid(ent:GetPhysicsObject()) and dmginfo:IsDamageType(DMG_BULLET+DMG_BUCKSHOT+DMG_CLUB+DMG_GENERIC+DMG_BLAST) then ent:GetPhysicsObject():ApplyForceOffset(dmginfo:GetDamageForce() / 2,dmginfo:GetDamagePosition()) end
 	local ply = RagdollOwner(ent) or ent
-
-	if not ply or not ply:IsPlayer() or not ply:Alive() or ply:HasGodMode() then
+    if not ply or not ply:IsPlayer() or not ply:Alive() or ply:HasGodMode() then
 		return
 	end
 
@@ -64,7 +63,6 @@ hook.Add("EntityTakeDamage","ragdamage",function(ent,dmginfo)
 		(entAtt:IsPlayer() and entAtt:Alive() and entAtt) or
 		(entAtt:GetClass() == "wep" and entAtt:GetOwner())
 	att = dmginfo:GetDamageType() ~= DMG_CRUSH and att
-
 	local Attacker = dmginfo:GetAttacker()
 	local rubatPidor = DamageInfo()
 	rubatPidor:SetAttacker(Attacker)
@@ -95,6 +93,60 @@ end)
 hook.Add("HOOK_UNION_Damage","Hit",function(ply,hitgroup,dmginfo,rag)
     local ent = rag or ply
     local inf = dmginfo:GetInflictor()
+    if inf:GetClass() == "npc_headcrab" then
+        inf:Remove()
+        ply:SetNWBool("Headcrab", true)
+        ply.adrenaline = ply.adrenaline + 5
+        ply.Wounds['stomach'] = ply.Wounds['stomach'] + 1    
+        timer.Create("HeadCrabEbashit"..ply:EntIndex(), 2, 0, function()
+            if IsValid(ply) and ply:GetNWBool("Headcrab", false) == true then
+                ply:SetVelocity(-ply:GetAimVector()*200)
+                ply.BleedOuts['stomach'] = ply.BleedOuts['stomach'] + 1
+                ply.pain_add = ply.pain_add + 5
+                if math.random(1,5) == 2 then
+                    if !ply.fake then
+                        Faking(ply)
+                    end
+                end
+            end
+        end)
+    end
+    if dmginfo:GetDamage() > 5 and ply:GetNWString("Helmet", "") == "ACH" and math.random(1,3) == 2 and (hitgroup == HITGROUP_HEAD or hitgroup == HITGROUP_CHEST or hitgroup == HITGROUP_STOMACH) then
+        if ply.fake then
+            ply:SetNWString("Helmet", "")
+            if ply.fakeragdoll.helmetweld then
+                ply.fakeragdoll.helmetweld:Remove()
+            end
+        else
+            ply:SetNWString("Helmet", "")
+            local helmet = ents.Create("ent_jack_hmcd_helmet")
+            helmet:SetPos(ply:GetBonePosition(ply:LookupBone("ValveBiped.Bip01_Head1")))
+            helmet:SetAngles(Angle(0,0,0))
+            helmet:Activate()
+            helmet:Spawn()
+            timer.Simple(.3,function()
+            helmet:GetPhysicsObject():SetVelocity(ply:GetAngles():Up()*6)
+            end)
+        end
+    end
+    if hitgroup == HITGROUP_HEAD and ply:GetNWString("Helmet", "") == "ACH" then
+        if ply.fake then
+            if ply.fakeragdoll.helmetweld and IsValid(ply.fakeragdoll:GetNWEntity("ENT_Helmet", "")) then
+                local armorent = ply.fakeragdoll:GetNWEntity("ENT_Helmet", "")
+                ply.fakeragdoll.helmetweld:Remove()
+                armorent:GetPhysicsObject():SetVelocity(ply:GetAngles():Up()*1.5)
+                ply:SetNWString("Helmet", "")
+            end
+        else
+            ply:SetNWString("Helmet", "")
+            local helmet = ents.Create("ent_jack_hmcd_helmet")
+            helmet:SetPos(ply:GetPos())
+            helmet:SetAngles(Angle(0,0,0))
+            helmet:Activate()
+            helmet:Spawn()
+            helmet:GetPhysicsObject():SetVelocity(ply:GetAngles():Up()*1.5)
+        end
+    end
     if ply:GetNWString("Bodyvest", "") == "Level IIIA" then
         if hitgroup == HITGROUP_STOMACH or hitgroup == HITGROUP_CHEST then
             dmginfo:ScaleDamage(1 / 5)
@@ -147,7 +199,6 @@ hook.Add("HOOK_UNION_Damage","Hit",function(ply,hitgroup,dmginfo,rag)
 
         end
     end
-    print(inf)
     dmg_d = dmginfo:GetDamage()
     if dmginfo:IsDamageType(DMG_BULLET+DMG_BUCKSHOT+DMG_SNIPER) then
         dmg_d = dmg_d * 3.5
@@ -168,6 +219,7 @@ hook.Add("HOOK_UNION_Damage","Hit",function(ply,hitgroup,dmginfo,rag)
         ent:EmitSound("neck_snap_01.wav",511,100,1,CHAN_ITEM)
         return
     end
+
     if hitgroup == HITGROUP_STOMACH and ply.fake and !ply.Hit['spine'] and dmginfo:GetDamageType() == DMG_CRUSH and ent:GetVelocity():Length() > 730 then
         ply.Hit['spine']=true
         ply:ChatPrint("Your spine is broken")
@@ -423,10 +475,8 @@ hook.Add("ScalePlayerDamage","FallPain", function(ply,hit,dmg)
         else
             dmg:ScaleDamage(5)
         end
-        if ply.bullet_force > 3 or ply.pain > 50 then
-            if !ply.fake then
-                Faking(ply)
-            end
+        if !ply.fake then
+            Faking(ply)
         end
     end
     if hit == HITGROUP_LEFTLEG or hit == HITGROUP_RIGHTLEG then

@@ -24,7 +24,7 @@ hook.Add( "HUDShouldDraw", "HideHUD", function(name)
 	end
     -- спастил с гмодвики
 end)
-
+local eblan = CreateClientConVar("eblan", 0, false, false, "")
 hook.Add("HUDDrawTargetID","HideHUD2", function() return false end)
 
 AddCSLuaFile()
@@ -55,11 +55,12 @@ function LerpAngleFT(lerp,source,set)
 	return LerpAngle(math_min(lerp * mul,1),source,set)
 end
 
+local sight = 0
+local changed = false
+
 local function ImersiveCam(ply,pos,ang,fov)
-	
 	local plyselect = ply:GetNWEntity("SelectPlayer", Entity(-1))
 	local ragdoll = ply:GetNWEntity("Ragdoll")
-
 	if not ply:Alive() and ply:GetNWBool("Spectating", false) == true then
 		if !plyselect:GetNWBool("fake") and ply:GetNWInt("SpectateMode", 0) == 0 then
 			local att = plyselect:GetAttachment(plyselect:LookupAttachment("eyes"))
@@ -82,7 +83,18 @@ local function ImersiveCam(ply,pos,ang,fov)
 			return camfake
 		end
 	end
-
+	if !ply:Alive() and ply:GetNWBool("fake") and IsValid(ragdoll) then
+		ragdoll:ManipulateBoneScale(6,vecZero)
+		local PosAng = ragdoll:GetAttachment(ragdoll:LookupAttachment("eyes"))
+		local camfake = {
+			origin = PosAng.Pos + Vector(0,-5,0),
+			angles = PosAng.Ang,
+			znear = 1,
+			zfar = 26000,
+			fov = 110
+		}
+		return camfake
+	end
 	if ply:Alive() and ply:GetNWBool("fake") and IsValid(ragdoll) then
 		ragdoll:ManipulateBoneScale(6,vecZero)
 		local PosAng = ragdoll:GetAttachment(ragdoll:LookupAttachment("eyes"))

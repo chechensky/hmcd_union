@@ -328,8 +328,41 @@ function GM:RenderArmor(ply)
 	else
 		ply.NVG = nil
 	end
-end
 
+	if ply:GetNWBool("Headcrab", false) then
+		if ply.HeadCrab then
+			local Pos, Ang = ply:GetBonePosition(ply:LookupBone("ValveBiped.Bip01_Head1"))
+			if Pos and Ang then
+				if ply.ModelSex == "male" then
+					Dist = 6
+				end
+
+				Pos = Pos + Ang:Forward() * 2 + Ang:Right() * 5
+				ply.HeadCrab:SetRenderOrigin(Pos)
+				Ang:RotateAroundAxis(Ang:Up(), -80)
+				Ang:RotateAroundAxis(Ang:Forward(), -90)
+				ply.HeadCrab:SetRenderAngles(Ang)
+				local R, G, B = render.GetColorModulation()
+				render.SetColorModulation(.7, .7, .7)
+				ply.HeadCrab:DrawModel()
+				render.SetColorModulation(R, G, B)
+			end
+		else
+			ply.HeadCrab = ClientsideModel("models/headcrabclassic.mdl")
+			ply.HeadCrab:SetPos(ply:GetPos())
+			ply.HeadCrab:SetParent(ply)
+			ply.HeadCrab:SetNoDraw(true)
+			local Scale = .8
+			if ply.ModelSex == "female" then
+				Scale = Scale * .7
+			end
+
+			ply.HeadCrab:SetModelScale(Scale, 0)
+		end
+	else
+		ply.HeadCrab = nil
+	end
+end
 function GM:PostPlayerDraw(ply)
 	if !AccessoryListWithoutEmpty[ply.Accessory] then return end
 	if ply:Alive() then

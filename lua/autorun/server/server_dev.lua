@@ -106,7 +106,6 @@ function GetLastPlayerAlive()
     end
     return lastplayer
 end
-
 function GetRandomRolePlayer(role)
     local roleply = nil
     for _, ply in ipairs(player.GetAll()) do

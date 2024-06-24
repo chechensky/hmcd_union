@@ -33,6 +33,16 @@ SWEP.SuppressedPistol = false
 SWEP.LaserPistol = false
 SWEP.AttBone = "Weapon"
 SWEP.UseHands = true
+
+SWEP.TPIK = true
+
+SWEP.TPIK_PosAngles = {
+    ["ValveBiped.Bip01_R_Clavicle"] = Angle(0, -30, 0),
+	["ValveBiped.Bip01_R_UpperArm"] = Angle(0, -30, 0),
+	["ValveBiped.Bip01_Spine2"] = Angle(0, 25, 0),
+	["ValveBiped.Bip01_Neck1"] = Angle(0, 20, 0),
+}
+
 SWEP.ReloadTime = 3.3
 SWEP.ViewModelFlip = false
 SWEP.Recoil = 0.2

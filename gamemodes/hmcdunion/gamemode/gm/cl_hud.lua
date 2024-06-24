@@ -12,6 +12,99 @@ function GM:HUDPaint()
 	self:DrawRadialMenu()
 	self:Drawmenu_useMenu()
 	self:DrawSpectate()
+	self:DrawDMTime()
+	self:DrawHeadCrabHud()
+end
+
+local shiz = {
+	"PIZDEC",
+	"ЕБАНЫЕ ХЕДКРАБЫ",
+	"НЕЕЕТ",
+	"ЧЕЧА ХУЙЛО",
+	"АААААААААААААААААААААААААААА",
+	"ПИДОРАС",
+	"НАХУЙ ХОМИСАЙД ЮНИОН",
+	"ПИДОРАСТИЧЕСКАЯ ХУЙНЯ",
+	"МНЕ НЕ ВЫЖИТЬ",
+	"это конец...",
+	"это финальная..."
+}
+
+local function DrawRandomText()
+    local x = math.random(0, ScrW())
+    local y = math.random(0, ScrH())
+    local text = table.Random(shiz)
+    local font = "Default"
+
+    surface.SetFont(font)
+    local textWidth, textHeight = surface.GetTextSize(text)
+
+    surface.SetTextPos(x, y)
+    surface.SetTextColor(255, 255, 255, 255)
+    surface.DrawText(text)
+end
+
+local function DrawRandomOther()
+    local x = math.random(0, ScrW())
+    local y = math.random(0, ScrH())
+    local text = "мне пизда..."
+    local font = "Default"
+
+    surface.SetFont(font)
+    local textWidth, textHeight = surface.GetTextSize(text)
+
+    surface.SetTextPos(x, y)
+    surface.SetTextColor(255, 255, 255, 255)
+    surface.DrawText(text)
+end
+
+local function DrawRandomPizdec()
+    local x = math.random(0, ScrW())
+    local y = math.random(0, ScrH())
+    local text = "ПИЗДААААААААААААААААААААААААААА ГОЙДААААААА"
+    local font = "Default"
+
+    surface.SetFont(font)
+    local textWidth, textHeight = surface.GetTextSize(text)
+
+    surface.SetTextPos(x, y)
+    surface.SetTextColor(255, 255, 255, 255)
+    surface.DrawText(text)
+end
+
+local fullbright = 255
+
+function GM:DrawHeadCrabHud()
+	if LocalPlayer():GetNWBool("Headcrab", false) == true then
+
+	if LocalPlayer():GetNWInt("Headcrab_Stade", 1) >= 1 then
+		if math.random(1,25) == 3 then
+			fullbright = math.Rand(0,200)
+		else
+			fullbright = 255
+		end
+		surface.SetDrawColor(0, 0, 0, fullbright)
+    	surface.DrawRect(0, 0, ScrW(), ScrH())
+	end
+		if LocalPlayer():GetNWInt("Headcrab_Stade", 1) >= 2 then
+			DrawRandomPizdec()
+		end
+		if LocalPlayer():GetNWInt("Headcrab_Stade", 1) >= 3 then
+			if math.random(1,5) == 2 then
+				DrawRandomText()
+			end
+		end
+		if LocalPlayer():GetNWInt("Headcrab_Stade", 1) >= 4 then
+			if math.random(1,2) == 1 then
+				DrawRandomOther()
+			end
+		end
+	end
+end
+function GM:DrawDMTime()
+	if LocalPlayer():GetNWString("Round","") == "dm" and LocalPlayer():GetNWInt("DMTime", 10) >= 1 then
+		drawTextShadow(LocalPlayer():GetNWInt("DMTime", 10),"DefaultFont",950,50,team.GetColor(1), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+	end
 end
 
 function GM:DrawSpectate()

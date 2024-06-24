@@ -1,3 +1,7 @@
+hook.Add("EntityTakeDamage", "AntiDamageWithDM", function(ply, dmginfo)
+	if GAMEMODE.DMTime >= 1 then return false end
+end)
+
 local CTime = CurTime()
 hook.Add("PlayerTick", "Glaza", function (ply)
     ply:SetEyeTarget(ply:GetEyeTrace().HitPos)
@@ -191,5 +195,21 @@ concommand.Add("hmcd_holdbreath", function(ply)
 		ply:SetNWBool("Breath", false)
 	else
 		ply:SetNWBool("Breath", true)
+	end
+end)
+
+-- headcrab infection
+
+hook.Add("PlayerPostThink", "StadeHeadcrab", function(ply)
+	if ply:GetNWBool("Headcrab", false) == true then
+		if ply.pain >= 130 then
+			ply:SetNWInt("Headcrab_Stade", 4)
+		elseif ply.pain >= 100 then
+			ply:SetNWInt("Headcrab_Stade", 3)
+		elseif ply.pain >= 60 then
+			ply:SetNWInt("Headcrab_Stade", 2)
+		elseif ply.pain >= 0 then
+			ply:SetNWInt("Headcrab_Stade", 1)
+		end
 	end
 end)

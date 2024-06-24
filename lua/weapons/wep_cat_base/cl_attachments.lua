@@ -45,8 +45,10 @@ function SWEP:ViewModelDrawn(vm)
 			end
 		end
 	end
-
-	if self.SightInfo then self:DrawSight(self, self.SightInfo[1], self.SightInfo[2], vm) end
+	if self.SightInfo then 
+		self:DrawSight(self, self.SightInfo[1], self.SightInfo[2], vm) 
+		print("1")
+	end
 end
 
 function SWEP:DrawWorldModel()
@@ -85,6 +87,7 @@ function SWEP:DrawWorldModel()
 								["up"] = ang:Up()
 							}
 						end
+						self:GetOwner():SetNWEntity("E2", self.WModel)
 						self.WModel:SetRenderAngles(ang)
 						self.WModel:DrawModel()
 					end

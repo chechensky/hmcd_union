@@ -805,18 +805,22 @@ function SWEP:Think()
 			end
 			if CLIENT then ply:SetupBones() end
 		else
-        	for boneName, angle in pairs(self.TPIK_PosAngles) do
-        	    local boneIndex = ply:LookupBone(boneName)
-        	    if boneIndex then
-        	        ply:ManipulateBoneAngles(boneIndex, Angle(0,0,0))
-        	    end
-        	end
-        	for boneName, vector in pairs(self.TPIK_PosVectors) do
-        	    local boneIndex = ply:LookupBone(boneName)
-        	    if boneIndex then
-        	        ply:ManipulateBonePosition(boneIndex, Vector(0,0,0))
-        	    end
-        	end
+			if self.TPIK_PosAngles then
+        		for boneName, angle in pairs(self.TPIK_PosAngles) do
+        		    local boneIndex = ply:LookupBone(boneName)
+        		    if boneIndex then
+        		        ply:ManipulateBoneAngles(boneIndex, Angle(0,0,0))
+        		    end
+        		end
+			end
+			if self.TPIK_PosVectors then
+        		for boneName, vector in pairs(self.TPIK_PosVectors) do
+        		    local boneIndex = ply:LookupBone(boneName)
+        		    if boneIndex then
+        		        ply:ManipulateBonePosition(boneIndex, Vector(0,0,0))
+        		    end
+        		end
+			end
 		end
 	end
 

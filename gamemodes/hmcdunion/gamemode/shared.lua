@@ -7,7 +7,7 @@ GM.Website = "N/A"
 GM.TeamBased = true
 
 -- checha gm ints!!!
-
+GM.DMTime = 10
 GM.RoundName = "homicide"
 GM.RoundNext = "homicide"
 GM.RoundType = 2
