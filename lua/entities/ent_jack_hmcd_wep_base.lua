@@ -1,7 +1,4 @@
---[[
-Server Name: [EU] Homicide
-Server IP:   185.17.0.25:27025
-File Path:   gamemodes/homicide/entities/entities/ent_jack_hmcd_wep_base.lua
+--[[File Path:   gamemodes/homicide/entities/entities/ent_jack_hmcd_wep_base.lua
 
 --]]
 AddCSLuaFile()
@@ -98,42 +95,6 @@ if SERVER then
 			ply:SelectWeapon(SWEP)
 		end
 	end
-
-function ENT:ReloadSound()
-	local weptable = weapons.Get(self.SWEP)
-	if weptable.ReloadSounds then
-		for i, sound in pairs(weptable.ReloadSounds) do
-			timer.Simple(weptable.ReloadSounds[i][2], function()
-				if IsValid(self) then
-					self:EmitSound(weptable.ReloadSounds[i][1], 65, 100)
-					self:GetPhysicsObject():ApplyForceCenter(self:GetAngles():Up()*100+self:GetAngles():Forward()*-200)
-				end
-			end)
-		end
-	end
-end
-
-function ENT:Reload()
-if IsValid(self) then
-
-	local ply = self:GetOwner()
-	local weptable = weapons.Get(self.SWEP)
-	print(weptable.Primary.Ammo)
-	if !self.Reloading and self.RoundsInMag < weptable.Primary.ClipSize and ply:GetAmmoCount(weptable.AmmoType) > 0 then
-		self:ReloadSound()
-		self.Reloading = true
-		timer.Create("reload"..self:EntIndex(), weptable.ReloadTime, 1, function()
-			local need = weptable.Primary.ClipSize - self.RoundsInMag
-			self:GetOwner():RemoveAmmo(need, weptable.Primary.Ammo)
-			self.RoundsInMag = self.RoundsInMag - need
-			if IsValid(self.Owner:GetWeapon(self.SWEP)) then
-				self.Owner:GetWeapon(self.SWEP):SetClip1(self.RoundsInMag)
-			end
-			self.Reloading = false
-		end)
-	end
-end
-end
 
 	function ENT:PhysicsCollide(data, ent)
 		if data.DeltaTime > .1 then
@@ -240,9 +201,6 @@ end
 		if IsValid(self.Owner) and self.Owner:Alive() and not self.Owner.Otrub and self.OwnerAlive then
 			local attacking = self.Owner:KeyDown(IN_ATTACK)
 			self.Owner = nil
-			if self.Owner:KeyDown(IN_RELOAD) then
-				self:Reload()
-			end
 			if ((weapons.Get(self.SWEP).Primary.Automatic and self.RoundsInMag > 0) or IsChanged(attacking, "attacking", self)) and attacking then
 				self:Shoot()
 			end

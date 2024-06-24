@@ -51,7 +51,7 @@ TwoHandedOrNo = {
 }
 
 local Vectors = {
-	["wep_jack_hmcd_assaultrifle"]=Vector(13,-1.8,3),
+	["wep_jack_hmcd_assaultrifle"]=Vector(6,-2,0),
 	["wep_jack_hmcd_crossbow"]=Vector(0,1,-1),
 	["wep_jack_hmcd_mp7"]=Vector(3.5,-1.5,-2),
 	["wep_jack_hmcd_rifle"]=Vector(0,-1.7,-1),

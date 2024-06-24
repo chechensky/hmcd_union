@@ -9,7 +9,7 @@ end
 SWEP.IconTexture = "vgui/inventory/weapon_nam_akm"
 SWEP.IconLength = 3
 SWEP.IconHeight = 2
-SWEP.Base = "wep_jack_hmcd_firearm_base"
+SWEP.Base = "wep_cat_base"
 SWEP.PrintName = "AKM"
 SWEP.Instructions = "This is a wooden/steel 7.62×39mm selective fire 30-round-capacity rifle, one of the most popular assault rifles in the world.\n\nLMB to fire.\nRMB to aim.\nRELOAD to reload.\nShot placement counts.\nCrouching helps stability.\nBullets can ricochet and penetrate."
 SWEP.Primary.ClipSize = 31
@@ -35,6 +35,17 @@ SWEP.AmmoType = "AR2"
 SWEP.Primary.Ammo = "AR2"
 SWEP.TriggerDelay = .1
 SWEP.CycleTime = 0.035
+
+SWEP.TPIK = true
+
+SWEP.TPIK_PosAngles = {
+    ["ValveBiped.Bip01_R_Upperarm"] = Angle(-5, 0, 0),
+	["ValveBiped.Bip01_L_Upperarm"] = Angle(30, 0, 0)
+}
+
+SWEP.TPIK_PosVectors = {
+	["ValveBiped.Bip01_Spine2"] = Vector(3,0,0)
+}
 
 SWEP.ShootWait_Ragdoll = 0.2
 

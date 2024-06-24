@@ -1,7 +1,4 @@
---[[
-Server Name: [EU] Homicide
-Server IP:   185.17.0.25:27025
-File Path:   gamemodes/homicide/entities/weapons/wep_jack_hmcd_usp.lua
+--[[File Path:   gamemodes/homicide/entities/weapons/wep_jack_hmcd_usp.lua
 		 __        __              __             ____     _                ____                __             __         
    _____/ /_____  / /__  ____     / /_  __  __   / __/____(_)__  ____  ____/ / /_  __     _____/ /____  ____ _/ /__  _____
   / ___/ __/ __ \/ / _ \/ __ \   / __ \/ / / /  / /_/ ___/ / _ \/ __ \/ __  / / / / /    / ___/ __/ _ \/ __ `/ / _ \/ ___/
@@ -18,7 +15,7 @@ else
 end
 
 SWEP.IconTexture = "vgui/hud/tfa_ins2_usp_match"
-SWEP.Base = "wep_jack_hmcd_firearm_base"
+SWEP.Base = "wep_cat_base"
 SWEP.PrintName = "H&K USP Match"
 SWEP.Instructions = "This is a semi-automatic 18-round-capacity pistol firing 9x19mm rounds.\n\nLMB to fire.\nRMB to aim.\nRELOAD to reload.\nShot placement counts.\nCrouching helps stability.\nBullets can ricochet and penetrate."
 SWEP.Primary.ClipSize = 19

@@ -9,7 +9,7 @@ end
 SWEP.IconTexture = "vgui/wep_jack_hmcd_shotgun"
 SWEP.IconLength = 3
 SWEP.IconHeight = 2
-SWEP.Base = "wep_jack_hmcd_firearm_base"
+SWEP.Base = "wep_cat_base"
 SWEP.PrintName = "Milkor MGL"
 SWEP.Instructions = "This is a lightweight 40 mm six-shot revolver-type grenade launcher.\n\nLMB to fire.\nRMB to aim.\nRELOAD to reload.\nShot placement counts."
 SWEP.Primary.ClipSize = 6

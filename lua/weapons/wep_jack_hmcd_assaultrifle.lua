@@ -9,7 +9,7 @@ end
 SWEP.IconTexture = "vgui/wep_jack_hmcd_assaultrifle"
 SWEP.IconLength = 3
 SWEP.IconHeight = 2
-SWEP.Base = "wep_jack_hmcd_firearm_base"
+SWEP.Base = "wep_cat_base"
 SWEP.PrintName = "AR-15"
 SWEP.Instructions = "An absurdly powerful weapon, this aluminum/polymer 5.56x45mm semi-automatic home-assembled 30-round-capacity rifle is the quintessence of an armed American citizenry in the early 21st century.\n\nLMB to fire.\nRMB to aim.\nRELOAD to reload.\nShot placement counts.\nCrouching helps stability.\nBullets can ricochet and penetrate."
 SWEP.Primary.ClipSize = 31

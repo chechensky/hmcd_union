@@ -107,6 +107,18 @@ function GetLastPlayerAlive()
     return lastplayer
 end
 
+function GetRandomRolePlayer(role)
+    local roleply = nil
+    for _, ply in ipairs(player.GetAll()) do
+        if ply:Alive() then
+			if ply.Role == role then
+            	roleply = ply
+			end
+		end
+    end
+    return roleply
+end
+
 function GetAliveRoleCount(role)
     local rolealive = 0
     for _, ply in ipairs(player.GetAll()) do

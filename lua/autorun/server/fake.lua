@@ -88,7 +88,7 @@ function GiveAttachments(ply)
     local info = ply.Info
     if(!info)then return end
     for name, wepinfo in pairs(info.Weapons or {}) do
-		if wepinfo.Base == "wep_jack_hmcd_firearm_base" then
+		if wepinfo.Base == "wep_cat_base" then
 			ply.wep:SetNWBool("Sight", wepinfo.Sight)
 			ply.wep:SetNWBool("Sight2", wepinfo.Sight2)
 			ply.wep:SetNWBool("Sight3", wepinfo.Sight3)
@@ -146,7 +146,7 @@ function ReturnPlyInfo(ply) -- возвращение информации иг�
         local weapon = ply:Give(name, true)
 
 		if IsValid(weapon) then
-			if wepinfo.Base == "wep_jack_hmcd_firearm_base" then
+			if wepinfo.Base == "wep_cat_base" then
 				weapon:SetNWBool("Sight", wepinfo.Sight)
 				weapon:SetNWBool("Sight2", wepinfo.Sight2)
 				weapon:SetNWBool("Sight3", wepinfo.Sight3)
@@ -247,6 +247,31 @@ function Faking(ply) -- функция падения
 			end
 		end
 	else
+		local rag = ply:GetNWEntity("Ragdoll")
+		local pos = rag:GetPos()
+
+		local trace = {
+			start = pos + Vector(0,0,-5),
+			endpos = pos + Vector(0,0,-15),
+			mins = Vector( -10, -10, 0 ),
+			maxs = Vector( 10, 10, 32 ),
+			filter = function(ent)
+				if ent:IsRagdoll() or ent:GetCollisionGroup() == COLLISION_GROUP_WEAPON or ent:IsPlayer() then
+					return ent
+				end
+			end,
+		}
+		
+		local trhull = util.TraceHull(trace)
+
+		pos = trhull.HitPos
+
+		print(trhull.Fraction)
+
+		if trhull.Fraction <= 0.05 then
+			ply:ChatPrint("You can't get up")
+			return
+		end
 		if ply.Otrub then
 			ply:ChatPrint("You're unconscious")
 		return false end
@@ -1288,7 +1313,7 @@ hook.Add("Player Think","VelocityPlayerFallOnPlayerCheck",function(ply,time)
 end)
 
 util.AddNetworkString("ebal_chellele")
-hook.Add("PlayerSwitchWeapon","fakewep",function(ply,oldwep,newwep)
+hook.Add("PlayerSwitchWeapon","wep",function(ply,oldwep,newwep)
 	if ply.in_handcuff then return true end
 	if ply.Otrub then return true end
 

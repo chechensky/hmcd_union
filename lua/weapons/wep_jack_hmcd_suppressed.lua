@@ -1,7 +1,4 @@
---[[
-Server Name: [EU] Homicide
-Server IP:   185.17.0.25:27025
-File Path:   gamemodes/homicide/entities/weapons/wep_jack_hmcd_suppressed.lua
+--[[File Path:   gamemodes/homicide/entities/weapons/wep_jack_hmcd_suppressed.lua
 		 __        __              __             ____     _                ____                __             __         
    _____/ /_____  / /__  ____     / /_  __  __   / __/____(_)__  ____  ____/ / /_  __     _____/ /____  ____ _/ /__  _____
   / ___/ __/ __ \/ / _ \/ __ \   / __ \/ / / /  / /_/ ___/ / _ \/ __ \/ __  / / / / /    / ___/ __/ _ \/ __ `/ / _ \/ ___/
@@ -18,7 +15,7 @@ else
 end
 
 SWEP.IconTexture = "vgui/wep_jack_hmcd_suppressed"
-SWEP.Base = "wep_jack_hmcd_firearm_base"
+SWEP.Base = "wep_cat_base"
 SWEP.PrintName = "Walther P22"
 SWEP.Instructions = "This is a semi-auto plinking pistol with a ten-round magazine and a homemade suppressor. It fires .22LR. Use it to kill innocents discreetly.\n\nLMB to fire.\nRMB to aim.\nRELOAD to reload.\nShot placement counts.\nCrouching helps stability.\nBullets can ricochet and penetrate."
 SWEP.Primary.ClipSize = 11
@@ -43,6 +40,19 @@ SWEP.ReloadSound = ""
 SWEP.AmmoType = "Pistol"
 SWEP.TriggerDelay = .1
 SWEP.ShellType = ""
+
+SWEP.TPIK = true
+
+SWEP.TPIK_PosAngles = {
+    ["ValveBiped.Bip01_R_Forearm"] = Angle(0, -10, 15),
+	["ValveBiped.Bip01_R_Clavicle"] = Angle(0, 30, 0),
+	["ValveBiped.Bip01_R_Hand"] = Angle(-5, 0, 0)
+}
+
+SWEP.TPIK_PosVectors = {
+	["ValveBiped.Bip01_L_Hand"] = Vector(0, 0, 0)
+}
+
 SWEP.CycleTime = .05
 SWEP.Recoil = .5
 SWEP.Supersonic = false

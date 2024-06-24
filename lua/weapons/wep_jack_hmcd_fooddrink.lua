@@ -1,7 +1,4 @@
---[[
-Server Name: [EU] Homicide
-Server IP:   185.17.0.25:27025
-File Path:   gamemodes/homicide/entities/weapons/wep_jack_hmcd_fooddrink.lua
+--[[File Path:   gamemodes/homicide/entities/weapons/wep_jack_hmcd_fooddrink.lua
 		 __        __              __             ____     _                ____                __             __         
    _____/ /_____  / /__  ____     / /_  __  __   / __/____(_)__  ____  ____/ / /_  __     _____/ /____  ____ _/ /__  _____
   / ___/ __/ __ \/ / _ \/ __ \   / __ \/ / / /  / /_/ ___/ / _ \/ __ \/ __  / / / / /    / ___/ __/ _ \/ __ `/ / _ \/ ___/
@@ -185,6 +182,18 @@ function SWEP:Deploy()
 
 	return true
 end
+function SWEP:OnRemove()
+	local own = self:GetOwner()
+	own:ManipulateBoneAngles(own:LookupBone("ValveBiped.Bip01_R_Forearm"), Angle(0,0,0), true)
+
+	return true
+end
+function SWEP:Holster()
+	local own = self:GetOwner()
+	own:ManipulateBoneAngles(own:LookupBone("ValveBiped.Bip01_R_Forearm"), Angle(0,0,0), true)
+
+	return true
+end
 
 function SWEP:SecondaryAttack()
 end
@@ -192,13 +201,16 @@ end
 --
 function SWEP:Think()
 	if SERVER then
+		local own = self:GetOwner()
 		local HoldType = "slam"
 
 		if self:GetOwner():KeyDown(IN_SPEED) then
 			HoldType = "normal"
+			own:ManipulateBoneAngles(own:LookupBone("ValveBiped.Bip01_R_Forearm"), Angle(0,0,0), true)
 		end
 
 		self:SetHoldType(HoldType)
+		own:ManipulateBoneAngles(own:LookupBone("ValveBiped.Bip01_R_Forearm"), Angle(-10,-30,0), true)
 	end
 end
 
@@ -249,7 +261,8 @@ if CLIENT then
 
 		if self.DatWorldModel then
 			if Pos and Ang then
-				self.DatWorldModel:SetRenderOrigin(Pos + Ang:Forward() * 4 - Ang:Up() * 3)
+				self.DatWorldModel:SetRenderOrigin(Pos + Ang:Forward() * 4 - Ang:Up() * 1 + Ang:Right() * 3)
+				Ang:RotateAroundAxis(Ang:Right(), 220)
 				self.DatWorldModel:SetRenderAngles(Ang)
 				self.DatWorldModel:DrawModel()
 			end

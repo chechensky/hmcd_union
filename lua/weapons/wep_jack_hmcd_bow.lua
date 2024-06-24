@@ -37,7 +37,7 @@ elseif CLIENT then
 end
 
 --
-SWEP.Base = "wep_jack_hmcd_firearm_base"
+SWEP.Base = "wep_cat_base"
 SWEP.ViewModel = "models/weapons/v_snij_awp.mdl"
 SWEP.WorldModel = "models/weapons/w_snij_awp.mdl"
 
@@ -329,7 +329,7 @@ if CLIENT then
 
 		if self.WBowSight then
 			if Pos and Ang then
-				self.WBowSight:SetRenderOrigin(Pos + Ang:Forward() * 19 + Ang:Right() * 0.5 + Ang:Up() * 7.5)
+				self.WBowSight:SetRenderOrigin(Pos + Ang:Forward() * 19 + Ang:Right() * 30 + Ang:Up() * 7.5)
 				Ang:RotateAroundAxis(Ang:Up(), 0)
 				Ang:RotateAroundAxis(Ang:Right(), 0)
 				Ang:RotateAroundAxis(Ang:Forward(), -90)

@@ -32,8 +32,10 @@ function GM:PlayerCanHearChatVoice(listener, talker, typ)
 
 	local Wep = talker:GetActiveWeapon()
 	if IsValid(Wep) and (Wep:GetClass() == "wep_jack_hmcd_walkietalkie") then
-		if ply and ply.Alive and ply:Alive() and ply.HasWeapon and ply:HasWeapon("wep_jack_hmcd_walkietalkie") then return true end
+		if ply and ply:Alive() and ply:HasWeapon("wep_jack_hmcd_walkietalkie") then return true end
 	end
+	print("list", listener)
+	print("talk", talker)
 
 	local dis, MaxDist = ply:GetPos():Distance(talker:GetPos()), 1300
 	if not (talker:Visible(ply) or ply:Visible(talker)) then
@@ -48,7 +50,7 @@ end
 function GM:PlayerCanSeePlayersChat(text, teamOnly, listener, speaker)
 	if not IsValid(speaker) then return false end
 	local canhear = self:PlayerCanHearChatVoice(listener, speaker)
-
+	print(canhear)
 	return canhear
 end
 
@@ -65,7 +67,7 @@ function GM:PlayerSay(ply,text,teem)
 			local can = hook.Call("PlayerCanSeePlayersChat", GAMEMODE, text, teem, ply2, ply)
 			if can then
 				local ct = ChatText()
-				if WalkieTalkie and not (ply2 == ply) then
+				if WalkieTalkie then
 					ct:Add("Walkie Talkie", color_white)
 				else
 					ct:Add(ply:GetNWString("Character_Name"), Color(col.x * 255, col.y * 255, col.z * 255))
@@ -73,6 +75,8 @@ function GM:PlayerSay(ply,text,teem)
 
 				ct:Add(": " .. text, color_white)
 				ct:Send(ply2)
+				print(ply)
+				print(ply2)
 				if WalkieTalkie then
 					sound.Play("snd_jack_hmcd_walkietalkie.wav", ply2:GetShootPos(), 50, 100)
 				end

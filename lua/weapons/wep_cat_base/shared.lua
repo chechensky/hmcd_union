@@ -17,6 +17,7 @@ SWEP.IconTexture = "vgui/wep_jack_hmcd_smallpistol"
 SWEP.Base = "weapon_base"
 SWEP.Slot = 2
 SWEP.SlotPos = 1
+SWEP.TPIK = false
 SWEP.DrawAmmo = false
 SWEP.vbwActive = true
 SWEP.vbw = 1
@@ -149,26 +150,6 @@ SWEP.FrontBlockedPerc = 0
 SWEP.FrontBlocked = 0
 SWEP.InertiaScale = 1
 SWEP.Temper = 0
-if SERVER then
-	concommand.Add("suicide", function(ply, cmd, args)
-		if not (ply or IsValid(ply) or ply:Alive()) then return end
-		local wep = ply:GetActiveWeapon()
-		if not (wep.SuicidePos and wep.SuicideAng) or wep:GetNWBool("GhostSuiciding") or not wep:GetReady() then return end
-		if IsValid(wep) and wep.GetSuiciding then
-			if wep:GetSuiciding() then
-				wep:SetSuiciding(false)
-				ply:SetDSP(0)
-			else
-				if not (wep:GetNWBool("Suppressor") and wep.SuicideType == "Rifle") then
-					wep:SetSuiciding(true)
-					ply:SetDSP(130)
-				else
-					ply:PrintMessage(HUD_PRINTTALK, "Your weapon is too long. Take the suppressor off.")
-				end
-			end
-		end
-	end)
-end
 
 function SWEP:Shell()
 	if self.ShellEffect == "" then return end
@@ -188,8 +169,8 @@ function SWEP:ShellReload()
 	if not IsFirstTimePredicted() or not self:GetOwner():Alive() then return end
 	local effectdata = EffectData()
 	local ent = self.Weapon
-	if IsValid(self:GetOwner().FakeWep) then
-		ent = self:GetOwner().FakeWep
+	if IsValid(self:GetOwner().wep) then
+		ent = self:GetOwner().wep
 		local ang = ent:GetAngles()
 		effectdata:SetOrigin(ent:GetPos() + ang:Forward() * ent.BulletEjectPos[1] + ang:Right() * ent.BulletEjectPos[2] + ang:Up() * ent.BulletEjectPos[3])
 	end
@@ -332,38 +313,6 @@ function SWEP:Initialize()
 	end
 end
 
-local sights = {
-	[1] = Material("models/weapons/tfa_ins2/optics/kobra_dot", "noclamp nocull smooth"),
-	[2] = Material("models/weapons/tfa_ins2/optics/eotech_reticule", "noclamp nocull smooth"),
-	[3] = Material("scope/aimpoint", "noclamp nocull smooth")
-}
-
-local sightMuls = {
-	["wep_jack_hmcd_mp7"] = {
-		[1] = 0.4,
-		[2] = 0.4,
-		[3] = 0.7
-	},
-	["wep_jack_hmcd_shotgun"] = {
-		[1] = 0.33,
-		[2] = 0.33
-	},
-	["wep_jack_hmcd_m249"] = {
-		[1] = 0.33,
-		[2] = 0.33
-	},
-	["wep_jack_hmcd_sr25"] = {
-		[3] = 0.75
-	},
-	["wep_jack_hmcd_assaultrifle"] = {
-		[1] = 0.25,
-		[2] = 0.25
-	},
-	["wep_jack_hmcd_akm"] = {
-		[3] = 0.75
-	}
-}
-
 function SWEP:PreDrawViewModel()
 	local vm = self:GetOwner():GetViewModel()
 	if self:GetClass() == "wep_jack_hmcd_ar2" then
@@ -397,7 +346,108 @@ function SWEP:AltFire()
 	EnergyBall:GetPhysicsObject():SetVelocity(self:GetOwner():GetAimVector() * 700)
 	self:GetOwner():SetLagCompensated(false)
 end
+HMCD_SurfaceHardness = {
+	[MAT_METAL] = .95,
+	[MAT_COMPUTER] = .95,
+	[MAT_VENT] = .95,
+	[MAT_GRATE] = .95,
+	[MAT_FLESH] = 2,
+	[MAT_ALIENFLESH] = .3,
+	[MAT_SAND] = .1,
+	[MAT_DIRT] = .3,
+	[74] = .1,
+	[85] = .2,
+	[MAT_WOOD] = .5,
+	[MAT_FOLIAGE] = .5,
+	[MAT_CONCRETE] = .9,
+	[MAT_TILE] = .8,
+	[MAT_SLOSH] = .05,
+	[MAT_PLASTIC] = .3,
+	[MAT_GLASS] = .6
+}
 
+function SWEP:BulletCallbackFunc(dmgAmt, ply, tr, dmg, tracer, hard, multi)
+	if tr.Entity:IsPlayer() then return end
+	if tr.MatType == MAT_FLESH then
+		local vPoint = tr.HitPos
+		local effectdata = EffectData()
+		effectdata:SetOrigin(vPoint)
+	end
+
+	if tr.HitSky then return end
+	if hard then self:RicochetOrPenetrate(tr) end
+end
+
+function SWEP:RicochetOrPenetrate(initialTrace)
+	local AVec, IPos, TNorm, SMul = initialTrace.Normal, initialTrace.HitPos, initialTrace.HitNormal, HMCD_SurfaceHardness[initialTrace.MatType]
+	if not SMul then SMul = .5 end
+	local ApproachAngle = -math.deg(math.asin(TNorm:DotProduct(AVec)))
+	local MaxRicAngle = 60 * SMul
+	if ApproachAngle > (MaxRicAngle * 1.25) then -- all the way through
+		local MaxDist, SearchPos, SearchDist, Penetrated = (self.Damage / SMul) * .15, IPos, 5, false
+		while (not Penetrated) and (SearchDist < MaxDist) do
+			SearchPos = IPos + AVec * SearchDist
+			local PeneTrace = util.QuickTrace(SearchPos, -AVec * SearchDist)
+			if (not PeneTrace.StartSolid) and PeneTrace.Hit then
+				Penetrated = true
+			else
+				SearchDist = SearchDist + 5
+			end
+		end
+
+		if Penetrated then
+			local StopMul = SearchDist / MaxDist
+			self:FireBullets({
+				Attacker = self.Owner,
+				Damage = 1,
+				Force = 1,
+				Num = 1,
+				Tracer = 0,
+				TracerName = "",
+				Dir = -AVec,
+				Spread = Vector(0, 0, 0),
+				Src = SearchPos + AVec
+			})
+
+			self:FireBullets({
+				Attacker = self.Owner,
+				Damage = self.CurrentDamage * math.Clamp((1 - StopMul) * 1.2, 0.01, 1),
+				Force = self.Damage / 15,
+				Num = 1,
+				Tracer = 0,
+				TracerName = "",
+				Dir = AVec,
+				Spread = Vector(0, 0, 0),
+				Src = SearchPos + AVec,
+				Callback = function(ply, tr)
+					local trace = util.QuickTrace(SearchPos + AVec, AVec * 1000000)
+					ply:GetActiveWeapon():BulletCallbackFunc(self.CurrentDamage * math.Clamp((1 - StopMul) * 1.2, 0.01, 1), ply, trace, dmg, false, true, false)
+				end
+			})
+
+			self.CurrentDamage = self.CurrentDamage * math.Clamp((1 - StopMul) * 1.2, 0.01, 1)
+		end
+	elseif ApproachAngle < (MaxRicAngle * .75) then
+		-- ping whiiiizzzz
+		sound.Play("snd_jack_hmcd_ricochet_" .. math.random(1, 22) .. ".wav", IPos, 70, math.random(90, 100))
+		local NewVec = AVec:Angle()
+		NewVec:RotateAroundAxis(TNorm, 180)
+		local AngDiffNormal = math.deg(math.acos(NewVec:Forward():Dot(TNorm))) - 90
+		NewVec:RotateAroundAxis(NewVec:Right(), AngDiffNormal * .7) -- bullets actually don't ricochet elastically
+		NewVec = NewVec:Forward()
+		self:FireBullets({
+			Attacker = self.Owner,
+			Damage = self.Damage * .5,
+			Force = self.Damage / 15,
+			Num = 1,
+			Tracer = 0,
+			TracerName = "",
+			Dir = -NewVec,
+			Spread = Vector(0, 0, 0),
+			Src = IPos + TNorm
+		})
+	end
+end
 function SWEP:PrimaryAttack()
 	self.ReloadInterrupted = true
 	if not self:GetReady() then return end
@@ -669,16 +719,17 @@ function SWEP:PrimaryAttack()
 			return
 		end
 	else
-		local RecoilY = math.Rand(.02, .08) * Rec
-		local RecoilX = math.Rand(-.01, .04) * Rec
-		if self:GetOwner():EyeAngles().p <= -87 then RecoilY = 0 end
-		if ((SERVER and game.SinglePlayer()) or CLIENT) and self.BipodAmt < 100 then
-			local newAng = (Ang:Forward() + RecoilY * Ang:Up() / 5 + Ang:Right() * RecoilX):Angle()
-			self:GetOwner():SetEyeAngles(newAng)
-			self:GetOwner():ViewPunch(newAng)
+		local Ang,Rec=self.Owner:EyeAngles(),self.Recoil
+		if self:GetNWBool("Suppressor") then Rec=.5 end
+		if self:GetOwner():GetNWFloat("RightArm", 1) < 0.85 then Rec=Rec*1.5 end
+		if self:GetOwner():GetNWFloat("LeftArm", 1) < 0.85 then Rec=Rec*5 end
+		local RecoilY=math.Rand(.015,.03)*Rec
+		local RecoilX=math.Rand(-.03,.05)*Rec
+		if (SERVER and game.SinglePlayer()) or CLIENT then
+			self.Owner:SetEyeAngles((Ang:Forward()+RecoilY*Ang:Up()+Ang:Right()*RecoilX):Angle())
 		end
-
-		if not self:GetOwner():OnGround() then self:GetOwner():SetVelocity(-self:GetOwner():GetAimVector() * 10) end
+		if self.Owner:OnGround() then self.Owner:SetVelocity(-self.Owner:GetAimVector()*10) end
+		self.Owner:ViewPunch(Angle(RecoilY*-100*self.Recoil,RecoilX*-100*self.Recoil,0))
 		if self:GetOwner():IsPlayer() then
 		else
 			if not self.BurstFire then
@@ -720,7 +771,6 @@ end
 function SWEP:SecondaryAttack()
 end
 
---print(HMCD_WhomILookinAt(self:GetOwner(),.3,50):GetModel())
 local nextBipodCheck = 0
 local primaryShoot = 0
 function SWEP:Think()
@@ -732,6 +782,42 @@ function SWEP:Think()
 		local curBodygroup = vm:GetBodygroup(1)
 		if self:Clip1() < 17 and not self.NextReload and curBodygroup ~= self:Clip1() then vm:SetBodygroup(1, self:Clip1()) end
 		if self:Clip1() > 16 and not self.NextReload and curBodygroup ~= 16 then vm:SetBodygroup(1, 16) end
+	end
+	if self.TPIK then
+
+		if !self:GetOwner():KeyDown(IN_SPEED) and !self:GetSuiciding() and self.FrontBlockedPerc < 0.1 then
+			if self.TPIK_PosAngles then
+        		for boneName, angle in pairs(self.TPIK_PosAngles) do
+        		    local boneIndex = ply:LookupBone(boneName)
+        		    if boneIndex then
+        		        ply:ManipulateBoneAngles(boneIndex, angle)
+        		    end
+        		end
+			end
+
+			if self.TPIK_PosVectors then
+        		for boneName, vector in pairs(self.TPIK_PosVectors) do
+        		    local boneIndex = ply:LookupBone(boneName)
+        		    if boneIndex then
+        		        ply:ManipulateBonePosition(boneIndex, vector)
+        		    end
+        		end
+			end
+			if CLIENT then ply:SetupBones() end
+		else
+        	for boneName, angle in pairs(self.TPIK_PosAngles) do
+        	    local boneIndex = ply:LookupBone(boneName)
+        	    if boneIndex then
+        	        ply:ManipulateBoneAngles(boneIndex, Angle(0,0,0))
+        	    end
+        	end
+        	for boneName, vector in pairs(self.TPIK_PosVectors) do
+        	    local boneIndex = ply:LookupBone(boneName)
+        	    if boneIndex then
+        	        ply:ManipulateBonePosition(boneIndex, Vector(0,0,0))
+        	    end
+        	end
+		end
 	end
 
 	if self.BarrelMustSmoke then
@@ -768,7 +854,7 @@ function SWEP:Think()
 			if IsValid(self) and IsValid(self:GetOwner()) then
 				if self.SetRocketGone then
 					self:SetRocketGone(false)
-					if IsValid(self:GetOwner().FakeWep) then self:GetOwner().FakeWep:SetBodygroup(1, 0) end
+					if IsValid(self:GetOwner().wep) then self:GetOwner().wep:SetBodygroup(1, 0) end
 				end
 
 				self:SetReady(true)
@@ -786,9 +872,9 @@ function SWEP:Think()
 					self:GetOwner():RemoveAmmo(Have, self.Primary.Ammo)
 				end
 
-				if IsValid(self:GetOwner().FakeWep) then
-					self:GetOwner().FakeWep.RoundsInMag = self:Clip1()
-					self:GetOwner().FakeWep.Reloading = false
+				if IsValid(self:GetOwner().wep) then
+					self:GetOwner().wep.RoundsInMag = self:Clip1()
+					self:GetOwner().wep.Reloading = false
 				end
 			end
 		end
@@ -812,16 +898,15 @@ function SWEP:Think()
 					timer.Simple(.5, function()
 						if IsValid(self) and IsValid(self:GetOwner()) then
 							self:SetReady(true)
-							if IsValid(self:GetOwner().FakeWep) then
-								self:GetOwner().FakeWep.RoundsInMag = self:Clip1()
-								self:GetOwner().FakeWep.Reloading = false
+							if IsValid(self:GetOwner().wep) then
+								self:GetOwner().wep.RoundsInMag = self:Clip1()
+								self:GetOwner().wep.Reloading = false
 							end
 						end
 					end)
 				end
 			end
 		end
-
 		local HoldType = self.HipHoldType
 		if self:GetOwner():KeyDown(IN_SPEED) or self:GetSuiciding() or self.FrontBlockedPerc > 0.1 then
 			HoldType = self.DownHoldType
@@ -929,118 +1014,6 @@ function SWEP:RandomIronFireAnim()
 	self.IronFireAnim = "iron_fire_" .. RandLetter
 end
 
-HMCD_SurfaceHardness = {
-	[MAT_METAL] = .95,
-	[MAT_COMPUTER] = .95,
-	[MAT_VENT] = .95,
-	[MAT_GRATE] = .95,
-	[MAT_FLESH] = 2,
-	[MAT_ALIENFLESH] = .3,
-	[MAT_SAND] = .1,
-	[MAT_DIRT] = .3,
-	[74] = .1,
-	[85] = .2,
-	[MAT_WOOD] = .5,
-	[MAT_FOLIAGE] = .5,
-	[MAT_CONCRETE] = .9,
-	[MAT_TILE] = .8,
-	[MAT_SLOSH] = .05,
-	[MAT_PLASTIC] = .3,
-	[MAT_GLASS] = .6
-}
-
-function SWEP:BulletCallbackFunc(dmgAmt, ply, tr, dmg, tracer, hard, multi)
-	if tr.Entity:IsPlayer() then return end
-	if tr.MatType == MAT_FLESH then
-		local vPoint = tr.HitPos
-		local effectdata = EffectData()
-		effectdata:SetOrigin(vPoint)
-	end
-
-	if tr.HitSky then return end
-	if hard then self:RicochetOrPenetrate(tr) end
-end
-
-function SWEP:RicochetOrPenetrate(initialTrace)
-	local AVec, IPos, TNorm, SMul = initialTrace.Normal, initialTrace.HitPos, initialTrace.HitNormal, HMCD_SurfaceHardness[initialTrace.MatType]
-	if not SMul then SMul = .5 end
-	local ApproachAngle = -math.deg(math.asin(TNorm:DotProduct(AVec)))
-	local MaxRicAngle = 60 * SMul
-	if ApproachAngle > (MaxRicAngle * 1.25) then -- all the way through
-		local MaxDist, SearchPos, SearchDist, Penetrated = (self.Damage / SMul) * .15, IPos, 5, false
-		while (not Penetrated) and (SearchDist < MaxDist) do
-			SearchPos = IPos + AVec * SearchDist
-			local PeneTrace = util.QuickTrace(SearchPos, -AVec * SearchDist)
-			if (not PeneTrace.StartSolid) and PeneTrace.Hit then
-				Penetrated = true
-			else
-				SearchDist = SearchDist + 5
-			end
-		end
-
-		if Penetrated then
-			local StopMul = SearchDist / MaxDist
-			self:FireBullets({
-				Attacker = self.Owner,
-				Damage = 1,
-				Force = 1,
-				Num = 1,
-				Tracer = 0,
-				TracerName = "",
-				Dir = -AVec,
-				Spread = Vector(0, 0, 0),
-				Src = SearchPos + AVec
-			})
-
-			self:FireBullets({
-				Attacker = self.Owner,
-				Damage = self.CurrentDamage * math.Clamp((1 - StopMul) * 1.2, 0.01, 1),
-				Force = self.Damage / 15,
-				Num = 1,
-				Tracer = 0,
-				TracerName = "",
-				Dir = AVec,
-				Spread = Vector(0, 0, 0),
-				Src = SearchPos + AVec,
-				Callback = function(ply, tr)
-					local trace = util.QuickTrace(SearchPos + AVec, AVec * 1000000)
-					ply:GetActiveWeapon():BulletCallbackFunc(self.CurrentDamage * math.Clamp((1 - StopMul) * 1.2, 0.01, 1), ply, trace, dmg, false, true, false)
-				end
-			})
-
-			self.CurrentDamage = self.CurrentDamage * math.Clamp((1 - StopMul) * 1.2, 0.01, 1)
-		end
-	elseif ApproachAngle < (MaxRicAngle * .75) then
-		-- ping whiiiizzzz
-		sound.Play("snd_jack_hmcd_ricochet_" .. math.random(1, 22) .. ".wav", IPos, 70, math.random(90, 100))
-		local NewVec = AVec:Angle()
-		NewVec:RotateAroundAxis(TNorm, 180)
-		local AngDiffNormal = math.deg(math.acos(NewVec:Forward():Dot(TNorm))) - 90
-		NewVec:RotateAroundAxis(NewVec:Right(), AngDiffNormal * .7) -- bullets actually don't ricochet elastically
-		NewVec = NewVec:Forward()
-		self:FireBullets({
-			Attacker = self.Owner,
-			Damage = self.Damage * .5,
-			Force = self.Damage / 15,
-			Num = 1,
-			Tracer = 0,
-			TracerName = "",
-			Dir = -NewVec,
-			Spread = Vector(0, 0, 0),
-			Src = IPos + TNorm
-		})
-
-		if CLIENT then
-			hook.Add("PostDrawOpaqueRenderables", "Shoot", function()
-				if dev:GetInt() >= 2 then
-					render.SetMaterial(Material("effects/flashlight/tech"))
-					render.DrawLine(IPos + TNorm, -NewVec, Color(255, 255, 255, 255), true)
-				end
-			end)
-		end
-	end
-end
-
 function SWEP:Reload()
 	self.ReloadInterrupted = false
 	if not IsFirstTimePredicted() then return end
@@ -1101,7 +1074,7 @@ function SWEP:Reload()
 		end
 
 		if SERVER then
-			if IsValid(self:GetOwner().FakeWep) then self:GetOwner().FakeWep.Reloading = true end
+			if IsValid(self:GetOwner().wep) then self:GetOwner().wep.Reloading = true end
 			if self.ReloadSounds then
 				for i, sound in pairs(self.ReloadSounds) do
 					timer.Simple(self.ReloadSounds[i][2] * Mul, function() if IsValid(self) and self.NextReload and self:GetOwner():GetActiveWeapon() == self and (self.ReloadSounds[i][3] == "Both" or (self.ReloadSounds[i][3] == "EmptyOnly" and not TacticalReload) or (self.ReloadSounds[i][3] == "FullOnly" and TacticalReload)) then self.Weapon:EmitSound(self.ReloadSounds[i][1], 65, 100) end end)
@@ -1188,10 +1161,6 @@ function SWEP:EnforceHolsterRules(newWep)
 	if not (newWep == self) then -- only enforce rules for us
 		return
 	end
-
-	for key, wep in ipairs(self:GetOwner():GetWeapons()) do
-		if wep.HolsterSlot and self.HolsterSlot and (wep.HolsterSlot == self.HolsterSlot) and not (wep == self) then self:GetOwner():DropWeapon(wep) end
-	end
 end
 
 function SWEP:StallAnimation(anim, time)
@@ -1213,7 +1182,10 @@ function SWEP:Holster(newWep)
 	for i, bgroup in pairs(self.PreviousBodygroups) do
 		if IsValid(self:GetOwner():GetViewModel()) then self:GetOwner():GetViewModel():SetBodygroup(i, bgroup) end
 	end
-
+    for i = 0, self:GetOwner():GetBoneCount() - 1 do
+        self:GetOwner():ManipulateBonePosition(i, Vector(0, 0, 0))
+        self:GetOwner():ManipulateBoneAngles(i, Angle(0, 0, 0))
+    end
 	self:SetNWVector("BipodPos", Vector())
 	self.BipodPos = nil
 	self.BipodEntity = nil
@@ -1226,8 +1198,13 @@ function SWEP:Holster(newWep)
 	return true
 end
 
-function SWEP:OnRemove()
-	self:CleanLaser()
+function SWEP:OnRemove()    
+	if !IsValid(self:GetOwner()) then return end
+    for i = 0, self:GetOwner():GetBoneCount() - 1 do
+        self:GetOwner():ManipulateBonePosition(i, Vector(0, 0, 0))
+        self:GetOwner():ManipulateBoneAngles(i, Angle(0, 0, 0))
+    end
+	return true
 end
 
 function SWEP:OnRestore()
@@ -1435,59 +1412,6 @@ if CLIENT then
 	local LastBipodGotten = 0
 	local LastBipodPos = Vector(0, 0, 0)
 	local LastAngGotten = Angle(0, 0, 0)
-	function SWEP:ViewModelDrawn(vm)
-		if self.Attachments and self.Attachments["Owner"] then
-			for attachment, info in pairs(self.Attachments["Owner"]) do
-				if self:GetNWBool(attachment) then
-					if not self.DrawnAttachments[attachment] then
-						self.DrawnAttachments[attachment] = ClientsideModel(info.model)
-						self.DrawnAttachments[attachment]:SetPos(vm:GetPos())
-						self.DrawnAttachments[attachment]:SetParent(vm)
-						self.DrawnAttachments[attachment]:SetNoDraw(true)
-						if info.scale then self.DrawnAttachments[attachment]:SetModelScale(info.scale, 0) end
-						if info.material then self.DrawnAttachments[attachment]:SetMaterial(info.material) end
-						if info.aimpos then self.AttAimPos = info.aimpos end
-						if info.sightpos then if not self.SightInfo then self.SightInfo = {14 - info.num, self.DrawnAttachments[attachment]} end end
-						if info.bipodpos then self.AttBipodPos = info.bipodpos end
-					else
-						local matr = vm:GetBoneMatrix(vm:LookupBone(info.bone))
-						if matr then
-							local pos, ang = matr:GetTranslation(), matr:GetAngles()
-							if info.reverseangle then ang.r = -ang.r end
-							self.DrawnAttachments[attachment]:SetRenderOrigin(pos + ang:Right() * info.pos.right + ang:Forward() * info.pos.forward + ang:Up() * info.pos.up)
-							if info.sightang then
-								local angCopy = matr:GetAngles()
-								if info.sightang.up then angCopy:RotateAroundAxis(angCopy:Up(), info.sightang.up) end
-								if info.sightang.forward then angCopy:RotateAroundAxis(angCopy:Forward(), info.sightang.forward) end
-								if info.sightang.right then angCopy:RotateAroundAxis(angCopy:Right(), info.sightang.right) end
-								self.ScopeDotAngle = angCopy
-								self.ScopeDotPosition = pos + angCopy:Right() * info.sightpos.right + angCopy:Forward() * info.sightpos.forward + angCopy:Up() * info.sightpos.up
-							end
-
-							if info.ang then
-								if info.ang.up then ang:RotateAroundAxis(ang:Up(), info.ang.up) end
-								if info.ang.forward then ang:RotateAroundAxis(ang:Forward(), info.ang.forward) end
-								if info.ang.right then ang:RotateAroundAxis(ang:Right(), info.ang.right) end
-							end
-
-							if info.sightpos then timer.Simple(.5, function() self.rt_s = 1 end) end
-							self.DrawnAttachments[attachment]:SetRenderAngles(ang)
-							self.DrawnAttachments[attachment]:DrawModel()
-						end
-					end
-				else
-					if self.DrawnAttachments[attachment] then
-						self.DrawnAttachments[attachment] = nil
-						if info.aimpos then self.AttAimPos = nil end
-						if info.sightang then self.SightInfo = nil end
-						if info.bipodpos then self.AttBipodPos = nil end
-					end
-				end
-			end
-		end
-
-		if self.SightInfo then GAMEMODE:DrawScopeDot(self, self.SightInfo[1], self.SightInfo[2], vm) end
-	end
 
 	function SWEP:GetViewModelPosition(pos, ang)
 		if LocalPlayer() ~= self:GetOwner() then self:Think() end
@@ -1549,245 +1473,7 @@ if CLIENT then
 		return pos + Right * (npos[1] + spos[1] + kpos[1]) + Forward * (npos[2] + spos[2] + kpos[2]) + Up * (npos[3] + spos[3] + kpos[3]) + bipodPos, ang
 	end
 
-	function SWEP:DrawHUD()
-		--[[ply = self:GetOwner()
-		if self:GetNWBool("Sight") or self:GetNWBool("Sight2") or self:GetNWBool("Sight3") or self:GetNWBool("Scope1") then
-		local rt = {
-    	    x = 0,
-    	    y = 0,
-    		origin = self:GetOwner():EyePos(),
-    		angles = self:GetOwner():EyeAngles(),
-    	    w = self.rt_s,
-    	    h = self.rt_s,
-    	    drawviewmodel = false,
-    	    znear = 1,
-    	    zfar = 26000,
-			bloomtone=false,
-			dopostprocess=false
-    	}
-
-    	local muzzle = ply:GetViewModel():GetAttachment(1)
-    	local rtscope1 = {
-    	    x = 0,
-    	    y = 0,
-    	    w = 512,
-    	    h = 512,
-    	    angles = muzzle.Ang+Angle(0,0,90) or Angle(0,0,0),
-    	    origin = muzzle.Pos or Vector(0,0,0),
-    	    drawviewmodel = false,
-    	    fov = 5,
-    	    znear = 1,
-    	    zfar = 26000
-    	}
-
-    	rtscope1.angles[3] = rtscope1.angles[3] -180
-    	self.rt_scope1 = GetRenderTarget("huy-glass", 512, 512, false)  
-    	self.mat_scope1 = Material("models/weapons/arc9/darsu_eft/mods/scope_all_swampfox_trihawk_prism_scope_3x30_lod0_linza")
-    	self.mat_scope1:SetTexture("$basetexture",self.rt_scope1)
-
-		self.rtmat_kobra = GetRenderTarget("huy-glass", 512, 512, false) 
-
-		self.mat_kobra = Material("models/weapons/tfa_ins2/optics/kobra_lense")
-    	self.mat_kobra:SetTexture("$basetexture",self.rtmat_kobra)
-		self.mat_kobra:SetTexture("$bumpmap", self.rtmat_kobra)
-		self.mat_kobra:SetInt("$envmaptint", 0)
-
-		self.rtmat_2 = GetRenderTarget("huy-glass", 512, 512, false) 
-
-		self.mat2 = Material("models/weapons/tfa_ins2/optics/aimpoint_lense")
-    	self.mat2:SetTexture("$basetexture",self.rtmat_2)
-		self.mat2:SetTexture("$bumpmap", self.rtmat_2)
-		self.mat2:SetInt("$envmaptint", 0)
-
-		self.rtmat_holo = GetRenderTarget("huy-glass", 512, 512, false) 
-
-		self.mat_holo = Material("models/weapons/tfa_ins2/optics/eotech_lense")
-    	self.mat_holo:SetTexture("$basetexture",self.rtmat_holo)
-		self.mat_holo:SetTexture("$bumpmap", self.rtmat_kobra)
-		self.mat_holo:SetInt("$envmaptint", 0)
-
-		self.rtmat_romeo = GetRenderTarget("huy-glass", 512, 512, false) 
-
-		self.mat_rmeo = Material("models/weapons/arc9/darsu_eft/mods/transparent_glass")
-    	self.mat_rmeo:SetTexture("$basetexture",self.rtmat_romeo)
-		self.mat_rmeo:SetTexture("$bumpmap", self.rtmat_romeo)
-		self.mat_rmeo:SetInt("$envmaptint", 0)
-
-		self.rtmat_kar = GetRenderTarget("huy-glass", 512, 512, false) 
-
-		self.mat_kar = Material("models/weapons/v_models/kar98/kar_lens_diff")
-    	self.mat_kar:SetTexture("$basetexture",self.rtmat_kar)
-    	if self:GetNWBool("Sight", false) then
-    		render.PushRenderTarget(self.rtmat_kobra, 0, 0, 512, 512)
-
-			local old = DisableClipping(true)
-   	 	    	render.Clear(255,0,0,0)
-    		    render.RenderView( rt )
-
-    		    cam.Start2D()
-				    if self:GetOwner():GetNWBool("fake", false) == false then surface.SetDrawColor( 255, 255, 255, self.AimPerc * 2.5 ) else 
-    		        	surface.SetDrawColor( 255, 255, 255, 255 )
-					end
-    		        surface.SetMaterial( Material("vgui/arc9_eft_shared/reticles/scope_all_ekb_okp7_true_marks.png") ) 
-					surface.DrawTexturedRectRotated( 256+self:GetNWFloat("SightShakeY"), 240+self:GetNWFloat("SightShakeX"), 280, 400, 0 ) 
-				cam.End2D()
-
-			DisableClipping(old)
-
-    		render.PopRenderTarget()
-		elseif self:GetNWBool("Sight2", false) then
-    		render.PushRenderTarget(self.rtmat_2, 0, 0, 512, 512)
-			local old = DisableClipping(true)
-    		    render.Clear(255,0,0,0)
-    		    render.RenderView( rt )
-
-				cam.Start2D()
-
-				    if self:GetOwner():GetNWBool("fake", false) == false then surface.SetDrawColor( 255, 255, 255, self.AimPerc * 2.5 ) else 
-    		        	surface.SetDrawColor( 255, 255, 255, 255 )
-					end
-					surface.SetMaterial( Material("vgui/arc9_eft_shared/reticles/scope_30mm_burris_fullfield_tac30_1_4x24_marks.png") ) 
-    		        surface.DrawTexturedRectRotated( 260+self:GetNWFloat("SightShakeY"), 270+self:GetNWFloat("SightShakeX"), 470, 470, 0 ) 
-				
-				cam.End2D()
-
-				DisableClipping(old)
-
-    		render.PopRenderTarget()
-		elseif self:GetNWBool("Sight3", false) then
-    		render.PushRenderTarget(self.rtmat_holo, 0, 0, 512, 512)
-    		    render.Clear(255,0,0,0)
-    		    render.RenderView( rt )
-    		    cam.Start2D()
-				    if self:GetOwner():GetNWBool("fake", false) == false then surface.SetDrawColor( 255, 255, 255, self.AimPerc * 2.5 ) else 
-    		        	surface.SetDrawColor( 255, 255, 255, 255 )
-					end
-    		        surface.SetMaterial( Material("vgui/arc9_eft_shared/reticles/scope_all_eotech_xps3-0_marks.png") ) 
-    		        surface.DrawTexturedRectRotated( 255+self:GetNWFloat("SightShakeY"), 220+self:GetNWFloat("SightShakeX"), 240, 270, 0 ) 
-    		    cam.End2D()
-    		render.PopRenderTarget()
-		elseif self:GetNWBool("Romeo8T", false) then
-    		render.PushRenderTarget(self.rtmat_romeo, 0, 0, 512, 512)
-			local old = DisableClipping(true)
-    		    render.Clear(255,0,0,0)
-    		    render.RenderView( rt )
-				
-    		    cam.Start2D()
-				    if self:GetOwner():GetNWBool("fake", false) == false then surface.SetDrawColor( 255, 255, 255, self.AimPerc * 2.5 ) else 
-    		        	surface.SetDrawColor( 255, 255, 255, 255 )
-					end
-    		        surface.SetMaterial( Material("vgui/arc9_eft_shared/reticles/scope_all_sig_romeo_8t_lod0_mark.png") ) 
-    		        surface.DrawTexturedRectRotated( 256+self:GetNWFloat("SightShakeY"), 280+self:GetNWFloat("SightShakeX"), 300, 390, 0 ) 
-    		    cam.End2D()
-				DisableClipping(old)
-
-    		render.PopRenderTarget()
-		elseif self:GetNWBool("Scope1", false) then
-		    render.PushRenderTarget(self.rt_scope1, 0, 0, 512, 512)
-        		local old = DisableClipping(true)
-        		render.Clear(1,1,1,255)
-        		render.RenderView( rtscope1 )
-	
-        		cam.Start2D()
-					surface.SetDrawColor(0, 0, 0, 255 - self.AimPerc * 2.55)
-        		    surface.DrawTexturedRectRotated( 256, 256, 512, 512, 0 )
-				if self.AimPerc > 55 then
-        		    surface.SetDrawColor( 255, 255, 255, 255 )
-					surface.SetMaterial(Material("vgui/arc9_eft_shared/reticles/scope_34mm_nightforce_atacr_7_35x56_marks.png"))
-        		    surface.DrawTexturedRectRotated( 256, 256, 512, 512, 0 )
-				end
-        		cam.End2D()
-        		DisableClipping(old)
-    		render.PopRenderTarget()
-		end]]
-		--
-	end
-
-	function SWEP:DrawWorldModel()
-		if self.Attachments and self.Attachments["Viewer"] then
-			if IsValid(self:GetOwner()) then
-				if self.FuckedWorldModel then
-					if not self.WModel then
-						self.WModel = ClientsideModel(self.WorldModel)
-						self.WModel:SetPos(self:GetOwner():GetPos())
-						self.WModel:SetParent(self:GetOwner())
-						self.WModel:SetNoDraw(true)
-						if self.Attachments["Viewer"]["Weapon"].bodygroups then
-							for i, val in pairs(self.Attachments["Viewer"]["Weapon"].bodygroups) do
-								self.WModel:SetBodygroup(i, val)
-							end
-						end
-					else
-						local pos, ang = self:GetOwner():GetBonePosition(self:GetOwner():LookupBone("ValveBiped.Bip01_R_Hand"))
-						if pos and ang then
-							local info = self.Attachments["Viewer"]["Weapon"]
-							self.WModel:SetRenderOrigin(pos + ang:Right() * info.pos.right + ang:Forward() * info.pos.forward + ang:Up() * info.pos.up)
-							local angList = {
-								["forward"] = ang:Forward(),
-								["right"] = ang:Right(),
-								["up"] = ang:Up()
-							}
-
-							for i, rot in pairs(info.ang) do
-								if not info.ang[1] then
-									ang:RotateAroundAxis(angList[i], rot)
-								else
-									ang:RotateAroundAxis(angList[rot[1]], rot[2])
-								end
-
-								angList = {
-									["forward"] = ang:Forward(),
-									["right"] = ang:Right(),
-									["up"] = ang:Up()
-								}
-							end
-
-							self.WModel:SetRenderAngles(ang)
-							self.WModel:DrawModel()
-						end
-					end
-				else
-					self:DrawModel()
-				end
-
-				for attachment, info in pairs(self.Attachments["Viewer"]) do
-					if self:GetNWBool(attachment) then
-						if not self.WDrawnAttachments[attachment] then
-							self.WDrawnAttachments[attachment] = ClientsideModel(info.model)
-							self.WDrawnAttachments[attachment]:SetPos(self:GetOwner():GetPos())
-							self.WDrawnAttachments[attachment]:SetParent(self:GetOwner())
-							self.WDrawnAttachments[attachment]:SetNoDraw(true)
-							if info.scale then self.WDrawnAttachments[attachment]:SetModelScale(info.scale, 0) end
-							if info.material then self.WDrawnAttachments[attachment]:SetMaterial(info.material) end
-						else
-							if attachment == "Laser" then self:DrawLaser() end
-							local pos, ang = self:GetOwner():GetBonePosition(self:GetOwner():LookupBone("ValveBiped.Bip01_R_Hand"))
-							self.WDrawnAttachments[attachment]:SetRenderOrigin(pos + ang:Right() * info.pos.right + ang:Forward() * info.pos.forward + ang:Up() * info.pos.up)
-							local angList = {
-								["forward"] = ang:Forward(),
-								["right"] = ang:Right(),
-								["up"] = ang:Up()
-							}
-
-							for i, rot in pairs(info.ang) do
-								ang:RotateAroundAxis(angList[i], rot)
-								angList = {
-									["forward"] = ang:Forward(),
-									["right"] = ang:Right(),
-									["up"] = ang:Up()
-								}
-							end
-
-							self.WDrawnAttachments[attachment]:SetRenderAngles(ang)
-							self.WDrawnAttachments[attachment]:DrawModel()
-						end
-					else
-						if self.WDrawnAttachments[attachment] then self.WDrawnAttachments[attachment] = nil end
-					end
-				end
-			end
-		end
-	end
+	-- тут была старая система прицельных сеток
 
 	function SWEP:FireAnimationEvent(pos, ang, event, name)
 		return true

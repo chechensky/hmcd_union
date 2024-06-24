@@ -1,7 +1,4 @@
---[[
-Server Name: [EU] Homicide
-Server IP:   185.17.0.25:27025
-File Path:   gamemodes/homicide/entities/weapons/wep_jack_hmcd_crossbow.lua
+--[[File Path:   gamemodes/homicide/entities/weapons/wep_jack_hmcd_crossbow.lua
 		 __        __              __             ____     _                ____                __             __         
    _____/ /_____  / /__  ____     / /_  __  __   / __/____(_)__  ____  ____/ / /_  __     _____/ /____  ____ _/ /__  _____
   / ___/ __/ __ \/ / _ \/ __ \   / __ \/ / / /  / /_/ ___/ / _ \/ __ \/ __  / / / / /    / ___/ __/ _ \/ __ `/ / _ \/ ___/
@@ -17,7 +14,7 @@ else
 	SWEP.WepSelectIcon = surface.GetTextureID("vgui/wep_jack_hmcd_crossbow")
 end
 
-SWEP.Base = "wep_jack_hmcd_firearm_base"
+SWEP.Base = "wep_cat_base"
 SWEP.IconTexture = "vgui/wep_jack_hmcd_crossbow"
 SWEP.IconLength = 2
 SWEP.PrintName = "Crossbow"

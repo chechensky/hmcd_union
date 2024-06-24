@@ -1,7 +1,4 @@
---[[
-Server Name: [EU] Homicide
-Server IP:   185.17.0.25:27025
-File Path:   gamemodes/homicide/entities/weapons/wep_jack_hmcd_spas.lua
+--[[File Path:   gamemodes/homicide/entities/weapons/wep_jack_hmcd_spas.lua
 		 __        __              __             ____     _                ____                __             __         
    _____/ /_____  / /__  ____     / /_  __  __   / __/____(_)__  ____  ____/ / /_  __     _____/ /____  ____ _/ /__  _____
   / ___/ __/ __ \/ / _ \/ __ \   / __ \/ / / /  / /_/ ___/ / _ \/ __ \/ __  / / / / /    / ___/ __/ _ \/ __ `/ / _ \/ ___/
@@ -20,7 +17,7 @@ end
 SWEP.IconTexture = "vgui/hud/tfa_ins2_spas12"
 SWEP.IconLength = 3
 SWEP.IconHeight = 2
-SWEP.Base = "wep_jack_hmcd_firearm_base"
+SWEP.Base = "wep_cat_base"
 SWEP.PrintName = "Spas-12"
 SWEP.Instructions = "This is a combat shotgun firing 12-guage 2-3/4 inch cartridges.\nRMB to aim.\nRELOAD to reload.\nShot placement counts.\nCrouching helps stability."
 SWEP.Primary.ClipSize = 8

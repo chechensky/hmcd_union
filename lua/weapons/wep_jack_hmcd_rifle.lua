@@ -1,7 +1,4 @@
---[[
-Server Name: [EU] Homicide
-Server IP:   185.17.0.25:27025
-File Path:   gamemodes/homicide/entities/weapons/wep_jack_hmcd_rifle.lua
+--[[File Path:   gamemodes/homicide/entities/weapons/wep_jack_hmcd_rifle.lua
 		 __        __              __             ____     _                ____                __             __         
    _____/ /_____  / /__  ____     / /_  __  __   / __/____(_)__  ____  ____/ / /_  __     _____/ /____  ____ _/ /__  _____
   / ___/ __/ __ \/ / _ \/ __ \   / __ \/ / / /  / /_/ ___/ / _ \/ __ \/ __  / / / / /    / ___/ __/ _ \/ __ `/ / _ \/ ___/
@@ -20,7 +17,7 @@ end
 SWEP.IconTexture = "vgui/wep_jack_hmcd_rifle"
 SWEP.IconLength = 3
 SWEP.IconHeight = 2
-SWEP.Base = "wep_jack_hmcd_firearm_base"
+SWEP.Base = "wep_cat_base"
 SWEP.PrintName = "Mauser Kar98k"
 SWEP.Instructions = "This is an old bolt-action hunting rifle with a scope with a five-round internal magazine, firing 7.92x57mm.\n\nLMB to fire.\nRMB to aim.\nRMB + E to use an alternative scope.\nRELOAD to reload.\nShot placement counts.\nCrouching helps stability.\nBullets can ricochet and penetrate."
 SWEP.Primary.ClipSize = 5
@@ -51,6 +48,20 @@ SWEP.ENT = "ent_jack_hmcd_rifle"
 SWEP.DeathDroppable = false
 SWEP.CommandDroppable = true
 SWEP.Spawnable = true
+
+SWEP.TPIK = true
+
+SWEP.TPIK_PosAngles = {
+	["ValveBiped.Bip01_L_Forearm"] = Angle(0,120,0),
+	["ValveBiped.Bip01_L_Hand"] = Angle(0,0,0),
+	["ValveBiped.Bip01_L_Finger0"] = Angle(0,0,0),
+	["ValveBiped.Bip01_L_Finger1"] = Angle(0,-30,0),
+	["ValveBiped.Bip01_L_Finger2"] = Angle(0,-30,0),
+	["ValveBiped.Bip01_L_Finger3"] = Angle(0,-30,0)
+}
+SWEP.TPIK_PosVectors = {
+}
+
 SWEP.MuzzleEffectSuppressed = "pcf_jack_mf_suppressed"
 --SWEP.SuppressedFireSound="snd_jack_hmcd_supppistol.wav"
 SWEP.CycleType = "manual"

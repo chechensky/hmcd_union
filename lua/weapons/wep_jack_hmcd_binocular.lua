@@ -1,7 +1,4 @@
---[[
-Server Name: [EU] Homicide
-Server IP:   185.17.0.25:27025
-File Path:   gamemodes/homicide/entities/weapons/wep_jack_hmcd_binocular.lua
+--[[File Path:   gamemodes/homicide/entities/weapons/wep_jack_hmcd_binocular.lua
 		 __        __              __             ____     _                ____                __             __         
    _____/ /_____  / /__  ____     / /_  __  __   / __/____(_)__  ____  ____/ / /_  __     _____/ /____  ____ _/ /__  _____
   / ___/ __/ __ \/ / _ \/ __ \   / __ \/ / / /  / /_/ ___/ / _ \/ __ \/ __  / / / / /    / ___/ __/ _ \/ __ `/ / _ \/ ___/
@@ -19,7 +16,7 @@ end
 
 SWEP.ViewModelFOV = 80
 SWEP.IconTexture = "vgui/wep_jack_hmcd_binocular"
-SWEP.Base = "wep_jack_hmcd_firearm_base"
+SWEP.Base = "wep_cat_base"
 SWEP.PrintName = "BPOs 10x42 “Baigish”"
 SWEP.Instructions = "These are two telescopes mounted side-by-side and aligned to point in the same direction, allowing the viewer to observe distant objects.\n\nRMB to look through lenses."
 SWEP.Primary.ClipSize = -1

@@ -1,7 +1,4 @@
---[[
-Server Name: [EU] Homicide
-Server IP:   185.17.0.25:27025
-File Path:   gamemodes/homicide/entities/weapons/wep_jack_hmcd_smallpistol.lua
+--[[File Path:   gamemodes/homicide/entities/weapons/wep_jack_hmcd_smallpistol.lua
 		 __        __              __             ____     _                ____                __             __         
    _____/ /_____  / /__  ____     / /_  __  __   / __/____(_)__  ____  ____/ / /_  __     _____/ /____  ____ _/ /__  _____
   / ___/ __/ __ \/ / _ \/ __ \   / __ \/ / / /  / /_/ ___/ / _ \/ __ \/ __  / / / / /    / ___/ __/ _ \/ __ `/ / _ \/ ___/
@@ -11,7 +8,7 @@ File Path:   gamemodes/homicide/entities/weapons/wep_jack_hmcd_smallpistol.lua
 --]]
 AddCSLuaFile()
 SWEP.Spawnable = true
-SWEP.Base = "wep_jack_hmcd_firearm_base"
+SWEP.Base = "wep_cat_base"
 SWEP.PrintName = "Beretta PX4-Storm SubCompact"
 SWEP.Instructions = "This is your trusty 9x19mm concealed-carry pistol with a lightweight low-capacity magazine. Use it to defend the lives of the innocent.\n\nLMB to fire.\nRMB to aim.\nRELOAD to reload.\nShot placement counts.\nCrouching helps stability.\nBullets can ricochet and penetrate."
 --SWEP.CustomColor=Color(50,50,50,255)
@@ -41,6 +38,14 @@ SWEP.MagEntity = "ent_jack_hmcd_px4mag"
 SWEP.HolsterSlot=2
 SWEP.World_MuzzleAttachmentName="muzzle_flash"
 SWEP.DangerLevel = 70
+
+SWEP.TPIK = true
+
+SWEP.TPIK_PosAngles = {
+    ["ValveBiped.Bip01_R_Forearm"] = Angle(5, -5, 0),
+	["ValveBiped.Bip01_L_Forearm"] = Angle(0, 0, 0),
+	["ValveBiped.Bip01_R_Hand"] = Angle(-5, 0, 0)
+}
 
 SWEP.ReloadSounds = {
 	{"weapons/ins2/p80/m9_magout.wav", 0.7, "EmptyOnly"},

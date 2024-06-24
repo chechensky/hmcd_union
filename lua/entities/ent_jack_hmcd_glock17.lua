@@ -1,7 +1,4 @@
---[[
-Server Name: [EU] Homicide
-Server IP:   185.17.0.25:27025
-File Path:   gamemodes/homicide/entities/entities/ent_jack_hmcd_glock17.lua
+--[[File Path:   gamemodes/homicide/entities/entities/ent_jack_hmcd_glock17.lua
 
 --]]
 AddCSLuaFile()
@@ -40,7 +37,7 @@ ENT.Attachments = {
 		scale = .9,
 		model = "models/weapons/tfa_ins2/upgrades/laser_pistol.mdl"
 	},
-		["Walther_Mrs"] = {
+	["Walther_Mrs"] = {
 		bone = "A_Underbarrel",
 		pos = {
 			forward = 5,
@@ -51,8 +48,8 @@ ENT.Attachments = {
 			forward = 10
 		},
 		scale = .9,
-			model = "models/weapons/arc9/darsu_eft/mods/scope_all_walther_mrs.mdl",
-		}
+		model = "models/weapons/arc9/darsu_eft/mods/scope_all_walther_mrs.mdl"
+	}
 }
 
 ENT.MuzzlePos = Vector(7, .2, 1)

@@ -51,12 +51,13 @@ function GM:StartRound()
 	if #ply_GetAll()<2 then return end
     local hmcd_roundtype = math.random(1,5)
     local roundt = table.Random(Rounds)
+    local rezhim = GAMEMODE.RoundNextType or math.random(1, 5)
     GAMEMODE.RoundName = GAMEMODE.RoundNext
     GAMEMODE.RoundNext = roundt
+    
     if GAMEMODE.RoundName == "homicide" then
-        GAMEMODE.RoundType = GAMEMODE.RoundNextType
+        GAMEMODE.RoundType = rezhim
         GAMEMODE.RoundNextType = math.random(1, 5)
-
     else
         GAMEMODE.RoundType = 0
         GAMEMODE.RoundNextType = math.random(1, 5)
@@ -96,7 +97,6 @@ function GM:StartRound()
 	            if HMCD_Loadout_Firearms[ply:GetNWString("RoleShow", "")][GAMEMODE.RoundType] then
 		            for i,wep in pairs(HMCD_Loadout_Firearms[ply:GetNWString("RoleShow", "")][GAMEMODE.RoundType]) do
                         if wep != "" then
-                            print(ply, wep)
 				            ply:Give(wep)
                             ply:GiveAmmo(weapons.Get(wep).Primary.ClipSize, weapons.Get(wep).Primary.Ammo, true)
                             if GAMEMODE.RoundType == 2 and ply.Role == "Traitor" then
@@ -115,29 +115,107 @@ function GM:StartRound()
         timer.Simple(.3,function()
 	        for _,ply in pairs(ply_GetAll())do
                 ply.Role = "Sandboxer"
+                GAMEMODE.RoundState = 1
 	        end
         end)
     elseif GAMEMODE.RoundName == "dm" then
         timer.Simple(.3, function()
+            local bodyvest = {
+                "Level IIIA",
+                "Level III"
+            }
 	        for _,ply in pairs(ply_GetAll())do
                 ply.Role = "Fighter"
                 ply:SetNWString("RoleShow", "Fighter")
+
+                timer.Simple(1,function()
+                    ply:SetNWString("Bodyvest", table.Random(bodyvest))
+                    if math.random(1, 3) == 2 then
+                        ply:SetNWString("Helmet", "ACH")
+                    end
+                end)
+
+                local mainwep = table.Random(DM_LoadoutMain)
+                local secwep = table.Random(DM_LoadoutSecondary)
+				ply:Give(mainwep)
+                ply:GiveAmmo(weapons.Get(mainwep).Primary.ClipSize * 1.5, weapons.Get(mainwep).Primary.Ammo, true)
+				ply:Give(secwep)
+                ply:GiveAmmo(weapons.Get(secwep).Primary.ClipSize * 0.5, weapons.Get(mainwep).Primary.Ammo, true)
+                for i=1, math.random(1, 4) do
+                    local atth = math.random(6,15)
+                    print("ATTH", atth)
+                    print("I", i)
+                    ply.Equipment[atth]=true
+		            net.Start("hmcd_equipment")
+		            net.WriteInt(atth,6)
+		            net.WriteBit(true)
+		            net.Send(ply)
+                end
+                GAMEMODE.RoundState = 1
 	        end
         end)
     elseif GAMEMODE.RoundName == "hl2" then
         timer.Simple(.3, function()
+            local bodyvest = {
+                "Level IIIA",
+                "Level III"
+            }
 	        for _,ply in pairs(ply_GetAll())do
+                local class = table.Random(Classes)
 
-                local numPlayers = #ply_GetAll()
-                local halfNumPlayers = math.floor(numPlayers / 2)
-                table.Shuffle(ply)
+                if _ % 2 == 0 then
+                    ply.Role = "Rebel"
+                    local rpg = GetRandomRolePlayer("Rebel")
+                    local crossbow = GetRandomRolePlayer("Rebel")
+                    ply:SetNWString("HL2_Class", class)
+                    ply:SetNWInt("RoleColor_R", 178)
+                    ply:SetNWInt("RoleColor_G", 119)
+                    ply:SetNWInt("RoleColor_B", 17)
 
-                if i <= halfNumPlayers then
-                    ply.Role = "Rebel"                
+                    timer.Simple(1,function()
+                        ply:SetNWString("Bodyvest", table.Random(bodyvest))
+                        if math.random(1, 3) == 2 then
+                            ply:SetNWString("Helmet", "ACH")
+                        end
+                    end)
+
+                    rpg:Give("wep_jack_hmcd_rpg", false)
+                    rpg:GiveAmmo(1, "RPG_Round", true)
+                    crossbow:Give("wep_jack_hmcd_crossbow", false)
+                    crossbow:GiveAmmo(5, "XBowBolt", true)
+                    if ply:GetNWString("HL2_Class", "") == "Medic" then
+                        ply:SetModel(table.Random(Medic_RebelModels[ply.ModelSex]))
+                    else
+                        ply:SetModel(table.Random(Fighter_RebelModels[ply.ModelSex]))
+                    end
                 else
                     ply.Role = "Combine"
+                    ply.ModelSex = "combine"
+                    ply:SetNWInt("RoleColor_R", 32)
+                    ply:SetNWInt("RoleColor_G", 98)
+                    ply:SetNWInt("RoleColor_B", 185)
+                    ply:SetNWString("Character_Name", "Combine #" .. math.random(8000, 9000))
+                    ply:SetNWString("HL2_Class", table.Random(ClassesCombine))
+                    ply:SetModel(CombineModels[ply:GetNWString("HL2_Class","")])
+                    if ply:GetNWString("HL2_Class","") == "Shotguner" then
+                        ply:SetBodygroup(0, 1)
+                    end
+                    ply:SetupHands()
                 end
+
+		        for i,wep in pairs(HL2_Loadout[ply.Role][ply:GetNWString("HL2_Class")]) do
+				    ply:Give(wep)
+	            end
+                local totalwep_main = table.Random(HL2_LoadoutFire_Main[ply.Role][ply:GetNWString("HL2_Class")])
+                local totalwep_sec = table.Random(HL2_LoadoutFire_Secondary[ply.Role])
+				ply:Give(totalwep_main)
+                ply:GiveAmmo(weapons.Get(totalwep_main).Primary.ClipSize * 2, weapons.Get(totalwep_main).Primary.Ammo, true)
+				
+                ply:Give(totalwep_sec)
+                ply:GiveAmmo(weapons.Get(totalwep_sec).Primary.ClipSize * 1, weapons.Get(totalwep_sec).Primary.Ammo, true)
+
                 ply:SetNWString("RoleShow", ply.Role)
+                GAMEMODE.RoundState = 1
 	        end
         end)
     end
@@ -196,6 +274,15 @@ function GM:Think()
         end
     return end
 
+    if GAMEMODE.RoundName == "hl2" then
+        local alive_rebel, alive_combine = GetAliveRoleCount("Rebel"), GetAliveRoleCount("Combine")
+        if alive_rebel < 1 then
+            GAMEMODE:EndRound(4, nil)
+        elseif alive_combine < 1 and alive_rebel > 0 then
+            GAMEMODE:EndRound(5, nil)
+        end
+    return end
+
     if GAMEMODE.RoundName == "homicide" then
         if GAMEMODE.RoundState == 1 then
             local alive_traitor, alive_innocent = GetAliveRoleCount("Traitor"), GetAliveRoleCount("Bystander")
@@ -212,8 +299,8 @@ function GM:Think()
 end
 
 hook.Add("PlayerPostThink", "Spectating", function(ply)
-    if !ply:GetNWBool("Spectating", false) then return end
     if ply:Alive() then return end
+    if !ply:GetNWBool("Spectating", false) then return end
 
 	local plyselect = ply:GetNWEntity("SelectPlayer", Entity(-1))
     if !IsValid(ply:GetNWEntity("SelectPlayer", Entity(-1))) then ply:SetNWEntity("SelectPlayer", table.Random(player.GetAll())) end
@@ -256,10 +343,6 @@ hook.Add("PlayerPostThink", "Spectating", function(ply)
 end)
 
 hook.Add("PlayerDeathThink", "DeathThink", function(ply)
-    if GAMEMODE.RoundState == 1 and GAMEMODE.RoundName != "sandbox" then return false end
     if GAMEMODE.RoundName != "sandbox" then return false end
-end)
-
-hook.Add("PlayerDeath", "SpectateWHO", function(ply)
     ply:SetNWBool("Spectating", true)
 end)

@@ -1,7 +1,4 @@
---[[
-Server Name: [EU] Homicide
-Server IP:   185.17.0.25:27025
-File Path:   gamemodes/homicide/entities/weapons/wep_jack_hmcd_rpg.lua
+--[[File Path:   gamemodes/homicide/entities/weapons/wep_jack_hmcd_rpg.lua
 		 __        __              __             ____     _                ____                __             __         
    _____/ /_____  / /__  ____     / /_  __  __   / __/____(_)__  ____  ____/ / /_  __     _____/ /____  ____ _/ /__  _____
   / ___/ __/ __ \/ / _ \/ __ \   / __ \/ / / /  / /_/ ___/ / _ \/ __ \/ __  / / / / /    / ___/ __/ _ \/ __ `/ / _ \/ ___/
@@ -36,7 +33,7 @@ end
 SWEP.IconTexture = "vgui/inventory/weapon_rpg7.vmt"
 SWEP.IconLength = 4
 SWEP.IconHeight = 2
-SWEP.Base = "wep_jack_hmcd_firearm_base"
+SWEP.Base = "wep_cat_base"
 SWEP.ViewModel = "models/weapons/tfa_ins2/c_rpg.mdl"
 SWEP.WorldModel = "models/weapons/tfa_ins2/w_rpg.mdl"
 

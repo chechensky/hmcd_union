@@ -1,7 +1,4 @@
---[[
-Server Name: [EU] Homicide
-Server IP:   185.17.0.25:27025
-File Path:   gamemodes/homicide/entities/weapons/wep_jack_hmcd_sr25.lua
+--[[File Path:   gamemodes/homicide/entities/weapons/wep_jack_hmcd_sr25.lua
 		 __        __              __             ____     _                ____                __             __         
    _____/ /_____  / /__  ____     / /_  __  __   / __/____(_)__  ____  ____/ / /_  __     _____/ /____  ____ _/ /__  _____
   / ___/ __/ __ \/ / _ \/ __ \   / __ \/ / / /  / /_/ ___/ / _ \/ __ \/ __  / / / / /    / ___/ __/ _ \/ __ `/ / _ \/ ___/
@@ -20,7 +17,7 @@ end
 SWEP.IconTexture = "vgui/hud/tfa_ins2_sr25_eft"
 SWEP.IconLength = 3
 SWEP.IconHeight = 2
-SWEP.Base = "wep_jack_hmcd_firearm_base"
+SWEP.Base = "wep_cat_base"
 SWEP.PrintName = "SR-25"
 SWEP.Instructions = "This is a designated marksman rifle/semi-automatic sniper rifle firing 7.62×51mm NATO caliber. \n\nLMB to fire.\nRMB to aim.\nRELOAD to reload.\nShot placement counts.\nCrouching helps stability.\nBullets can ricochet and penetrate."
 SWEP.Primary.ClipSize = 20
@@ -41,8 +38,20 @@ SWEP.ReloadRate = .75
 -- SWEP.ReloadSound="snd_jack_hmcd_boltreload.wav"
 -- SWEP.CycleSound="snd_jack_hmcd_boltcycle.wav"
 SWEP.AmmoType = "AR2"
+SWEP.Primary.Ammo = "AR2"
 SWEP.TriggerDelay = .1
 -- SWEP.CycleTime=1.2
+
+SWEP.TPIK = true
+
+SWEP.TPIK_PosAngles = {
+    ["ValveBiped.Bip01_R_Upperarm"] = Angle(10, 0, 0),
+	["ValveBiped.Bip01_R_Clavicle"] = Angle(0, -10, 0),
+	["ValveBiped.Bip01_L_Clavicle"] = Angle(0, 10, 0),
+	["ValveBiped.Bip01_L_Upperarm"] = Angle(30, 0, 0),
+	["ValveBiped.Bip01_L_Finger0"] = Angle(0,-10,0)
+}
+
 SWEP.Recoil = 0.5
 SWEP.Supersonic = true
 SWEP.Accuracy = .9999
@@ -249,7 +258,7 @@ SWEP.Attachments = {
 				right = 90
 			},
 			scale = 1,
-			model = "models/weapons/arc9/darsu_eft/mods/scope_all_sig_romeo_8t.mdl",
+			model = "models/weapons/arc9/darsu_eft/mods/scope_7mm_vomz_target_ring.mdl",
 			sightpos = {
 				right = 0.3,
 				forward = 0,

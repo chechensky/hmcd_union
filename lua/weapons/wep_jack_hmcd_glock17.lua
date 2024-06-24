@@ -1,7 +1,4 @@
---[[
-Server Name: [EU] Homicide
-Server IP:   185.17.0.25:27025
-File Path:   gamemodes/homicide/entities/weapons/wep_jack_hmcd_glock17.lua
+--[[File Path:   gamemodes/homicide/entities/weapons/wep_jack_hmcd_glock17.lua
 		 __        __              __             ____     _                ____                __             __         
    _____/ /_____  / /__  ____     / /_  __  __   / __/____(_)__  ____  ____/ / /_  __     _____/ /____  ____ _/ /__  _____
   / ___/ __/ __ \/ / _ \/ __ \   / __ \/ / / /  / /_/ ___/ / _ \/ __ \/ __  / / / / /    / ___/ __/ _ \/ __ `/ / _ \/ ___/
@@ -19,7 +16,7 @@ end
 SWEP.Spawnable = true
 
 SWEP.IconTexture = "vgui/entities/cw_nen_glock17"
-SWEP.Base = "wep_jack_hmcd_firearm_base"
+SWEP.Base = "wep_cat_base"
 SWEP.PrintName = "Glock-17"
 SWEP.Instructions = "This is a polymer-framed, short recoil-operated, locked-breech semi-automatic pistol using 9x19mm rounds.\n\nLMB to fire.\nRMB to aim.\nRELOAD to reload.\nShot placement counts.\nCrouching helps stability.\nBullets can ricochet and penetrate."
 SWEP.ViewModel = "models/weapons/tfa_ins2/c_glock_p80.mdl"
@@ -41,12 +38,19 @@ SWEP.TriggerDelay = .05
 SWEP.AttBone = "glock in my rari"
 SWEP.FuckedWorldModel = true
 SWEP.Recoil = .5
+SWEP.TPIK = true
+
+SWEP.TPIK_PosAngles = {
+    ["ValveBiped.Bip01_R_Forearm"] = Angle(0, 20, 5),
+	["ValveBiped.Bip01_R_Hand"] = Angle(-5, 0, 0)
+}
+
 SWEP.Supersonic = true
 SWEP.AmmoType = "Pistol"
 SWEP.LastFireAnim = "base_firelast"
 SWEP.LastIronFireAnim = "iron_fire_last"
 SWEP.ShellType = ""
-SWEP.ShellDelay = 0.02
+SWEP.ShellDelay = 0
 SWEP.Category="HMCD: Union - Pistols"
 SWEP.DeathDroppable = false
 SWEP.CloseFireSound = "hndg_glock17/glock_fire_01.wav"

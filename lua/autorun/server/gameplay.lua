@@ -49,6 +49,9 @@ hook.Add("PropBreak", "SystemLoot", function(ply, prop)
 end)
 
 hook.Add("PlayerPostThink", "CapsicumWork", function(ply)
+    if ply:GetNWString("HL2_Class","") == "Shotguner" then
+        ply:SetBodygroup(0, 1)
+    end
 	ply.capsicumminus = ply.capsicumminus or CTime
 	if ply.capsicum < 0 then ply.capsicum = 0 end
 	if ply.capsicum > 0.1 then

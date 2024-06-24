@@ -1,7 +1,4 @@
---[[
-Server Name: [EU] Homicide
-Server IP:   185.17.0.25:27025
-File Path:   gamemodes/homicide/entities/weapons/wep_jack_hmcd_pistol.lua
+--[[File Path:   gamemodes/homicide/entities/weapons/wep_jack_hmcd_pistol.lua
 		 __        __              __             ____     _                ____                __             __         
    _____/ /_____  / /__  ____     / /_  __  __   / __/____(_)__  ____  ____/ / /_  __     _____/ /____  ____ _/ /__  _____
   / ___/ __/ __ \/ / _ \/ __ \   / __ \/ / / /  / /_/ ___/ / _ \/ __ \/ __  / / / / /    / ___/ __/ _ \/ __ `/ / _ \/ ___/
@@ -16,7 +13,7 @@ else
 	killicon.AddFont("wep_jack_hmcd_pistol", "HL2MPTypeDeath", "1", Color(255, 0, 0))
 end
 
-SWEP.Base = "wep_jack_hmcd_firearm_base"
+SWEP.Base = "wep_cat_base"
 SWEP.PrintName = "Beretta PX4-Storm SubCompact"
 SWEP.Instructions = "This is your trusty 9x19mm pistol. Use it as you see fit.\n\nLMB to fire.\nRMB to aim.\nRELOAD to reload.\nShot placement counts.\nCrouching helps stability.\nBullets can ricochet and penetrate."
 SWEP.Primary.ClipSize = 14
@@ -40,6 +37,7 @@ SWEP.CloseFireSound = "hndg_beretta92fs/beretta92_fire1.wav"
 --SWEP.SuppressedFireSound="snd_jack_hmcd_supppistol.wav"
 --SWEP.FarFireSound="snd_jack_hmcd_smp_far.wav"
 --SWEP.CloseFireSound="m9/m9_fp.wav"
+
 SWEP.FarFireSound = "m9/m9_dist.wav"
 SWEP.SuppressedFireSound = "m9/m9_suppressed_fp.wav"
 SWEP.MuzzleEffectSuppressed = "pcf_jack_mf_suppressed"

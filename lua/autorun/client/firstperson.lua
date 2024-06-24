@@ -1,5 +1,3 @@
-print("no empty")
-
 net.Receive("ebal_chellele",function(len)
     net.ReadEntity().curweapon = net.ReadString()
 end)

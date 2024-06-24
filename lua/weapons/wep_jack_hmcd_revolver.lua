@@ -1,7 +1,4 @@
---[[
-Server Name: [EU] Homicide
-Server IP:   185.17.0.25:27025
-File Path:   gamemodes/homicide/entities/weapons/wep_jack_hmcd_revolver.lua
+--[[File Path:   gamemodes/homicide/entities/weapons/wep_jack_hmcd_revolver.lua
 		 __        __              __             ____     _                ____                __             __         
    _____/ /_____  / /__  ____     / /_  __  __   / __/____(_)__  ____  ____/ / /_  __     _____/ /____  ____ _/ /__  _____
   / ___/ __/ __ \/ / _ \/ __ \   / __ \/ / / /  / /_/ ___/ / _ \/ __ \/ __  / / / / /    / ___/ __/ _ \/ __ `/ / _ \/ ___/
@@ -18,7 +15,7 @@ else
 end
 
 SWEP.IconTexture = "vgui/wep_jack_hmcd_revolver"
-SWEP.Base = "wep_jack_hmcd_firearm_base"
+SWEP.Base = "wep_cat_base"
 SWEP.PrintName = "Manurhin MR96"
 SWEP.Instructions = "This is an inexpensive 6-round revolver firing .38-special.\n\nLMB to fire.\nRMB to aim.\nRELOAD to reload.\nShot placement counts.\nCrouching helps stability.\nBullets can ricochet and penetrate."
 SWEP.Primary.ClipSize = 6
@@ -56,6 +53,15 @@ SWEP.ShotPitch = 90
 SWEP.ENT = "ent_jack_hmcd_revolver"
 SWEP.CommandDroppable = true
 SWEP.Spawnable = true
+
+SWEP.TPIK = true
+
+SWEP.TPIK_PosAngles = {
+    ["ValveBiped.Bip01_R_Forearm"] = Angle(5, -5, 0),
+	["ValveBiped.Bip01_L_Forearm"] = Angle(0, 0, 0),
+	["ValveBiped.Bip01_R_Hand"] = Angle(-5, 0, 0)
+}
+
 SWEP.CycleType = "revolving"
 SWEP.ReloadType = "clip"
 SWEP.MuzzleEffect = "pcf_jack_mf_spistol"

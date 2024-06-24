@@ -1,7 +1,4 @@
---[[
-Server Name: [EU] Homicide
-Server IP:   185.17.0.25:27025
-File Path:   gamemodes/homicide/entities/entities/ent_jack_hmcd_taser.lua
+--[[File Path:   gamemodes/homicide/entities/entities/ent_jack_hmcd_taser.lua
 
 --]]
 AddCSLuaFile()

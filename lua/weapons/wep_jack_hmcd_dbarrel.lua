@@ -1,7 +1,4 @@
---[[
-Server Name: [EU] Homicide
-Server IP:   185.17.0.25:27025
-File Path:   gamemodes/homicide/entities/weapons/wep_jack_hmcd_dbarrel.lua
+--[[File Path:   gamemodes/homicide/entities/weapons/wep_jack_hmcd_dbarrel.lua
 		 __        __              __             ____     _                ____                __             __         
    _____/ /_____  / /__  ____     / /_  __  __   / __/____(_)__  ____  ____/ / /_  __     _____/ /____  ____ _/ /__  _____
   / ___/ __/ __ \/ / _ \/ __ \   / __ \/ / / /  / /_/ ___/ / _ \/ __ \/ __  / / / / /    / ___/ __/ _ \/ __ `/ / _ \/ ___/
@@ -19,7 +16,7 @@ end
 
 SWEP.IconLength = 2
 SWEP.IconTexture = "vgui/wep_jack_hmcd_dbarrel"
-SWEP.Base = "wep_jack_hmcd_firearm_base"
+SWEP.Base = "wep_cat_base"
 SWEP.PrintName = "Double Barelled Shotgun"
 SWEP.Instructions = "This is a shotgun with two parallel barrels, allowing two shots to be fired in quick succession. It fires 12-guage 2-3/4 inch cartridges.\n\nLMB to fire.\nRMB to aim.\nRELOAD to reload.\nShot placement counts."
 SWEP.Primary.ClipSize = 2

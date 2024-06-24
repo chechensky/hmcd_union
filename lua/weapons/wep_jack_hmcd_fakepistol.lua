@@ -1,7 +1,4 @@
---[[
-Server Name: [EU] Homicide
-Server IP:   185.17.0.25:27025
-File Path:   gamemodes/homicide/entities/weapons/wep_jack_hmcd_fakepistol.lua
+--[[File Path:   gamemodes/homicide/entities/weapons/wep_jack_hmcd_fakepistol.lua
 		 __        __              __             ____     _                ____                __             __         
    _____/ /_____  / /__  ____     / /_  __  __   / __/____(_)__  ____  ____/ / /_  __     _____/ /____  ____ _/ /__  _____
   / ___/ __/ __ \/ / _ \/ __ \   / __ \/ / / /  / /_/ ___/ / _ \/ __ \/ __  / / / / /    / ___/ __/ _ \/ __ `/ / _ \/ ___/
@@ -19,7 +16,7 @@ else
 end
 
 SWEP.IconTexture = "vgui/wep_jack_hmcd_fakepistol"
-SWEP.Base = "wep_jack_hmcd_firearm_base"
+SWEP.Base = "wep_cat_base"
 SWEP.PrintName = "Fake Pistol"
 SWEP.Instructions = "This is a black-spraypainted airsoft gun. Use it to trick innocents and lure them to their doom, either by pretending to be the gunman or by dropping it as a bait."
 SWEP.Slot = 5

@@ -1,7 +1,4 @@
---[[
-Server Name: [EU] Homicide
-Server IP:   185.17.0.25:27025
-File Path:   gamemodes/homicide/entities/entities/ent_jack_hmcd_assaultrifle.lua
+--[[File Path:   gamemodes/homicide/entities/entities/ent_jack_hmcd_assaultrifle.lua
 
 --]]
 AddCSLuaFile()
@@ -15,6 +12,12 @@ ENT.Bodygroups = {
 	[2] = 1,
 	[8] = 2
 }
+
+ENT.Spawnable = true
+
+ENT.PhysicsBox = {Vector(), Vector()}
+
+ENT.CollisionBounds = {Vector(-1,10,5), Vector(1,-5,0)}
 
 ENT.DefaultAmmoAmt = 30
 ENT.AmmoType = "SMG1"

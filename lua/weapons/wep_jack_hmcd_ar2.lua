@@ -9,7 +9,7 @@ end
 SWEP.IconTexture = "vgui/wep_jack_hmcd_ar2"
 SWEP.IconLength = 3
 SWEP.IconHeight = 2
-SWEP.Base = "wep_jack_hmcd_firearm_base"
+SWEP.Base = "wep_cat_base"
 SWEP.PrintName = "OSIPR"
 SWEP.Instructions = "This is a pulse assault rifle using dark energy manufactured by the combine.\n\nLMB to fire.\nLMB + E to use alternative fire.\nRMB to aim.\nRELOAD to reload.\nShot placement counts.\nCrouching helps stability.\nBullets can ricochet and penetrate."
 SWEP.Primary.ClipSize = 31

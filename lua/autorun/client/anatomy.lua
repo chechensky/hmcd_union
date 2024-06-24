@@ -1,7 +1,4 @@
--- don't empty
-
-print("don't empty plz")
-
+-- просто хмгд эффекты боли и крови... -_- поцан! -_- --_-- ---_---
 hook.Add("RenderScreenspaceEffects","Effects", function()
 	local ply = LocalPlayer()
 	if ply:GetNWBool("Spectating", false) == true then return end

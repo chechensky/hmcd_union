@@ -1,7 +1,4 @@
---[[
-Server Name: [EU] Homicide
-Server IP:   185.17.0.25:27025
-File Path:   gamemodes/homicide/entities/effects/gdcw_universal_penetrate/init.lua
+--[[File Path:   gamemodes/homicide/entities/effects/gdcw_universal_penetrate/init.lua
 
 --]]
 --Sound,Impact

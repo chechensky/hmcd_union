@@ -9,6 +9,7 @@ util.AddNetworkString("EndRound")
 local plymanag = player_manager
 
 function GM:PlayerSpawn(ply)
+	ply:SetupHands()
 	if PLYSPAWN_OVERRIDE then return end
 
     ply:RemoveFlags(FL_ONGROUND)
@@ -19,7 +20,6 @@ function GM:PlayerSpawn(ply)
 	if not ply:Alive() then return end
 	ply:UnSpectate()
 	ply:SetupHands()
-
 	ply:SetHealth(150)
 	ply:SetMaxHealth(150)
 	ply:SetSlowWalkSpeed(75)

@@ -9,7 +9,7 @@ end
 SWEP.IconTexture = "vgui/hud/cw_doi_flamethrower_american"
 SWEP.IconLength = 3
 SWEP.IconHeight = 2
-SWEP.Base = "wep_jack_hmcd_firearm_base"
+SWEP.Base = "wep_cat_base"
 SWEP.PrintName = "M2 Flamethrower"
 SWEP.Instructions = "This is a dick.\n\nLMB to fire.\nRMB to aim.\nRELOAD to reload.\nShot placement doesn't count.\nCrouching helps stability.\nBullets cannot ricochet and penetrate."
 SWEP.Primary.ClipSize = 600

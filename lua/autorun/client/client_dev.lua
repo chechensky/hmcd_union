@@ -2,6 +2,9 @@ fs = GetConVar("checha_feature"):GetBool()
 
 hook.Add("Think","LipSync",function()
 	for i, ply in pairs(player.GetAll()) do
+		if !ply:Alive() then
+			ply.Equipment = {}
+		end
 		local ent = IsValid(ply:GetNWEntity("Ragdoll")) and ply:GetNWEntity("Ragdoll") or ply
 
 		local flexes = {
@@ -18,7 +21,7 @@ hook.Add("Think","LipSync",function()
 			ent:SetFlexWeight( v, weight )
 		end
 	end
-end)
+end)--липсинк ОЧЕНЬ СМЕНШОЙ!!! ALERT!! с хмгд, легкий
 
 hook.Add("PostDrawOpaqueRenderables", "LaserChecha", function()
 	local ply = LocalPlayer()
@@ -26,12 +29,12 @@ hook.Add("PostDrawOpaqueRenderables", "LaserChecha", function()
 
 	local pos, ang = ply:GetPos(), ply:GetAngles()
 
-	if weapon.Base != "wep_jack_hmcd_firearm_base" then return end
+	if weapon.Base != "wep_cat_base" then return end
 	if !weapon:GetNWBool("Laser", false) then return end
 	if !weapon:GetNWBool("LaserStatus") then return end
 
-	local startPos = ply:GetViewModel():GetAttachment(1).Pos + ply:GetViewModel():GetForward() * (weapon.LaserPos_Forward or 0) + ply:GetViewModel():GetUp() * (weapon.LaserPos_Up or 0) + ply:GetViewModel():GetRight() * (weapon.LaserPos_Right or 0)
-	local endPos = startPos + ply:GetViewModel():GetRight() * (weapon.LaserPos_RightCorrect or 0) + ply:GetViewModel():GetForward() * 3000
+	local startPos = ply:GetViewModel():GetAttachment(1).Pos
+	local endPos = startPos + ply:GetViewModel():GetRight() * 1200 + ply:GetViewModel():GetForward() * 4200
 	local tr = util.TraceLine({
     	start = startPos,
        	endpos = endPos,
@@ -39,13 +42,13 @@ hook.Add("PostDrawOpaqueRenderables", "LaserChecha", function()
 	}) 
 	render.SetMaterial(Material("sprites/light_glow02_add"))
 	render.DrawQuadEasy(tr.HitPos, tr.HitNormal, 10, 10, Color(255, 0, 0, 255), 0)
-end)
+end) -- лазеры ЧЕЧИ!!!
 
 dev = GetConVar( "developer" )
 
 hook.Add("PostDrawTranslucentRenderables","hitboxs",function()
 	if dev:GetInt() == 1 or dev:GetInt() == 3 then
-		for _, ent in ipairs(player.GetAll()) do
+		--[[for _, ent in ipairs(player.GetAll()) do
 			local cho = IsValid(ent:GetNWEntity("Ragdoll")) and ent:GetNWEntity("Ragdoll") or ent
         	local pos,ang = cho:GetBonePosition(cho:LookupBone('ValveBiped.Bip01_Spine2'))
        		render.DrawWireframeBox( pos, ang, Vector(-1,0,-6),Vector(10,6,6), Color(200,200,200) )
@@ -73,9 +76,9 @@ hook.Add("PostDrawTranslucentRenderables","hitboxs",function()
 
 			local pos = cho:GetBonePosition(cho:LookupBone('ValveBiped.Bip01_Spine1'))
 		    render.DrawWireframeBox( pos, ang, Vector(-8,-3,-1),Vector(2,-2,1), Color(206,199,199) )
-		end
+		end]]--
 	end
-end )
+end )--хбоксы кста хуйня с чедарабокса взял залупа член убрать надо будет или переделать нахуй
 
 function createCircle(x, y, radius, seg)
     local cir = {}
@@ -87,38 +90,6 @@ function createCircle(x, y, radius, seg)
 
     return cir
 end
-
-local sights={
-    [1]=Material( "models/weapons/tfa_ins2/optics/kobra_dot", "noclamp nocull smooth"),
-    [2]=Material( "models/weapons/tfa_ins2/optics/eotech_reticule", "noclamp nocull smooth"),
-    [3]=Material( "scope/aimpoint", "noclamp nocull smooth")
-}
-
-local sightMuls={
-    ["wep_jack_hmcd_mp7"]={
-        [1]=0.4,
-        [2]=0.4,
-        [3]=0.7
-    },
-    ["wep_jack_hmcd_shotgun"]={
-        [1]=0.33,
-        [2]=0.33
-    },
-    ["wep_jack_hmcd_m249"]={
-        [1]=0.33,
-        [2]=0.33
-    },
-    ["wep_jack_hmcd_sr25"]={
-        [3]=0.75
-    },
-    ["wep_jack_hmcd_assaultrifle"]={
-        [1]=0.25,
-        [2]=0.25
-    },
-    ["wep_jack_hmcd_akm"]={
-        [3]=0.75
-    }
-}
 
 net.Receive(
 	"ragplayercolor",

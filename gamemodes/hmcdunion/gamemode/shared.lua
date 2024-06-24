@@ -29,22 +29,7 @@ GM.papkago("hmcdunion/gamemode/gm/")
 
 function GM:CreateTeams()
 	team.SetUp(1,"Players",Color(57,62,213))
-	team.SetUp(2,"Spectators",Color(149,149,149))
 end
-
-blood_drop = {
-	"blood/drop1.wav",
-	"blood/drop2.wav",
-	"blood/drop3.wav",
-	"blood/drop4.wav"
-}
-
-Rounds = {
-	"homicide",
-	"sandbox",
-	"hl2",
-	"dm"
-}
 
 HMCD_REMOVEEQUIPMENT=-1
 HMCD_ARMOR3A=1
@@ -65,6 +50,20 @@ HMCD_OSPREY=15
 HMCD_BALLISTICMASK=16
 HMCD_NVG=17
 HMCD_MOTHELMET=18
+
+blood_drop = {
+	"blood/drop1.wav",
+	"blood/drop2.wav",
+	"blood/drop3.wav",
+	"blood/drop4.wav"
+}
+
+Rounds = {
+	"homicide",
+	"hl2",
+	"dm"
+}
+
 HMCD_EquipmentNames = {
 	[1] = "Level IIIA Armor",
 	[2] = "Level III Armor",
@@ -90,15 +89,88 @@ HMCD_HelpRole = {
 	["Traitor"] = "KILL'EM ALL!",
 	["Bystander"] = "You innocent, just find traitor and kill him.",
 	["Gunman"] = "You have a gun, kill traitor in your party.",
-	["Fighter"] = "You fighter, kill all and stay alive."
+	["Fighter"] = "You fighter, kill all and stay alive.",
+	["Rebel"] = "You're a rebel, kill the entire Alliance.",
+	["Combine"] = "You're in the Alliance, kill all the rebels."
 }
 
 RoundsNormalise = {
 	["homicide"] = "Homicide",
 	["sandbox"] = "Sandbox",
-	["hl2"] = "Half Life 2 - Deathmatch",
-	["dm"] = "Deathmatch",
+	["hl2"] = "Homicide: Resistance Versus Combine",
+	["dm"] = "Homicide: Deathmatch",
 	["svo"] = "Special Military Operation"
+}
+
+DM_LoadoutMain = {
+	"wep_jack_hmcd_akm",
+	"wep_jack_hmcd_assaultrifle",
+	"wep_jack_hmcd_rifle",
+	"wep_jack_hmcd_sr25",
+	"wep_jack_hmcd_mp7",
+	"wep_jack_hmcd_mp5",
+	"wep_jack_hmcd_dbarrel",
+	"wep_jack_hmcd_remington",
+	"wep_jack_hmcd_shotgun",
+	"wep_jack_hmcd_spas"
+}
+
+DM_LoadoutSecondary = {
+	"wep_jack_hmcd_smallpistol",
+	"wep_jack_hmcd_cz75a",
+	"wep_jack_hmcd_glock17",
+	"wep_jack_hmcd_usp",
+	"wep_jack_hmcd_revolver",
+	"wep_jack_hmcd_suppressed"
+}
+
+
+HL2_Loadout = {
+	["Rebel"] = {
+		["Medic"] = {"wep_jack_hmcd_oldgrenade_dm","wep_jack_hmcd_fooddrinkbig","wep_jack_hmcd_adrenaline","wep_jack_hmcd_medkit","wep_jack_hmcd_bandagebig","wep_jack_hmcd_painpills","wep_jack_hmcd_walkietalkie"},
+		["Fighter"] = {"wep_jack_hmcd_oldgrenade_dm","wep_jack_hmcd_m67","wep_jack_hmcd_bandage","wep_jack_hmcd_painpills","wep_jack_hmcd_pocketknife","wep_jack_hmcd_riotshield","wep_jack_hmcd_walkietalkie","wep_jack_hmcd_riotshield"}
+	},
+	["Combine"] = {
+		["Simple"] = {"wep_jack_hmcd_grenade","wep_jack_hmcd_adrenaline","wep_jack_hmcd_medkit","wep_jack_hmcd_bandagebig","wep_jack_hmcd_painpills"},
+		["Elite"] = {"wep_jack_hmcd_grenade","wep_jack_hmcd_m67"},
+		["Shotguner"] = {"wep_jack_hmcd_grenade","wep_jack_hmcd_m67"},
+	}
+}
+HL2_LoadoutFire_Main = {
+	["Rebel"] = {
+		["Medic"] = {
+			"wep_jack_hmcd_mp7",
+			"wep_jack_hmcd_dbarrel",
+			"wep_jack_hmcd_shotgun",
+			"wep_jack_hmcd_spas"
+		},
+		["Fighter"] = {
+			"wep_jack_hmcd_combinesniper",
+			"wep_jack_hmcd_akm",
+			"wep_jack_hmcd_rifle",
+			"wep_jack_hmcd_mp7",
+			"wep_jack_hmcd_mp5",
+			"wep_jack_hmcd_dbarrel",
+			"wep_jack_hmcd_shotgun",
+			"wep_jack_hmcd_spas"
+		},
+	},
+	["Combine"] = {
+		["Simple"] = {
+			"wep_jack_hmcd_ar2"
+		},
+		["Shotguner"] = {
+			"wep_jack_hmcd_spas"
+		},
+		["Elite"] = {
+			"wep_jack_hmcd_combinesniper",
+			"wep_jack_hmcd_ar2"
+		},
+	}
+}
+HL2_LoadoutFire_Secondary = {
+	["Rebel"] = {"wep_jack_hmcd_smallpistol","wep_jack_hmcd_usp"},
+	["Combine"] = {"wep_jack_hmcd_usp"}
 }
 
 HMCD_Loadout_Firearms = {
@@ -204,6 +276,68 @@ HMCD_Loadout = {
 	}
 }
 
+Classes = {
+	"Medic",
+	"Fighter"
+}
+
+ClassesCombine = {
+	"Shotguner",
+	"Elite",
+	"Simple"
+}
+
+CombineModels = {
+	["Simple"] = "models/player/combine_soldier.mdl",
+	["Shotguner"] = "models/player/combine_soldier.mdl",
+	["Elite"] = "models/player/combine_super_soldier.mdl"
+}
+
+Fighter_RebelModels = {
+	["female"] = {
+		"models/player/Group03/female_01.mdl",
+		"models/player/Group03/female_02.mdl",
+		"models/player/Group03/female_03.mdl",
+		"models/player/Group03/female_04.mdl",
+		"models/player/Group03/female_05.mdl",
+		"models/player/Group03/female_06.mdl",
+	},
+	["male"] = {
+		"models/player/Group03/male_01.mdl",
+		"models/player/Group03/male_02.mdl",
+		"models/player/Group03/male_03.mdl",
+		"models/player/Group03/Male_04.mdl",
+		"models/player/Group03/Male_05.mdl",
+		"models/player/Group03/male_06.mdl",
+		"models/player/Group03/male_07.mdl",
+		"models/player/Group03/male_08.mdl",
+		"models/player/Group03/male_09.mdl"
+	}
+}
+
+Medic_RebelModels = {
+	["female"] = {
+		"models/player/Group03m/female_01.mdl",
+		"models/player/Group03m/female_02.mdl",
+		"models/player/Group03m/female_03.mdl",
+		"models/player/Group03m/female_04.mdl",
+		"models/player/Group03m/female_04.mdl",
+		"models/player/Group03m/female_05.mdl",
+		"models/player/Group03m/female_06.mdl"
+	},
+	["male"] = {
+		"models/player/Group03m/Male_01.mdl",
+		"models/player/Group03m/male_02.mdl",
+		"models/player/Group03m/male_03.mdl",
+		"models/player/Group03m/Male_04.mdl",
+		"models/player/Group03m/Male_05.mdl",
+		"models/player/Group03m/male_06.mdl",
+		"models/player/Group03m/male_07.mdl",
+		"models/player/Group03m/male_08.mdl",
+		"models/player/Group03m/male_09.mdl"
+	}
+}
+
 HMCD_RoundsTypeNormalise = {
 	[0] = "",
 	[1] = "Standart",
@@ -303,7 +437,7 @@ AccessoryList={
 	["Соломенная шляпа"]={"models/captainbigbutt/skeyler/hats/strawhat.mdl","ValveBiped.Bip01_Head1",{Vector(.75,5,0),Angle(0,-75,-90),.85},{Vector(.5,4.5,0),Angle(0,-75,-90),.75},true,0},
 	["Солнцезащитная шляпа"]={"models/captainbigbutt/skeyler/hats/sunhat.mdl","ValveBiped.Bip01_Head1",{Vector(-1.5,3.5,0),Angle(0,-75,-90),.8},{Vector(-1.5,3,0),Angle(0,-75,-90),.75},true,0},
 	["Побрякушки"]={"models/captainbigbutt/skeyler/hats/zhat.mdl","ValveBiped.Bip01_Head1",{Vector(.7,3.75,.3),Angle(0,-75,-90),.75},{Vector(.3,3,.25),Angle(0,-75,-90),.75},true,0},
-	["Цилиндр"]={"models/player/items/humans/top_hat.mdl","ValveBiped.Bip01_Head1",{Vector(2,-1,0),Angle(0,-80,-90),1.025},{Vector(2,-1,0),Angle(0,-80,-90),.95},true,0},
+	["Цилиндр"]={"models/player/items/player/top_hat.mdl","ValveBiped.Bip01_Head1",{Vector(2,-1,0),Angle(0,-80,-90),1.025},{Vector(2,-1,0),Angle(0,-80,-90),.95},true,0},
 	["Рюкзак"]={"models/makka12/bag/jag.mdl","ValveBiped.Bip01_Spine4",{Vector(0,-3,0),Angle(0,90,90),.7},{Vector(.5,-3,0),Angle(0,90,90),.6},false,0},
 	["Кошелек"]={"models/props_c17/BriefCase001a.mdl","ValveBiped.Bip01_Spine1",{Vector(-3,-10,7),Angle(0,90,90),.6},{Vector(-3,-10,7),Angle(0,90,90),.6},false,0},
 	-- gen 2
@@ -363,7 +497,7 @@ AccessoryListWithoutEmpty={
 	["Соломенная шляпа"]={"models/captainbigbutt/skeyler/hats/strawhat.mdl","ValveBiped.Bip01_Head1",{Vector(.75,5,0),Angle(0,-75,-90),.85},{Vector(.5,4.5,0),Angle(0,-75,-90),.75},true,0},
 	["Солнцезащитная шляпа"]={"models/captainbigbutt/skeyler/hats/sunhat.mdl","ValveBiped.Bip01_Head1",{Vector(-1.5,3.5,0),Angle(0,-75,-90),.8},{Vector(-1.5,3,0),Angle(0,-75,-90),.75},true,0},
 	["Побрякушки"]={"models/captainbigbutt/skeyler/hats/zhat.mdl","ValveBiped.Bip01_Head1",{Vector(.7,3.75,.3),Angle(0,-75,-90),.75},{Vector(.3,3,.25),Angle(0,-75,-90),.75},true,0},
-	["Цилиндр"]={"models/player/items/humans/top_hat.mdl","ValveBiped.Bip01_Head1",{Vector(2,-1,0),Angle(0,-80,-90),1.025},{Vector(2,-1,0),Angle(0,-80,-90),.95},true,0},
+	["Цилиндр"]={"models/player/items/player/top_hat.mdl","ValveBiped.Bip01_Head1",{Vector(2,-1,0),Angle(0,-80,-90),1.025},{Vector(2,-1,0),Angle(0,-80,-90),.95},true,0},
 	["Рюкзак"]={"models/makka12/bag/jag.mdl","ValveBiped.Bip01_Spine4",{Vector(0,-3,0),Angle(0,90,90),.7},{Vector(.5,-3,0),Angle(0,90,90),.6},false,0},
 	["Кошелек"]={"models/props_c17/BriefCase001a.mdl","ValveBiped.Bip01_Spine1",{Vector(-3,-10,7),Angle(0,90,90),.6},{Vector(-3,-10,7),Angle(0,90,90),.6},false,0},
 	-- gen 2
@@ -568,41 +702,6 @@ AmmoType_Drop = {
 	"XBowBolt",
 	"AirboatGun"
 }
-local sights={
-    [1]=Material( "models/weapons/tfa_ins2/optics/kobra_dot", "noclamp nocull smooth"),
-    [2]=Material( "models/weapons/tfa_ins2/optics/eotech_reticule", "noclamp nocull smooth"),
-    [3]=Material( "scope/aimpoint", "noclamp nocull smooth"),
-	[4]=Material( "scope/aimpoint", "noclamp nocull smooth")
-}
-
-local sightRight = {
-	["wep_jack_hmcd_mp7"] = {
-		[1] = 20,
-		[2] = 0,
-		[3] = 0
-	},
-	["wep_jack_hmcd_glock17"] = {
-		[4] = -5
-	}
-}
-
-local sightUp = {
-	["wep_jack_hmcd_akm"] = {
-		[1] = -100,
-		[2] = -120,
-		[3] = -100
-	},
-	["wep_jack_hmcd_glock17"] = {
-		[4] = -20
-	}
-}
-
-local size = {
-	[1] = 230,
-	[2] = 200,
-	[3] = 600,
-	[4] = 350
-}
 
 local atts_simplified={
 	[HMCD_PISTOLSUPP]="Suppressor",
@@ -652,60 +751,3 @@ concommand.Add("hmcd_attachrequest",function(ply,cmd,args)
 		net.Send(ply)
 	end
 end)
-
-function DepthedWHO(mdl)
-    local eyedist = WorldToLocal(mdl:GetPos(), mdl:GetAngles(), EyePos(), EyeAngles()).x
-    render.DepthRange(0, 0.0093 + (0.0005 * eyedist / 20))
-end
-
-function GM:DrawScopeDot(wep, sightnum, model,vm)
-    model.sight3 = Material("models/weapons/tfa_ins2/optics/eotech_lense")
-    model.sight3:SetTexture("$basetexture","empty")
-
-    model.sight2 = Material("models/weapons/tfa_ins2/optics/aimpoint_lense")
-    model.sight2:SetTexture("$basetexture","empty")
-
-    local material = sights[sightnum]
-
-    render.UpdateScreenEffectTexture()
-    render.ClearStencil()
-    render.SetStencilEnable(true)
-    render.SetStencilCompareFunction(STENCIL_ALWAYS)
-    render.SetStencilPassOperation(STENCIL_REPLACE)
-    render.SetStencilFailOperation(STENCIL_KEEP)
-    render.SetStencilZFailOperation(STENCIL_REPLACE)
-    render.SetStencilWriteMask(255)
-    render.SetStencilTestMask(255)
-
-    render.SetBlend(0)
-
-    render.SetStencilReferenceValue(56)
-
-    model:DrawModel()
-
-    render.SetBlend(1)
-
-    render.SetStencilPassOperation(STENCIL_KEEP)
-    render.SetStencilCompareFunction(STENCIL_EQUAL)
-
-	if wep:GetClass() == "wep_jack_hmcd_assaultrifle" then DepthedWHO(model) end
-
-    render.SetMaterial(material)
-
-	local sight_upped
-	local sight_righited
-	if sightUp[wep:GetClass()] then sight_upped = sightUp[wep:GetClass()][sightnum] else	sight_upped = 0 end
-	if sightRight[wep:GetClass()] then sight_righited = sightRight[wep:GetClass()][sightnum] else sight_righited = 0 end
-
-	local size = size[sightnum]
-
-	local pos = LocalPlayer():EyePos()
-    local up = model:GetAngles():Up()
-    local right = model:GetAngles():Right()
-	pos = pos + model:GetAngles():Forward() * 4200 + model:GetAngles():Up() * sight_upped + model:GetAngles():Right() * sight_righited
-    render.DrawQuad(pos + (up * size / 2) - (right * size / 2), pos + (up * size / 2) + (right * size / 2), pos - (up * size / 2) + (right * size / 2), pos - (up * size / 2) - (right * size / 2), Color(255,255,255,255))
-    	
-	if wep:GetClass() == "wep_jack_hmcd_assaultrifle" then render.DepthRange(0, 1) end
-
-    render.SetStencilEnable(false)
-end

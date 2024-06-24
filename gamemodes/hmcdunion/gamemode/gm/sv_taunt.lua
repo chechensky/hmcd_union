@@ -248,6 +248,30 @@ addTaunt("morose", "vo/npc/female01/question03.wav", "female")
 addTaunt("morose", "vo/npc/female01/question12.wav", "female")
 addTaunt("morose", "vo/npc/female01/question18.wav", "female")
 
+addTaunt("random", "npc/metropolice/vo/backmeupimout.wav", "combine")
+addTaunt("happy", "npc/metropolice/vo/backmeupimout.wav", "combine")
+addTaunt("response", "npc/metropolice/vo/backmeupimout.wav", "combine")
+addTaunt("morose", "npc/metropolice/vo/backmeupimout.wav", "combine")
+addTaunt("help", "npc/metropolice/vo/backmeupimout.wav", "combine")
+
+addTaunt("random", "npc/metropolice/vo/runninglowonverdicts.wav", "combine")
+addTaunt("happy", "npc/metropolice/vo/runninglowonverdicts.wav", "combine")
+addTaunt("response", "npc/metropolice/vo/runninglowonverdicts.wav", "combine")
+addTaunt("morose", "npc/metropolice/vo/runninglowonverdicts.wav", "combine")
+addTaunt("help", "npc/metropolice/vo/runninglowonverdicts.wav", "combine")
+
+addTaunt("random", "npc/metropolice/vo/on" .. math.random(1, 2) .. ".wav", "combine")
+addTaunt("happy", "npc/metropolice/vo/on" .. math.random(1, 2) .. ".wav", "combine")
+addTaunt("response", "npc/metropolice/vo/on" .. math.random(1, 2) .. ".wav", "combine")
+addTaunt("morose", "npc/metropolice/vo/on" .. math.random(1, 2) .. ".wav", "combine")
+addTaunt("help", "npc/metropolice/vo/on" .. math.random(1, 2) .. ".wav", "combine")
+
+addTaunt("random", "npc/metropolice/vo/off" .. math.random(1, 4) .. ".wav", "combine")
+addTaunt("happy", "npc/metropolice/vo/off" .. math.random(1, 4) .. ".wav", "combine")
+addTaunt("response", "npc/metropolice/vo/off" .. math.random(1, 4) .. ".wav", "combine")
+addTaunt("morose", "npc/metropolice/vo/off" .. math.random(1, 4) .. ".wav", "combine")
+addTaunt("help", "npc/metropolice/vo/off" .. math.random(1, 4) .. ".wav", "combine")
+
 addTaunt("random", "vo/npc/female01/doingsomething.wav", "female")
 addTaunt("random", "vo/npc/female01/busy02.wav", "female")
 addTaunt("random", "vo/npc/female01/question06.wav", "female")
@@ -352,6 +376,7 @@ concommand.Add("taunt", function (ply, com, args, full)
 	if !ply.NextTaunt then ply.NextTaunt = 0 end
 	if ply.NextTaunt>Time then return end
 	if !ply:Alive() then return end
+	if ply.Otrub then return end
 
 	if #args < 1 then return end
 	local cat = args[1]:lower()

@@ -6,7 +6,7 @@ else
 	SWEP.WepSelectIcon = surface.GetTextureID("vgui/hud/cw_doi_flamethrower_american")
 end
 
-SWEP.Base = "wep_jack_hmcd_firearm_base"
+SWEP.Base = "wep_cat_base"
 SWEP.PrintName = "M2 Flamethrower2"
 SWEP.Category = "HMCD: Union - WTF"
 SWEP.Instructions = "An absurdly powerful weapon, this aluminum/polymer 5.56x45mm semi-automatic home-assembled 30-round-capacity rifle is the quintessence of an armed American citizenry in the early 21st century.\n\nLMB to fire.\nRMB to aim.\nRELOAD to reload.\nShot placement counts.\nCrouching helps stability.\nBullets can ricochet and penetrate."

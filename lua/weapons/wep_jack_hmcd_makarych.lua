@@ -1,7 +1,4 @@
---[[
-Server Name: [EU] Homicide
-Server IP:   185.17.0.25:27025
-File Path:   gamemodes/homicide/entities/weapons/wep_jack_hmcd_makarych.lua
+--[[File Path:   gamemodes/homicide/entities/weapons/wep_jack_hmcd_makarych.lua
 		 __        __              __             ____     _                ____                __             __         
    _____/ /_____  / /__  ____     / /_  __  __   / __/____(_)__  ____  ____/ / /_  __     _____/ /____  ____ _/ /__  _____
   / ___/ __/ __ \/ / _ \/ __ \   / __ \/ / / /  / /_/ ___/ / _ \/ __ \/ __  / / / / /    / ___/ __/ _ \/ __ `/ / _ \/ ___/
@@ -18,7 +15,7 @@ else
 end
 
 SWEP.IconTexture = "vgui/hud/tfa_ins2_pm"
-SWEP.Base = "wep_jack_hmcd_firearm_base"
+SWEP.Base = "wep_cat_base"
 SWEP.PrintName = "IJ-79-9T"
 SWEP.Category = "HMCD: Union - Pistols"
 SWEP.Instructions = "This is a non-lethal gas pistol with the ability to fire ammunition with rubber bullets.\n\nLMB to fire.\nRMB to aim.\nRELOAD to reload.\nShot placement counts.\nCrouching helps stability.\nBullets can ricochet."

@@ -169,39 +169,79 @@ function GM:RenderAccessories(ply)
 			ply.AccessoryModel:SetNoDraw(true)
 		end
 	end
+	if ply:IsPlayer() then
+		local Weps, DrawWep = ply:GetWeapons(), nil
+		for key, wep in pairs(Weps) do
+			if wep.HolsterSlot and (wep.HolsterSlot == 1) then
+				DrawWep = wep
+				break
+			end
+		end
+
+		if DrawWep and (DrawWep ~= ply:GetActiveWeapon()) then
+			if ply.HolsterWep and (ply.HolsterWepModelName == DrawWep.WorldModel) then
+				local Pos, Ang = ply:GetBonePosition(ply:LookupBone("ValveBiped.Bip01_Spine4"))
+				if Pos and Ang then
+					local Dist = 0
+					if ply.ChestArmor and ((ply.ChestArmor == "Level III") or (ply.ChestArmor == "Level IIIA")) then
+						Dist = 2
+					end
+
+					Pos = Pos + Ang:Right() * (DrawWep.HolsterPos.x + Dist) + Ang:Forward() * DrawWep.HolsterPos.y + Ang:Up() * DrawWep.HolsterPos.z
+					Ang:RotateAroundAxis(Ang:Right(), DrawWep.HolsterAng.p)
+					Ang:RotateAroundAxis(Ang:Up(), DrawWep.HolsterAng.y)
+					Ang:RotateAroundAxis(Ang:Forward(), DrawWep.HolsterAng.r)
+					ply.HolsterWep:SetRenderOrigin(Pos)
+					ply.HolsterWep:SetRenderAngles(Ang)
+					ply.HolsterWep:DrawModel()
+				end
+			else
+				ply.HolsterWep = ClientsideModel(DrawWep.WorldModel)
+				ply.HolsterWepModelName = DrawWep.WorldModel
+				ply.HolsterWep:SetPos(ply:GetPos())
+				ply.HolsterWep:SetParent(ply)
+				local Mats = ply.HolsterWep:GetMaterials()
+				for key, mat in pairs(Mats) do
+					ply.HolsterWep:SetSubMaterial(key - 1, mat)
+				end
+
+				ply.HolsterWep:SetNoDraw(true)
+			end
+		end
+	end
 end
 
 function GM:RenderArmor(ply)
 	local Mod=ply:GetModel()
+	
 	if ply:GetNWString("Bodyvest", "") == "Level IIIA" or ply:GetNWString("Bodyvest", "") == "Level III" then
-		if ply.ArmorModel then
+		if ply.Bodyvest then
 			local Pos, Ang = ply:GetBonePosition(ply:LookupBone("ValveBiped.Bip01_Spine4"))
 			if Pos and Ang then
-				local Dist, Down = 10, 46
+				local Dist, Down = 12, 46
 				if ply.ModelSex == "male" then
 					Dist = 12.5
 					Down = 50
 				end
 
 				Pos = Pos - Ang:Forward() * Down - Ang:Right() * Dist + Ang:Up() * 0
-				ply.ArmorModel:SetRenderOrigin(Pos)
+				ply.Bodyvest:SetRenderOrigin(Pos)
 				Ang:RotateAroundAxis(Ang:Up(), 80)
 				Ang:RotateAroundAxis(Ang:Forward(), 90)
-				ply.ArmorModel:SetRenderAngles(Ang)
-				local R, G, B = render.GetColorModulation()
-				if ply:GetNWString("Bodyvest", "") == "Level III" then
-					render.SetColorModulation(.3, .3, .3)
-				end
+				ply.Bodyvest:SetRenderAngles(Ang)
+				
+				if ply:GetNWString("Bodyvest", "") == "Level III" then render.SetColorModulation(.3, .3, .3) end
+				ply.Bodyvest:DrawModel()
 
-				ply.ArmorModel:DrawModel()
+				local R, G, B = render.GetColorModulation()
 				render.SetColorModulation(R, G, B)
 			end
 		else
-			ply.ArmorModel = ClientsideModel("models/sal/acc/armor01.mdl")
-			--ply.ArmorModel:SetMaterial("models/mat_jack_hmcd_armor")
-			ply.ArmorModel:SetPos(ply:GetPos())
-			ply.ArmorModel:SetParent(ply)
-			ply.ArmorModel:SetNoDraw(true)
+			ply.Bodyvest = ClientsideModel("models/sal/acc/armor01.mdl")
+			--ply.Bodyvest:SetMaterial("models/mat_jack_hmcd_armor")
+			ply.Bodyvest:SetPos(ply:GetPos())
+			ply.Bodyvest:SetParent(ply)
+			ply.Bodyvest:SetNoDraw(true)
 			local Scale = 1
 			if ply.ModelSex == "female" then
 				Scale = Scale * .8
@@ -209,14 +249,14 @@ function GM:RenderArmor(ply)
 				Scale = Scale * .9
 			end
 
-			ply.ArmorModel:SetModelScale(Scale, 0)
+			ply.Bodyvest:SetModelScale(Scale, 0)
 		end
 	else
-		ply.ArmorModel = nil
+		ply.Bodyvest = nil
 	end
 
 	if ply:GetNWString("Helmet", "") == "ACH" then
-		if ply.HelmetModel then
+		if ply.Helmet then
 			local Pos, Ang = ply:GetBonePosition(ply:LookupBone("ValveBiped.Bip01_Head1"))
 			if Pos and Ang then
 				if ply.ModelSex == "male" then
@@ -224,34 +264,34 @@ function GM:RenderArmor(ply)
 				end
 
 				Pos = Pos + Ang:Forward() * 1 + Ang:Right()
-				ply.HelmetModel:SetRenderOrigin(Pos)
+				ply.Helmet:SetRenderOrigin(Pos)
 				Ang:RotateAroundAxis(Ang:Up(), -80)
 				Ang:RotateAroundAxis(Ang:Forward(), -90)
-				ply.HelmetModel:SetRenderAngles(Ang)
+				ply.Helmet:SetRenderAngles(Ang)
 				local R, G, B = render.GetColorModulation()
 				render.SetColorModulation(.7, .7, .7)
-				ply.HelmetModel:DrawModel()
+				ply.Helmet:DrawModel()
 				render.SetColorModulation(R, G, B)
 			end
 		else
-			ply.HelmetModel = ClientsideModel("models/barney_helmet.mdl")
-			ply.HelmetModel:SetMaterial("models/mat_jack_hmcd_armor")
-			ply.HelmetModel:SetPos(ply:GetPos())
-			ply.HelmetModel:SetParent(ply)
-			ply.HelmetModel:SetNoDraw(true)
+			ply.Helmet = ClientsideModel("models/barney_helmet.mdl")
+			ply.Helmet:SetMaterial("models/mat_jack_hmcd_armor")
+			ply.Helmet:SetPos(ply:GetPos())
+			ply.Helmet:SetParent(ply)
+			ply.Helmet:SetNoDraw(true)
 			local Scale = 1
 			if ply.ModelSex == "female" then
 				Scale = Scale * .9
 			end
 
-			ply.HelmetModel:SetModelScale(Scale, 0)
+			ply.Helmet:SetModelScale(Scale, 0)
 		end
 	else
-		ply.HelmetModel = nil
+		ply.Helmet = nil
 	end
 
 	if ply:GetNWString("Mask", "") == "NVG" then
-		if ply.NVGModel then
+		if ply.NVG then
 			local Pos, Ang = ply:GetBonePosition(ply:LookupBone("ValveBiped.Bip01_Head1"))
 			if Pos and Ang then
 				if ply.ModelSex == "male" then
@@ -259,7 +299,7 @@ function GM:RenderArmor(ply)
 				end
 
 				Pos = Pos + Ang:Forward() * 1 + Ang:Right() * 0
-				ply.NVGModel:SetRenderOrigin(Pos)
+				ply.NVG:SetRenderOrigin(Pos)
 				if ply:GetNWBool("NVG_Up", false) then
 					Ang:RotateAroundAxis(Ang:Up(), -70)
 					Ang:RotateAroundAxis(Ang:Forward(), -90)
@@ -267,26 +307,26 @@ function GM:RenderArmor(ply)
 					Ang:RotateAroundAxis(Ang:Up(), -80)
 					Ang:RotateAroundAxis(Ang:Forward(), -90)
 				end
-				ply.NVGModel:SetRenderAngles(Ang)
+				ply.NVG:SetRenderAngles(Ang)
 				local R, G, B = render.GetColorModulation()
 				render.SetColorModulation(.7, .7, .7)
-				ply.NVGModel:DrawModel()
+				ply.NVG:DrawModel()
 				render.SetColorModulation(R, G, B)
 			end
 		else
-			ply.NVGModel = ClientsideModel("models/arctic_nvgs/nvg_gpnvg.mdl")
-			ply.NVGModel:SetPos(ply:GetPos())
-			ply.NVGModel:SetParent(ply)
-			ply.NVGModel:SetNoDraw(true)
+			ply.NVG = ClientsideModel("models/arctic_nvgs/nvg_gpnvg.mdl")
+			ply.NVG:SetPos(ply:GetPos())
+			ply.NVG:SetParent(ply)
+			ply.NVG:SetNoDraw(true)
 			local Scale = 1
 			if ply.ModelSex == "female" then
 				Scale = Scale * .9
 			end
 
-			ply.NVGModel:SetModelScale(Scale, 0)
+			ply.NVG:SetModelScale(Scale, 0)
 		end
 	else
-		ply.NVGModel = nil
+		ply.NVG = nil
 	end
 end
 

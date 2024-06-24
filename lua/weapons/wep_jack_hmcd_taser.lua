@@ -1,7 +1,4 @@
---[[
-Server Name: [EU] Homicide
-Server IP:   185.17.0.25:27025
-File Path:   gamemodes/homicide/entities/weapons/wep_jack_hmcd_taser.lua
+--[[File Path:   gamemodes/homicide/entities/weapons/wep_jack_hmcd_taser.lua
 		 __        __              __             ____     _                ____                __             __         
    _____/ /_____  / /__  ____     / /_  __  __   / __/____(_)__  ____  ____/ / /_  __     _____/ /____  ____ _/ /__  _____
   / ___/ __/ __ \/ / _ \/ __ \   / __ \/ / / /  / /_/ ___/ / _ \/ __ \/ __  / / / / /    / ___/ __/ _ \/ __ `/ / _ \/ ___/
@@ -22,7 +19,7 @@ if CLIENT then
 end
 
 SWEP.IconTexture = "vgui/wep_jack_hmcd_taser"
-SWEP.Base = "wep_jack_hmcd_firearm_base"
+SWEP.Base = "wep_cat_base"
 SWEP.PrintName = "X26 Taser"
 SWEP.Instructions = "This is a conducted electrical weapon firing two small barbed darts intended to puncture the skin of the target and cause neuromuscular incapacitation.\n\nLMB to fire.\nRMB to aim.\nRELOAD to reload."
 SWEP.Primary.ClipSize = 1

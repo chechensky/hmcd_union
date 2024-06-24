@@ -310,10 +310,10 @@ hook.Add("Vars Player", "VarsS", function(ply)	-- Alive give
 		["Ents"] = {}
 	}
 	ply.temp = "Warm"
-	ply:SetNWBool("Spectating",false)
 	ply:SetNWInt("SpectateMode", 0)
 	ply:SetNWEntity("SelectPlayer", Entity(-1))
 	ply.Equipment = {}
+
 	ply.lasthitgroup = nil
 	ply.capsicum = 0
 	ply.MurdererIdentityHidden = false
@@ -325,7 +325,6 @@ hook.Add("Vars Player", "VarsS", function(ply)	-- Alive give
 	ply:SetNWString("Helmet", "")
 	ply:SetNWString("Bodyvest", "")
 	ply:SetNWString("Mask", "")
-
 
 	ply.IsBleeding = false
 	ply.o2 = 1
@@ -401,6 +400,7 @@ end)
 hook.Add("PlayerSpawn", "VarsIS", function(ply) 
 	ply:SetTeam(1) 
 	ply.LastAttacker = nil
+	ply:SetNWBool("Spectating",false)
 	hook_run("Vars Player", ply)
 end)
 
@@ -419,4 +419,27 @@ hook.Add("PlayerCanHearPlayersVoice", "OtrubNoVoice", function(list, talk)
 	if talk.Otrub or talk.mutejaw then
 		return false,false
 	end
+end)
+
+local startAngle = Angle(0, 0, 0)
+local targetAngle = Angle(0, 0, 0)
+local transitionDuration = 0.5
+local transitionStartTime = CurTime()
+
+hook.Add("Think", "SmoothBoneAngleTransition", function()
+for _, ply in ipairs(player.GetAll()) do
+    local currentTime = CurTime()
+    local elapsedTime = currentTime - transitionStartTime
+    local t = math.Clamp(elapsedTime / transitionDuration, 0, 1)
+
+    local newAngle = LerpAngle(t, startAngle, targetAngle)
+
+    if ply:IsValid() then
+        ply:ManipulateBoneAngles(ply:LookupBone("ValveBiped.Bip01_R_Forearm"), newAngle)
+    end
+
+    if t >= 1 then
+        hook.Remove("Think", "SmoothBoneAngleTransition")
+    end
+end
 end)
