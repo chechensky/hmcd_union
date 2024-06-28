@@ -150,6 +150,9 @@ function GM:DrawGameHUD(ply)
 		col = Color(col.x * 255, col.y * 255, col.z * 255)
 		col.a = (1 - (CurTime() - self.LookedFade) / 1) * 255
 		drawTextShadow(name, "FontTargetP", ScrW() / 2, ScrH() / 2 + 80, col, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+		if type_look == "Ragdoll" then
+			drawTextShadow("[RMB]+[E] Loot", "FontSmall", ScrW() / 2, ScrH() / 2 + 110, Color(255,255,255,col.a), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+		end
 	end
 
 	local RoundTextures={

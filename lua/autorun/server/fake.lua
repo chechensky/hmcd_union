@@ -108,7 +108,6 @@ end
 function ClearFakeWeapon(ply)
 	if ply.FakeShooting then DespawnWeapon(ply) end
 end
-
 util.AddNetworkString("ragplayercolor")
 function EntityMeta:BetterSetPlayerColor(col)
 	if not (col or self) then return end
@@ -608,18 +607,6 @@ for i = 1,6 do
 	CustomWeight["models/monolithservers/mpd/male_0"..i.."_2.mdl"] = 20
 end
 
-
-util.AddNetworkString("custom name")
-
-net.Receive("custom name",function(len,ply)
-	if not ply:IsAdmin() then return end
-	
-	local name = net.ReadString()
-	if name == "" then return end
-
-	ply:SetNWString("CustomName",name)
-end)
-
 local hitgroup_angle = {
 	[HITGROUP_LEFTLEG] = 2000,
 	[HITGROUP_RIGHTLEG] = 2000,
@@ -832,6 +819,9 @@ function PlayerMeta:CreateRagdoll(attacker,dmginfo) --изменение фун�
 	if IsValid(rag:GetPhysicsObject()) then
 		rag:GetPhysicsObject():SetMass(CustomWeight[rag:GetModel()] or 15)
 	end
+	rag:SetNWString("Mask",self:GetNWString("Mask"))
+	rag:SetNWString("Bodyvest",self:GetNWString("Bodyvest"))
+	rag:SetNWString("Helmet",self:GetNWString("Bodyvest"))
 	rag:Activate()
 	rag:SetNWEntity("RagdollOwner", self)
 	local vel = self:GetVelocity()/1
@@ -1055,8 +1045,8 @@ hook.Add("Player Think","FakeControl",function(ply,time) --управление 
 
 
 			local shadowparams = {
-				secondstoarrive=0.1,
-				pos=rag:GetAttachment(rag:LookupAttachment("anim_attachment_rh")).Pos+eyeangs:Forward()*(180/math.Clamp(rag:GetVelocity():Length()/150,1,6)),
+				secondstoarrive=0.5,
+				pos=head:GetPos()+eyeangs:Forward()*(180/math.Clamp(rag:GetVelocity():Length()/150,1,6)),
 				angle=ang,
 				maxangular=370,
 				maxangulardamp=100,
@@ -1342,7 +1332,7 @@ end)
 
 util.AddNetworkString("ebal_chellele")
 hook.Add("PlayerSwitchWeapon","wep",function(ply,oldwep,newwep)
-	if timer.Exists("DM_Timer") then return true end
+	if GAMEMODE.NoGun then return true end
 	if ply.in_handcuff then return true end
 	if ply.Otrub then return true end
 

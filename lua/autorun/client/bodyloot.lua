@@ -68,7 +68,7 @@ local panel
 net.Receive("inventory",function()
 	local lply = LocalPlayer()
 
-	if IsValid(panel) then panel.override = true panel:Remove() end
+	if IsValid(panel) and IsValid(armor) then panel.override = true panel:Remove() armor:Remove() end
 
 	local lootEnt = net.ReadEntity()
 	local success,items = pcall(net.ReadTable)
@@ -80,13 +80,6 @@ net.Receive("inventory",function()
 	local items_ammo = net.ReadTable()
 
 	items.weapon_hands = nil
-	armor = vgui.Create("DFrame")
-	armor:SetAlpha(255)
-	armor:SetSize(500, 200)
-	armor:SetPos(ScrW()*.396, ScrH()*.13)
-	armor:SetDraggable(false)
-	armor:MakePopup()
-	armor:SetTitle( nickname.. "'s armor")
 
 	panel = vgui.Create("DFrame")
 	panel:SetAlpha(255)
@@ -95,6 +88,14 @@ net.Receive("inventory",function()
 	panel:SetDraggable(true)
 	panel:MakePopup()
 	panel:SetTitle( nickname.. "'s body")
+
+	armor = vgui.Create("DFrame")
+	armor:SetAlpha(255)
+	armor:SetSize(500, 200)
+	armor:SetPos(ScrW()*.396, ScrH()*.13)
+	armor:SetDraggable(false)
+	armor:MakePopup()
+	armor:SetTitle( nickname.. "'s armor")
 
 	function panel:OnKeyCodePressed(key)
 		if key == KEY_W or key == KEY_S or key == KEY_A or key == KEY_D or key == KEY_SPACE or key == KEY_BACKSPACE then self:Remove() end
@@ -136,7 +137,7 @@ net.Receive("inventory",function()
 	local x,y = 5,20
 
 	local corner = 6
-
+	print(lootEnt:GetNWString("Bodyvest", ""))
 	if lootEnt:IsPlayer() then
 
 		--bodyvest
@@ -146,7 +147,11 @@ net.Receive("inventory",function()
 		bodyvest.Armor = lootEnt:GetNWString("Bodyvest", "")
 		bodyvest:SetText("")
 		bodyvest.Paint = function(self,w,h)
-			draw.RoundedBox(0,0,0,w,h,self:IsHovered() and black2 or Color(0,0,0,0))
+			if bodyvest.Armor == "" then
+				draw.RoundedBox(0,0,0,w,h,self:IsHovered() and Color(0,0,0,0) or Color(0,0,0,0))
+			else
+				draw.RoundedBox(0,0,0,w,h,self:IsHovered() and black2 or black)
+			end
 			surface.SetDrawColor(0,0,0,0)
 			surface.DrawOutlinedRect(1,1,w - 2,h - 2)
 			surface.SetMaterial(bodyvestIcons[bodyvest.Armor])
@@ -164,8 +169,11 @@ net.Receive("inventory",function()
 		helmet:SetText("")
 
 		helmet.Paint = function(self,w,h)
-			draw.RoundedBox(0,0,0,w,h,self:IsHovered() and black2 or Color(0,0,0,0))
-			surface.SetDrawColor(0,0,0,0)
+			if helmet.Armor == "" then
+				draw.RoundedBox(0,0,0,w,h,self:IsHovered() and Color(0,0,0,0) or Color(0,0,0,0))
+			else
+				draw.RoundedBox(0,0,0,w,h,self:IsHovered() and black2 or black)
+			end			surface.SetDrawColor(0,0,0,0)
 			surface.DrawOutlinedRect(1,1,w - 2,h - 2)
 			--surface.SetMaterial(Material(helmetIcons[lootEnt:GetNWString("Helmet", "")]))
 			surface.SetMaterial(helmetIcons[helmet.Armor])
@@ -183,8 +191,11 @@ net.Receive("inventory",function()
 		mask:SetText("")
 
 		mask.Paint = function(self,w,h)
-			draw.RoundedBox(0,0,0,w,h,self:IsHovered() and black2 or Color(0,0,0,0))
-			surface.SetDrawColor(0,0,0,0)
+			if mask.Armor == "" then
+				draw.RoundedBox(0,0,0,w,h,self:IsHovered() and Color(0,0,0,0) or Color(0,0,0,0))
+			else
+				draw.RoundedBox(0,0,0,w,h,self:IsHovered() and black2 or black)
+			end			surface.SetDrawColor(0,0,0,0)
 			surface.DrawOutlinedRect(1,1,w - 2,h - 2)
 			--surface.SetMaterial(Material(helmetIcons[lootEnt:GetNWString("Helmet", "")]))
 			surface.SetMaterial(maskIcons[mask.Armor])
@@ -233,6 +244,7 @@ net.Receive("inventory",function()
 		print(wep)
 		local wepTbl = weapons.Get(wep) or WeaponByModel[wep] or wep
 		local CarryWeight
+		if blackListedWeps[wep] then continue end
 		if wepTbl.CarryWeight then
 			CarryWeight = wepTbl.CarryWeight
 		else
@@ -259,7 +271,7 @@ net.Receive("inventory",function()
 			draw.RoundedBox(0,0,0,w,h,self:IsHovered() and black2 or black)
 			surface.SetDrawColor(0,0,0,0)
 			surface.DrawOutlinedRect(1,1,w - 2,h - 2)
-			surface.SetMaterial(Material(wepTbl.IconTexture))
+			surface.SetMaterial(wepTbl.IconTexture and Material(wepTbl.IconTexture) or Material("empty"))
 			surface.SetDrawColor(255,255,255,255)
 			surface.DrawTexturedRect(2,2,w - 4,h - 4)
 		end

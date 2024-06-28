@@ -40,7 +40,8 @@ SWEP.TPIK = false
 
 SWEP.TPIK_PosAngles = {
     ["ValveBiped.Bip01_R_Upperarm"] = Angle(-5, 0, 0),
-	["ValveBiped.Bip01_L_Upperarm"] = Angle(30, 0, 0)
+	["ValveBiped.Bip01_L_Upperarm"] = Angle(30, 0, 0),
+	["ValveBiped.Bip01_L_Finger1"] = Angle(-60, 0, 0),
 }
 
 SWEP.TPIK_PosVectors = {

@@ -154,7 +154,7 @@ end
 hook.Add("PlayerSay", "DropWeapon", function(ply,text)
 	if string.lower(text) == "*drop" then
         if !ply.fake then
-			if IsValid(ply:GetActiveWeapon()) and ply:GetActiveWeapon():GetClass() != "wep_jack_hmcd_hands" and ply:GetActiveWeapon().PinOut != true then
+			if IsValid(ply:GetActiveWeapon()) and ply:GetActiveWeapon():GetClass() != "wep_jack_hmcd_hands" and ply:GetActiveWeapon().PinOut != true and ply:GetActiveWeapon().Category != "HMCD: Union - Traitor" then
 				ply:DropWeapon()
 				ply:ViewPunch(Angle(5,0,0))
 				ply:DoAnimationEvent(ACT_GMOD_GESTURE_ITEM_DROP)
@@ -260,6 +260,9 @@ hook.Add("Identity", "IDGive", function(ply)
 	end)
 end)
 
+hook.Add("Die Reason", "VarsS", function(ply)	--die message
+end)
+
 hook.Add("Vars Player", "VarsS", function(ply)	-- Alive give
 	if PLYSPAWN_OVERRIDE then return end
 
@@ -350,7 +353,6 @@ hook.Add("Vars Player", "VarsS", function(ply)	-- Alive give
 	ply.msgLeftLeg = 0
 	ply.msgRightLeg = 0
 
-	-- adrenaline not experience:
 	-- head
 	ply.ane_neck = false
 	ply.ane_jdis = false
@@ -363,7 +365,6 @@ hook.Add("Vars Player", "VarsS", function(ply)	-- Alive give
 	ply.ane_la = false
 
 	ply:SetNWBool("Headcrab", false)
-	timer.Remove("HeadCrabEbashit"..ply:EntIndex())
 
 	-- THink wokrs
 
@@ -397,29 +398,33 @@ hook.Add("Vars Player", "VarsS", function(ply)	-- Alive give
 		['RightLeg']=1,
 		['Jaw']=1
 	}
-	-- guilt sys
-	if ply:GetNWInt("Guilt", 0) > 0 then
-		ply:SetNWInt("Guilt", ply:GetNWInt("Guilt", 0) - math.random(1, 20))
-	end
-
-	if ply:GetNWInt("Guilt") < 0 then ply:SetNWInt("Guilt", 0) end
-
-	timer.Simple(.3, function() ply:ChatPrint("You guilt: " .. ply:GetPData("U_Guilt", 0) .. "%") end)
-
-	--
-	hook_run("Identity", ply)
 	---------------------------------
 end)
 
 hook.Add("PlayerSpawn", "VarsIS", function(ply) 
-	ply:SetTeam(1) 
-	ply.LastAttacker = nil
-	ply:SetNWBool("Spectating",false)
+	ply:SetTeam(1)
+	if !PLYSPAWN_OVERRIDE then
+		if ply:GetNWInt("Guilt", 0) > 0 then
+			ply:GuiltRemove(math.random(1,20))
+		end
+
+		if ply:GetNWInt("Guilt") < 0 then ply:GuiltSet(0) end
+
+		timer.Simple(.1, function() 
+			ply:ChatPrint("You guilt: " .. ply:GetNWInt("Guilt", 0) .. "%") 
+		end)
+		ply.LastHitgroup = nil
+		ply.LastDamageType = nil
+		ply.LastAttacker = nil
+		ply:SetNWBool("Spectating",false)
+		hook_run("Identity", ply)
+	end
 	hook_run("Vars Player", ply)
 end)
 
 hook.Add("PlayerDeath", "VarsD", function(ply)
 	ply:SetTeam(1)
+	hook_run("Die Reason", ply)
 	hook_run("Vars Player", ply)
 end)
 

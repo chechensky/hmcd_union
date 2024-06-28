@@ -71,7 +71,7 @@ local function ImersiveCam(ply,pos,ang,fov)
 			return view
 		elseif plyselect:GetNWBool("fake") and IsValid(plyselect:GetNWEntity("Ragdoll")) and (ply:GetNWInt("SpectateMode", 0) == 0 or ply:GetNWInt("SpectateMode", 0) == 2) then
 			local ragdollselect = plyselect:GetNWEntity("Ragdoll")
-			ragdollselect:ManipulateBoneScale(6,vecZero)
+			ragdollselect:ManipulateBoneScale(ragdoll:LookupBone("ValveBiped.Bip01_Head1"),vecZero)
 			local PosAng = ragdollselect:GetAttachment(ragdollselect:LookupAttachment("eyes"))
 			local camfake = {
 				origin = PosAng.Pos - Vector(2,0,0),
@@ -83,8 +83,8 @@ local function ImersiveCam(ply,pos,ang,fov)
 			return camfake
 		end
 	end
-	if !ply:Alive() and ply:GetNWBool("fake") and IsValid(ragdoll) then
-		ragdoll:ManipulateBoneScale(6,vecZero)
+	if !ply:Alive() and ply:GetNWBool("fake") and IsValid(ragdoll) and ply:GetNWBool("spectatefake", false) == true then
+		ragdoll:ManipulateBoneScale(ragdoll:LookupBone("ValveBiped.Bip01_Head1"),Vector())
 		local PosAng = ragdoll:GetAttachment(ragdoll:LookupAttachment("eyes"))
 		local camfake = {
 			origin = PosAng.Pos + Vector(0,-5,0),
@@ -96,11 +96,12 @@ local function ImersiveCam(ply,pos,ang,fov)
 		return camfake
 	end
 	if ply:Alive() and ply:GetNWBool("fake") and IsValid(ragdoll) then
-		ragdoll:ManipulateBoneScale(6,vecZero)
-		local PosAng = ragdoll:GetAttachment(ragdoll:LookupAttachment("eyes"))
+		ragdoll:ManipulateBoneScale(ragdoll:LookupBone("ValveBiped.Bip01_Head1"),vecZero)
+		local PosAng = ragdoll:GetAttachment(ragdoll:LookupAttachment("anim_attachment_lh"))
+		local PosAngHead= ragdoll:GetAttachment(ragdoll:LookupAttachment("eyes"))
 		local camfake = {
-			origin = PosAng.Pos + Vector(0,-5,0),
-			angles = PosAng.Ang,
+			origin = PosAngHead.Pos,
+			angles = PosAngHead.Ang,
 			znear = 1,
 			zfar = 26000,
 			fov = 110

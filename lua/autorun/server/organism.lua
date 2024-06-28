@@ -108,12 +108,32 @@ end)
 
 local hook_run = hook.Run
 
+timer.Create("Headcrab",2,0,function()
+    for _, ply in player.Iterator() do
+        hook_run("Headcrab", ply)
+    end
+
+end)
+
 timer.Create("PulseWork",0.9,0,function()
     for _, ply in player.Iterator() do
         hook_run("Bleeding", ply)
     end
 
 end)
+
+hook.Add("Headcrab", "Headcrabwork", function(ply)
+    if IsValid(ply) and ply:Alive() and ply:GetNWBool("Headcrab", false) == true then
+        ply.BleedOuts['stomach'] = ply.BleedOuts['stomach'] + 1
+        ply.pain_add = ply.pain_add + 5
+        if math.random(1,5) == 2 then
+            if !ply.fake then
+                 Faking(ply)
+            end
+        end
+    end
+end)
+
 hook.Add("Bleeding", "BleedWorkPulse", function(ply)
 	local ent = IsValid(ply.fakeragdoll) and ply.fakeragdoll or ply
 
@@ -212,6 +232,7 @@ hook.Add("Player Think", "AdrenalineWork", function(ply)
 		if ply.ane_neck then
 			ply:ChatPrint("Your neck is broken")
             ply:Kill()
+			ply.ane_neck = false
 		end
 	end
 
@@ -221,9 +242,11 @@ hook.Add("Player Think", "AdrenalineWork", function(ply)
             if !ply.fake then
                 Faking(ply)
             end
+			ply.ane_jdis = false
 		elseif ply.ane_jaw then
             ply:ChatPrint("Your jaw is broken")
             ply.mutejaw = true
+			ply.ane_jaw = false
 		end
 	end
 end)

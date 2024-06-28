@@ -110,7 +110,6 @@ function GM:PhraseMousePressed(code, vec)
 		if selected and selected > 0 and code == MOUSE_LEFT then
 			if selected and ments[selected] then
 				RunConsoleCommand("taunt", ments[selected].Code)
-				print("taunt", ments[selected].Code)
 			end
 		end
 

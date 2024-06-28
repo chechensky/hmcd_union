@@ -64,6 +64,40 @@ Rounds = {
 	"dm"
 }
 
+TypeHit = {
+	[DMG_BULLET] = "shot",
+	[DMG_SNIPER] = "shot",
+	[DMG_BUCKSHOT] = "shot",
+	[DMG_SLASH] = "slash",
+	[DMG_CLUB] = "club",
+	[DMG_CRUSH] = "crush",
+	[DMG_FALL] = "fall"
+}
+
+HitgroupReason = {
+	[HITGROUP_HEAD] = "head",
+	[HITGROUP_CHEST] = "chest",
+	[HITGROUP_STOMACH] = "stomach",
+	[HITGROUP_LEFTARM] = "left arm",
+	[HITGROUP_RIGHTARM] = "right arm",
+	[HITGROUP_LEFTLEG] = "left leg",
+	[HITGROUP_RIGHTLEG] = "right leg"
+}
+
+DieReason = {
+	[DMG_BURN] = "burnout.",
+	[DMG_BULLET] = "bullet.",
+	[DMG_SNIPER] = "bullet.",
+	[DMG_BLAST] = "explosion",
+	[DMG_CRUSH] = "crush.",
+	[DMG_BUCKSHOT] = "bullet.",
+	[DMG_SLASH] = "melee weapon.",
+	[DMG_CLUB] = "melee weapon.",
+	[DMG_FALL] = "falled.",
+	[DMG_DROWN] = "drowned.",
+	[DMG_POISON] = "poison."
+}
+
 HMCD_EquipmentNames = {
 	[1] = "Level IIIA Armor",
 	[2] = "Level III Armor",

@@ -64,6 +64,9 @@ function GM:StartRound()
     end
     game.CleanUpMap(false, { "env_fire", "entityflame", "_firesmoke" })
 	for _,ply in pairs(ply_GetAll())do
+        if ply.fake then
+            Faking(ply)
+        end
         ply:UnSpectate()
 		ply:StripAmmo()
 		ply:StripWeapons()
@@ -119,21 +122,22 @@ function GM:StartRound()
 	        end
         end)
     elseif GAMEMODE.RoundName == "dm" then
-        timer.Simple(.3, function()
-            GAMEMODE.DMTime = 10
-            local bodyvest = {
-                "Level IIIA",
-                "Level III"
-            }
-
+        GAMEMODE.DMTime = 10
+        GAMEMODE.NoGun = true
         timer.Simple(12,function()
             timer.Create("DM_Timer", 1, 10, function()
                 GAMEMODE.DMTime = GAMEMODE.DMTime - 1
                 if timer.RepsLeft("DM_Timer") <= 0 then
                     timer.Remove("DM_Timer")
+                    GAMEMODE.NoGun = false
                 end
             end)
         end)
+        timer.Simple(.3, function()
+            local bodyvest = {
+                "Level IIIA",
+                "Level III"
+            }
 
 	        for _,ply in pairs(ply_GetAll())do
                 ply.Role = "Fighter"
@@ -199,7 +203,9 @@ function GM:StartRound()
                     else
                         ply:SetModel(table.Random(Fighter_RebelModels[ply.ModelSex]))
                     end
-                    ply:SetPos(ents.FindByClass("info_player_terrorist")[table.Random(1,10)]:GetPos())
+                    if #ents.FindByClass("info_player_terrorist") > 0 then
+                        ply:SetPos(ents.FindByClass("info_player_terrorist")[table.Random(1,10)]:GetPos())
+                    end
                 else
                     ply.Role = "Combine"
                     ply.ModelSex = "combine"
@@ -213,7 +219,9 @@ function GM:StartRound()
                         ply:SetBodygroup(0, 1)
                     end
                     ply:SetupHands()
-                    ply:SetPos(ents.FindByClass("info_player_counterterrorist")[table.Random(1,10)]:GetPos())
+                    if #ents.FindByClass("info_player_terrorist") > 0 then
+                        ply:SetPos(ents.FindByClass("info_player_counterterrorist")[table.Random(1,10)]:GetPos())
+                    end
                 end
 
 		        for i,wep in pairs(HL2_Loadout[ply.Role][ply:GetNWString("HL2_Class")]) do
@@ -245,7 +253,7 @@ hook.Add("PlayerPostThink", "IncreaseFOVOnSprint", function(ply)
     if ply:KeyDown(IN_SPEED) then
         ply:SetFOV(100, 0.08)
     else
-        ply:SetFOV(90, 0.08)
+        ply:SetFOV(GetConVar("fov_desired"):GetInt(), 0.08)
     end
 end)
 
@@ -264,10 +272,10 @@ function GM:EndRound(reason, mvp, survived)
 	        net.WriteVector(Vector(0,0,0))
 	        net.WriteString("?")
         end
-        if !survived then
-            net.WriteString("?")
+        if survived then
+            net.WriteString(survived:GetNWString("Character_Name", ""))
         else
-            net.WriteString(survived:GetNWString("Character_Name", ""))        
+            net.WriteString("?")
         end
 
     net.Broadcast()
@@ -283,7 +291,7 @@ function GM:Think()
     if #ply_GetAll() < 2 then GAMEMODE.RoundState = 2 end
     if GAMEMODE.RoundState == 0 or GAMEMODE.RoundState == 2 then 
         if GAMEMODE.RoundState == 2 and #ply_GetAll() > 1 then 
-            GAMEMODE:EndRound(1, table.Random(player.GetAll())) 
+            GAMEMODE:EndRound(1, table.Random(player.GetAll()), nil) 
         end
     return end
     local alive_ply = GetAlivePlayerCount()
@@ -296,7 +304,7 @@ function GM:Think()
     end
 
     if GAMEMODE.RoundName == "dm" then
-        if alive_ply == 1 then
+        if alive_ply < 2 then
             GAMEMODE:EndRound(6, nil, GetLastPlayerAlive())
         end
     return end
@@ -318,6 +326,12 @@ function GM:Think()
 
             elseif alive_traitor < 1 and alive_innocent > 0 then
                 GAMEMODE:EndRound(2, GAMEMODE.Traitor.LastAttacker)
+                if GAMEMODE.Traitor.LastDamageType or type(DieReason[GAMEMODE.Traitor.LastDamageType]) == string then
+                    print(GAMEMODE.Traitor.LastDamageType)
+                    PrintMessage(HUD_PRINTTALK, "The murderer died because of " .. DieReason[GAMEMODE.Traitor.LastDamageType])
+                elseif !GAMEMODE.Traitor.LastDamageType or type(DieReason[GAMEMODE.Traitor.LastDamageType]) != string then
+                    PrintMessage(HUD_PRINTTALK, "The murderer died in mysterious circumstances.")
+                end
             end
 
         end
@@ -326,7 +340,6 @@ function GM:Think()
 end
 
 hook.Add("PlayerPostThink", "Spectating", function(ply)
-    if ply:Alive() then return end
     if !ply:GetNWBool("Spectating", false) then return end
 
 	local plyselect = ply:GetNWEntity("SelectPlayer", Entity(-1))
@@ -370,6 +383,6 @@ hook.Add("PlayerPostThink", "Spectating", function(ply)
 end)
 
 hook.Add("PlayerDeathThink", "DeathThink", function(ply)
-    if GAMEMODE.RoundName != "sandbox" then return false end
     ply:SetNWBool("Spectating", true)
+    if GAMEMODE.RoundName != "sandbox" then return false end
 end)

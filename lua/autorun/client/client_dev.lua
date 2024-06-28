@@ -34,7 +34,7 @@ hook.Add("PostDrawOpaqueRenderables", "LaserChecha", function()
 	if !weapon:GetNWBool("LaserStatus") then return end
 
 	local startPos = ply:GetViewModel():GetAttachment(1).Pos
-	local endPos = startPos + ply:GetViewModel():GetRight() * 1200 + ply:GetViewModel():GetForward() * 4200
+	local endPos = startPos + ply:GetViewModel():GetForward() * 4200
 	local tr = util.TraceLine({
     	start = startPos,
        	endpos = endPos,

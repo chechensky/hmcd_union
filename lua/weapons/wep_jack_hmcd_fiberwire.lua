@@ -196,8 +196,7 @@ function SWEP:Think()
 
 				if tr.Entity:IsPlayer() then
 					tr.Entity.lastRagdollEndTime = nil
-					print(tr.Entity)
-					tr.Entity:ConCommand("fake")
+					Faking(tr.Entity)
 				end
 
 				self.StrangleRag = rag

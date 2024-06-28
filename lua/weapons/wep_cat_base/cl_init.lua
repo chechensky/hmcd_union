@@ -1,3 +1,5 @@
 include("cl_holosight.lua")
 include("cl_attachments.lua")
+include("sh_bullet.lua")
+include("sh_gameplay.lua")
 include("shared.lua")

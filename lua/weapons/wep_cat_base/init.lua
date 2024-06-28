@@ -2,6 +2,7 @@ AddCSLuaFile("cl_init.lua")
 AddCSLuaFile("cl_holosight.lua")
 AddCSLuaFile("cl_attachments.lua")
 AddCSLuaFile("sh_bullet.lua")
+AddCSLuaFile("sh_gameplay.lua")
 AddCSLuaFile("shared.lua")
 
 include("sh_gameplay.lua")

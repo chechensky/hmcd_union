@@ -3,6 +3,7 @@ if SERVER then
 	SWEP.Spawnable = true
 elseif CLIENT then
 	SWEP.DrawAmmo = false
+	SWEP.ViewModelFlip = true
 	SWEP.DrawCrosshair = false
 	SWEP.ViewModelFOV = 80
 	SWEP.Slot = 1

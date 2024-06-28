@@ -26,7 +26,9 @@ function GM:PlayerSpawn(ply)
 	ply:SetLadderClimbSpeed(75)
 
 	plymanag.SetPlayerClass(ply,"player_default")
-
+	timer.Simple(1, function()
+		plymanag.TranslatePlayerHands(ply:GetModel())
+	end)--фикс рук камбайна бай чеча СКРИПТХУК БАЙ БАЙ КРУТОЙ СКИЛЕТ "016!"!!!
 	local phys = ply:GetPhysicsObject()
 	if phys:IsValid() then phys:SetMass(15) end
 end
@@ -191,7 +193,6 @@ function HMCD_Poison(victim, attacker, poison)
 				
 				timer.Simple(TetrodotoxinTime, function()
 					if !ValidPlayer_WithLifeID(victim, TAS) then return end
-					print("123123")
 					victim:Kill()
 				
 				end)

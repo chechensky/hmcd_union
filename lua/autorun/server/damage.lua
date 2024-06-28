@@ -72,7 +72,12 @@ hook.Add("EntityTakeDamage","ragdamage",function(ent,dmginfo)
 	rubatPidor:SetDamagePosition(dmginfo:GetDamagePosition())
 	rubatPidor:SetDamageForce(dmginfo:GetDamageForce())
 
+    ply.LastHitgroup = hitgroup
+    ply.LastDamageType = dmginfo:GetDamageType()
     ply.LastAttacker = att
+    print(att)
+    print(hitgroup)
+    print(dmginfo:GetDamageType())
 	ply.LastDMGInfo = rubatPidor
 	dmginfo:ScaleDamage(2)
 	if rag then
@@ -93,23 +98,11 @@ end)
 hook.Add("HOOK_UNION_Damage","Hit",function(ply,hitgroup,dmginfo,rag)
     local ent = rag or ply
     local inf = dmginfo:GetInflictor()
-    if inf:GetClass() == "npc_headcrab" then
+    if IsValid(inf) and inf:GetClass() == "npc_headcrab" then
         inf:Remove()
         ply:SetNWBool("Headcrab", true)
         ply.adrenaline = ply.adrenaline + 5
         ply.Wounds['stomach'] = ply.Wounds['stomach'] + 1    
-        timer.Create("HeadCrabEbashit"..ply:EntIndex(), 2, 0, function()
-            if IsValid(ply) and ply:GetNWBool("Headcrab", false) == true then
-                ply:SetVelocity(-ply:GetAimVector()*200)
-                ply.BleedOuts['stomach'] = ply.BleedOuts['stomach'] + 1
-                ply.pain_add = ply.pain_add + 5
-                if math.random(1,5) == 2 then
-                    if !ply.fake then
-                        Faking(ply)
-                    end
-                end
-            end
-        end)
     end
     if dmginfo:GetDamage() > 5 and ply:GetNWString("Helmet", "") == "ACH" and math.random(1,3) == 2 and (hitgroup == HITGROUP_HEAD or hitgroup == HITGROUP_CHEST or hitgroup == HITGROUP_STOMACH) then
         if ply.fake then
@@ -149,12 +142,12 @@ hook.Add("HOOK_UNION_Damage","Hit",function(ply,hitgroup,dmginfo,rag)
     end
     if ply:GetNWString("Bodyvest", "") == "Level IIIA" then
         if hitgroup == HITGROUP_STOMACH or hitgroup == HITGROUP_CHEST then
-            dmginfo:ScaleDamage(1 / 5)
+            dmginfo:ScaleDamage(1 / 3.4)
         end
     end
     if ply:GetNWString("Bodyvest", "") == "Level III" then
         if hitgroup == HITGROUP_STOMACH or hitgroup == HITGROUP_CHEST then
-            dmginfo:ScaleDamage(1 / 8)
+            dmginfo:ScaleDamage(1 / 5)
         end
     end
     if ply:GetNWString("Helmet", "") == "ACH" then

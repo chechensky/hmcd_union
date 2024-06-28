@@ -200,6 +200,7 @@ function SWEP:ThrowGrenade()
 	Grenade:Activate()
 	Grenade:GetPhysicsObject():SetVelocity(self:GetOwner():GetVelocity() + self:GetOwner():GetAimVector() * 1000)
 	self:GetOwner():SetLagCompensated(false)
+	self:Remove()
 end
 
 function SWEP:DropGrenade()
