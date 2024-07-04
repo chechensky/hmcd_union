@@ -189,13 +189,7 @@ hook.Add("PlayerSay", "DropWeapon", function(ply,text)
 end)
 
 concommand.Add("wagner", function(ply) --СВОСВОСВОСВО ZZZZZZZZZZZZZVVVVVVVVVVVV
-    ply:SetMaterial("")
-    for i = 0, 9 do
-        ply:SetSubMaterial(i, "")
-    end
-	ply:SetModel("models/knyaje pack/sso_politepeople/sso_politepeople.mdl")
-	ply:SetBodyGroups("010111111")
-    --тут надо убрать (ресетнуть) акссесуар.
+	ply:ManipulateBoneAngles(6, Angle(0,0,0))
 end)
 
 concommand.Add("azov", function(ply) --свинота
@@ -228,34 +222,43 @@ hook.Add("Identity", "IDGive", function(ply)
 
 	timer.Simple(.2, function()
 
-	local cl_playermodel, playerModel = ply:GetInfo("cl_playermodel"), table.Random(PlayerModels)
-	cl_playermodel = playerModel.model
-	local modelname = player_manager.TranslatePlayerModel(cl_playermodel)
-	if ply.CustomModel then
-		for key, maudhayle in pairs(PlayerModels) do
-			if maudhayle.model == ply.CustomModel then
-				playerModel = maudhayle
-				break
+		local cl_playermodel, playerModel = ply:GetInfo("cl_playermodel"), table.Random(PlayerModels)
+		cl_playermodel = playerModel.model
+		local modelname = player_manager.TranslatePlayerModel(cl_playermodel)
+
+		if ply.CustomModel then
+		
+			for key, maudhayle in pairs(PlayerModels) do
+
+				if maudhayle.model == ply.CustomModel then
+
+					playerModel = maudhayle
+					break
+					
+				end
+
 			end
+
 		end
-	end
-	cl_playermodel = playerModel.model
-	local modelname = player_manager.TranslatePlayerModel(cl_playermodel)
-	util_PCM(modelname)
-	ply:SetModel(modelname)
-	ply.ModelSex = playerModel.sex
-	ply.ClothingMatIndex = playerModel.clothes
-	ply:SetClothing("none")
-	ply:SetBodygroup(1, 1)
-	ply:SetBodygroup(2, math.random(0, 1))
-	ply:SetBodygroup(3, math.random(0, 1))
-	ply:SetBodygroup(4, math.random(0, 1))
-	ply:SetBodygroup(5, math.random(0, 1))
-    ply:GenerateClothes()
-	ply:GenerateColor()
-	ply:GenerateAccessories()
-	ply:GenerateName()
-	--ply:ManipulateBonePosition(ply:LookupBone("ValveBiped.Bip01_Spine2"), Vector((ply.Rost) or 0,0,0))
+
+		cl_playermodel = playerModel.model
+		local modelname = player_manager.TranslatePlayerModel(cl_playermodel)
+		util_PCM(modelname)
+		ply:SetModel(modelname)
+		ply.ModelSex = playerModel.sex
+		ply.ClothingMatIndex = playerModel.clothes
+		ply:SetClothing("none")
+		ply:SetBodygroup(1, 1)
+		ply:SetBodygroup(2, math.random(0, 1))
+		ply:SetBodygroup(3, math.random(0, 1))
+		ply:SetBodygroup(4, math.random(0, 1))
+		ply:SetBodygroup(5, math.random(0, 1))
+    	ply:GenerateClothes()
+		ply:GenerateColor()
+		ply:GenerateAccessories()
+		ply:GenerateName()
+		--ply:ManipulateBonePosition(ply:LookupBone("ValveBiped.Bip01_Spine2"), Vector((ply.Rost) or 0,0,0))
+		ply:SetupHands()
 
 	end)
 end)
@@ -312,7 +315,8 @@ hook.Add("Vars Player", "VarsS", function(ply)	-- Alive give
 		["Players"] = {},
 		["Ents"] = {}
 	}
-
+	ply.adrenalineinjector = 0
+	ply.Ribs = 24
 	ply.temp = "Warm"
 	ply:SetNWInt("SpectateMode", 0)
 	ply:SetNWEntity("SelectPlayer", Entity(-1))
@@ -363,9 +367,14 @@ hook.Add("Vars Player", "VarsS", function(ply)	-- Alive give
 	-- arms
 	ply.ane_ra = false
 	ply.ane_la = false
-
+	ply.Seizure = false
+	ply.SeizureReps = 0
+	ply:ConCommand("-attack")
 	ply:SetNWBool("Headcrab", false)
-
+	
+	umsg.Start("Skin_Appearance", ply)
+	umsg.End()
+	
 	-- THink wokrs
 
 	ply.pulseStart = 0
@@ -398,6 +407,14 @@ hook.Add("Vars Player", "VarsS", function(ply)	-- Alive give
 		['RightLeg']=1,
 		['Jaw']=1
 	}
+
+    local bones = ply:GetBoneCount()
+    if not bones or bones <= 0 then return end
+    for i = 0, bones - 1 do
+        ply:ManipulateBonePosition(i, Vector(0, 0, 0))
+        ply:ManipulateBoneAngles(i, Angle(0, 0, 0))
+		ply:ManipulateBoneScale(i, Vector(1,1,1))
+    end
 	---------------------------------
 end)
 
@@ -426,6 +443,7 @@ hook.Add("PlayerDeath", "VarsD", function(ply)
 	ply:SetTeam(1)
 	hook_run("Die Reason", ply)
 	hook_run("Vars Player", ply)
+    ply:SetNWBool("Spectating", true)
 end)
 
 hook.Add("PlayerSay", "OtrubNoChat", function(ply)

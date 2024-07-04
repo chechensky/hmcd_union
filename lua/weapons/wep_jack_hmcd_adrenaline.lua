@@ -83,10 +83,7 @@ function SWEP:PrimaryAttack()
 	sound.Play("snd_jack_hmcd_needleprick.wav", self:GetOwner():GetShootPos() + VectorRand(), 60, math.random(90, 110))
 	sound.Play("snd_jack_hmcd_needleprick.wav", self:GetOwner():GetShootPos() + VectorRand(), 50, math.random(90, 110))
 	sound.Play("snd_jack_hmcd_needleprick.wav", self:GetOwner():GetShootPos() + VectorRand(), 40, math.random(90, 110))
-	local lerpadrenaline = Lerp(FrameTime(), self:GetOwner().adrenaline or 0, self:GetOwner().adrenaline + 1)
-	print(lerpadrenaline)
-	self:GetOwner().adrenaline_use = self:GetOwner().adrenaline_use + 1
-	self:GetOwner().adrenaline = self:GetOwner().adrenaline + 1
+	self:GetOwner().adrenalineinjector = self:GetOwner().adrenalineinjector + 3
 	self:Remove()
 end
 

@@ -1,5 +1,3 @@
-print("no empty")
--- damage ??
 
 local filterEnt
 local function filter(ent)
@@ -57,9 +55,8 @@ hook.Add("EntityTakeDamage","ragdamage",function(ent,dmginfo)
 	local mul = RagdollDamageBoneMul[hitgroup]
 
 	if rag and mul then dmginfo:ScaleDamage(mul) end
-
 	local entAtt = dmginfo:GetAttacker()
-	local att =
+    local att =
 		(entAtt:IsPlayer() and entAtt:Alive() and entAtt) or
 		(entAtt:GetClass() == "wep" and entAtt:GetOwner())
 	att = dmginfo:GetDamageType() ~= DMG_CRUSH and att
@@ -75,9 +72,6 @@ hook.Add("EntityTakeDamage","ragdamage",function(ent,dmginfo)
     ply.LastHitgroup = hitgroup
     ply.LastDamageType = dmginfo:GetDamageType()
     ply.LastAttacker = att
-    print(att)
-    print(hitgroup)
-    print(dmginfo:GetDamageType())
 	ply.LastDMGInfo = rubatPidor
 	dmginfo:ScaleDamage(2)
 	if rag then
@@ -326,7 +320,7 @@ hook.Add("HOOK_UNION_Damage","Hit",function(ply,hitgroup,dmginfo,rag)
         local right_leg_artery = util.IntersectRayWithOBB(dmgpos,penetration, pos, ang, Vector(-5,-2,1), Vector(10,0,2))]]--
 
         if lung then
-            if !ply.Hit['lungs'] then
+            if !ply.Hit['lungs'] and dmginfo:IsDamageType(DMG_BULLET+DMG_BUCKSHOT+DMG_SNIPER) then
                 ply.Hit['lungs'] = true
 				ply.BleedOuts["chest"] = ply.BleedOuts["chest"] + 20
             end
@@ -364,28 +358,28 @@ hook.Add("HOOK_UNION_Damage","Hit",function(ply,hitgroup,dmginfo,rag)
         end
 
         if liver then
-            if ply.Hit['liver']!=true and !dmginfo:IsDamageType(DMG_CLUB) then
+            if !ply.Hit['liver'] and dmginfo:IsDamageType(DMG_BULLET+DMG_BUCKSHOT+DMG_SNIPER) then
                 ply.Hit['liver'] = true
 				ply.BleedOuts["stomach"] = ply.BleedOuts["stomach"] + 20
             end
         end
         
         if stomach then
-            if ply.Hit['stomach'] != true and !dmginfo:IsDamageType(DMG_CLUB) then
+            if !ply.Hit['stomach'] and dmginfo:IsDamageType(DMG_BULLET+DMG_BUCKSHOT+DMG_SNIPER) then
                 ply.Hit['stomach'] = true
                 ply.BleedOuts["stomach"] = ply.BleedOuts["stomach"] + 10
             end
         end
         
         if intestines then
-            if ply.Hit['intestines']!=true and !dmginfo:IsDamageType(DMG_CLUB) then
+            if !ply.Hit['intestines'] and dmginfo:IsDamageType(DMG_BULLET+DMG_BUCKSHOT+DMG_SNIPER) then
                 ply.Hit['intestines'] = true
                 ply.BleedOuts["stomach"] = ply.BleedOuts["stomach"] + 10
             end
         end
         
         if heart then
-            if !ply.Hit['heart'] and !dmginfo:IsDamageType(DMG_CLUB) then
+            if !ply.Hit['heart'] and dmginfo:IsDamageType(DMG_BULLET+DMG_BUCKSHOT+DMG_SNIPER) then
                 ply.Hit['heart'] = true
 				ply.BleedOuts["chest"] = ply.BleedOuts["chest"] + 100
             end
@@ -510,8 +504,19 @@ end)
 
 hook.Add("OrganismVars", "MinusOrganismInt", function(ply)
     if ply.pain < 0 then ply.pain = 0 end
+	if ply.adrenalineinjector < 0 then ply.adrenalineinjector = 0 end
+
+	if ply.adrenalineinjector > 0 then
+		ply.adrenaline_unone = ply.adrenaline_unone + 2
+		ply.adrenalineinjector = ply.adrenalineinjector - 1.5
+	end
+
     if ply.pain > 0 then
-        ply.pain = ply.pain - ply.bullet_force / 5
+        if ply.bullet_force / 2 > 0 then
+            ply.pain = ply.pain - ply.bullet_force / 2
+        else
+            ply.pain = ply.pain - math.random(1, 15)
+        end
     end
     if ply.bullet_force > 0 then
         ply.bullet_force = ply.bullet_force - 3
@@ -534,5 +539,7 @@ hook.Add("O2Vars", "O2_Work", function(ply)
     if ply.o2 < 0 then ply.o2 = 0 end
     if ply:GetNWBool("Breath", true) and ply:WaterLevel() >= 3 then
         ply.o2 = ply.o2 - math.Rand(0.2, 0.5)
+        ply:EmitSound("player/pl_drown" .. math.random(1, 3) .. ".wav", 50,100,1,CHAN_AUTO)
+        ply:ViewPunch(Angle(-math.random(1, 3),math.random(0.4, 2),math.random(0.6, 2)))
     end
 end)

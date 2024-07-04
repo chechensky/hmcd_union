@@ -1,4 +1,3 @@
-print("no empty")
 
 -- Stamina Work
 
@@ -6,8 +5,8 @@ hook.Add("Player Think", "StaminaWork", function(ply,time)
 	local leg = ply.stamina['leg']
 	local duo_leg = ply.Bones['RightLeg']+ply.Bones['LeftLeg']
 
-	local run = leg*6.5
-	local walk = leg*2
+	local run = leg*6.5+ply.adrenalineinjector
+	local walk = leg*2+ply.adrenalineinjector
 	local jump = leg*4.2
 	local hui = (ply.ModelSex == "male" and "m") or "f"
 	if walk != ply:GetWalkSpeed() then ply:SetWalkSpeed(walk)  end
@@ -28,8 +27,10 @@ end)
 
 -- Organs Work
 OrgansNextThink = 0
+LungNextThink = 0
 hook.Add("Player Think","Organs_Hit_Reactions",function(ply,time)
 	ply.OrgansNextThink = ply.OrgansNextThink or OrgansNextThink
+	ply.LungNextThink = ply.LungNextThink or LungNextThink
 	if ply.o2 < 0 then
 		ply:ChatPrint("You died because of a small amount of oxygen.")
 		ply:Kill()
@@ -51,19 +52,34 @@ hook.Add("Player Think","Organs_Hit_Reactions",function(ply,time)
 		ply:Kill()
 	end
 	
-	if not(ply.OrgansNextThink>CurTime())then
-		ply.OrgansNextThink=CurTime() + 0.2
-		if ply.Hit and ply:Alive() then
-			if !ply:GetNWBool("Breath", true) then
-				ply.o2 = ply.o2 - math.Rand(0.01,0.05)
-			end
-			if ply.Hit["intestines"] == true then
-				ply.cant_eat = true
-			end
-			if ply.Hit["heart"] == true then
-				ply.heartstop = true
-			end
+	if not ( ply.OrgansNextThink > CurTime() ) and ply:Alive() then
+		ply.OrgansNextThink = CurTime() + 0.2
+
+		if ply.Hit["intestines"] == true then
+			ply.cant_eat = true
 		end
+
+		if ply.Hit["heart"] == true then
+			ply.heartstop = true
+		end
+
+    end
+
+	if not ( ply.LungNextThink > CurTime() ) and ply:Alive() then
+		ply.LungNextThink = CurTime() + 1
+
+		if ply.Hit["lungs"] == true then
+			ply.o2 = ply.o2 - math.Rand(0.1, 0.4)
+		end
+
+		if !ply:GetNWBool("Breath", true) then
+			ply.o2 = ply.o2 - math.Rand(0.1, 0.3)
+		end
+
+		if ply:GetNWBool("Breath", true) then
+			ply.o2 = ply.o2 + math.Rand(0.08, 0.3)
+		end
+		
     end
 end)
 
@@ -166,7 +182,7 @@ hook.Add("Bleeding", "BleedWorkPulse", function(ply)
 	end
 end)
 
-BLEEDING_NextThink1 = 0
+local BLEEDING_NextThink1 = 0
 hook.Add("Think","BleedingBodies",function()
 	for i, ent in pairs(BleedingEntities) do
 		if not ent.IsBleeding then return end
@@ -189,11 +205,10 @@ hook.Add("Think","BleedingBodies",function()
 end)
 
 local CTime = CurTime
-
 hook.Add("Player Think", "AdrenalineWork", function(ply)
 	ply.adrenaline_unone = ply.adrenaline_unone or CTime()
 	ply.pain_addtime = ply.pain_addtime or CTime()
-	
+
 	if ply.adrenaline < 0 then ply.adrenaline = 0 end
 	if ply.pain_add < 0 then ply.pain_add = 0 end
 

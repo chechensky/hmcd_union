@@ -10,7 +10,7 @@ function SWEP:ViewModelDrawn(vm)
 					if info.scale then self.DrawnAttachments[attachment]:SetModelScale(info.scale, 0) end
 					if info.material then self.DrawnAttachments[attachment]:SetMaterial(info.material) end
 					if info.aimpos then self.AttAimPos = info.aimpos end
-					if info.sightpos then if not self.SightInfo then self.SightInfo = {14 - info.num, self.DrawnAttachments[attachment]} end end
+					if info.sightpos then if not self.SightInfo then self.SightInfo = {14 - info.num, self.DrawnAttachments[attachment], info.thermal} end end
 					if info.bipodpos then self.AttBipodPos = info.bipodpos end
 				else
 					local matr = vm:GetBoneMatrix(vm:LookupBone(info.bone))
@@ -45,8 +45,12 @@ function SWEP:ViewModelDrawn(vm)
 			end
 		end
 	end
-	if self.SightInfo then 
-		self:DrawSight(self, self.SightInfo[1], self.SightInfo[2], vm) 
+	if self.SightInfo then
+		if self.SightInfo[3] == true then
+			self:DrawThermalSight(self,self.SightInfo[1],self.SightInfo[2],vm)
+		else
+			self:DrawSight(self, self.SightInfo[1], self.SightInfo[2], vm) 
+		end
 	end
 end
 
@@ -103,7 +107,13 @@ function SWEP:DrawWorldModel()
 						if info.scale then self.WDrawnAttachments[attachment]:SetModelScale(info.scale, 0) end
 						if info.material then self.WDrawnAttachments[attachment]:SetMaterial(info.material) end
 					else
-						if attachment == "Laser" then self:DrawLaser() end
+						if attachment == "Laser" then
+							if self:GetNWBool("LaserStatus", false) then
+								self:DrawLaser()
+							else
+								self:CleanLaser()
+							end
+						end
 						local pos, ang = self:GetOwner():GetBonePosition(self:GetOwner():LookupBone("ValveBiped.Bip01_R_Hand"))
 						self.WDrawnAttachments[attachment]:SetRenderOrigin(pos + ang:Right() * info.pos.right + ang:Forward() * info.pos.forward + ang:Up() * info.pos.up)
 						local angList = {

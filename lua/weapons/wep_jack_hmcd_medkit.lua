@@ -374,7 +374,22 @@ function SWEP:PrimaryAttack()
 	ply:ChatPrint("You healing " .. NormaliseKonech[part] .. ".")
 	ply.BleedOuts[part] = ply.BleedOuts[part] - mbleed
 	ply.pain = ply.pain - 100
-		
+
+	local usedmed = ents.Create("prop_physics")
+	usedmed:SetModel(self.WorldModel)
+	usedmed:SetPos(ply:GetPos())
+	usedmed:SetCollisionGroup(COLLISION_GROUP_DEBRIS)
+	local phys = usedmed:GetPhysicsObject()
+	if IsValid(usedmed) then
+    	usedmed:ApplyForceCenter(ply:GetForward() * 500)
+	end
+	timer.Simple(30, function()
+    	if IsValid(usedmed) then
+        	usedmed:Remove()
+    	end
+	end)
+	usedmed:Spawn()
+
 	self:SetNextPrimaryFire(CurTime() + 2)
 end
 
@@ -396,6 +411,7 @@ function SWEP:OnDrop()
 	Ent:SetPos(self:GetPos())
 	Ent:SetAngles(self:GetAngles())
 	Ent.Amount = self:GetAmount()
+	Ent.Resource = self.Resource
 	Ent:Spawn()
 	Ent:Activate()
 	Ent:GetPhysicsObject():SetVelocity(self:GetVelocity() / 2)

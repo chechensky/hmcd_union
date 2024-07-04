@@ -131,7 +131,6 @@ function GM:RadialMousePressed(code, vec)
 						lply:EmitSound("att/laser_on.ogg", 75,100,1,CHAN_AUTO)
 					else
 						lply:GetActiveWeapon():SetNWBool("LaserStatus", false)
-						lply:ViewPunch(Angle(20,0,0))
 						lply:EmitSound("att/laser_off.ogg", 75,100,1,CHAN_AUTO)
 					end
 				elseif ments[selected].Code == "usemenu" then

@@ -115,7 +115,6 @@ local eat_food = {
 	"models/jordfood/can.mdl",
 	"models/jordfood/cakes.mdl",
 	"models/jordfood/atun.mdl",
-	"models/jordfood/jtun.mdl",
 	"models/jordfood/girlscout_cookies.mdl",
 	"models/jordfood/prongleclosedfilledgreen.mdl",
 	"models/foodnhouseholditems/miniwheats.mdl"

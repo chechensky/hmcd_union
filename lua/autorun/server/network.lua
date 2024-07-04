@@ -275,10 +275,8 @@ hook.Add("Player Think","Looting",function(ply)
 			if not IsValid(Ent) then return end
 			if IsValid(RagdollOwner(Ent)) then Ent = RagdollOwner(Ent) end
 			if IsValid(Ent) and Ent.IsJModArmor then Ent = Ent.Owner end
-			if not IsValid(Ent) then return end
 			if Ent:IsPlayer() and Ent:Alive() and not Ent.fake then return end
 			if not Ent.Info then return end
-			
 			Ent.UsersInventory = Ent.UsersInventory or {}
 			Ent.UsersInventory[ply] = true
 
@@ -289,7 +287,14 @@ hook.Add("Player Think","Looting",function(ply)
 
 	ply.okeloot = key
 end)
-
+local function FindWeaponByClass(player, class)
+    for _, weapon in pairs(player:GetWeapons()) do
+        if weapon:GetClass() == class then
+            return weapon
+        end
+    end
+    return nil
+end
 local prekol = {
 	weapon_physgun = true,
 	gmod_tool = true
@@ -338,10 +343,9 @@ net.Receive("ply_take_item",function(len,ply)
 		if IsValid(wep1) and wep1:IsWeapon() then
 			wep1:SetClip1(wepInfo.Clip1 or 0)
 		end
-		
 		ply:SelectWeapon(actwep:GetClass())
-
-		if lootEnt:IsPlayer() then lootEnt:StripWeapon(wep) end
+        print(lootEnt:IsPlayer())
+        if lootEnt:IsPlayer() then lootEnt:StripWeapon(wep) end
 		lootInfo.Weapons[wep] = nil
 		table.RemoveByValue(lootInfo.Weapons2,wep)
 	end
@@ -379,8 +383,7 @@ net.Receive("ply_drop_item",function(len,ply)
 	if IsValid(wep1) and wep1:IsWeapon() then
 		wep1:SetClip1(wepInfo.Clip1 or 0)
 	end
-		
-	if lootEnt:IsPlayer() then lootEnt:StripWeapon(wep) end
+    if lootEnt:IsPlayer() then lootEnt:StripWeapon(wep) end
 	lootInfo.Weapons[wep] = nil
 	table.RemoveByValue(lootInfo.Weapons2,wep)
 
@@ -393,7 +396,6 @@ net.Receive("ply_take_armor",function(len,ply)
     local armorname = net.ReadString()
     local armor = net.ReadString()
     local armorent = lootEnt.fakeragdoll:GetNWEntity("ENT_"..armorname, "")
-
     armorent:Remove()
     lootEnt:SetNWBool(armorname, "")
     ply:SetNWBool(armorname, armor)

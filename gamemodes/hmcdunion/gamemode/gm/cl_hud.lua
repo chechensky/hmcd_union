@@ -164,14 +164,14 @@ function GM:DrawGameHUD(ply)
 		["SMG1"]=surface.GetTextureID("vgui/hud/hmcd_round_4630"),
 		["XBowBolt"]=surface.GetTextureID("vgui/hud/hmcd_round_arrow"),
 		["AirboatGun"]=surface.GetTextureID("vgui/hud/hmcd_nail"),
-		["RPG_Round"]=surface.GetTextureID("vgui/hud/hmcd_round_76239")
+		["RPG_Round"]=surface.GetTextureID("vgui/hud/rpg_round")
 	}
 	if ply.AmmoShow and ply.AmmoShow>CurTime() and ply:GetActiveWeapon().AmmoType != nil then
 		local Wep,TimeLeft,Opacity=ply:GetActiveWeapon(),ply.AmmoShow-CurTime(),255
 		if TimeLeft < 1 then Opacity=150 end
 		surface.SetTexture(RoundTextures[Wep.AmmoType])
 		surface.SetDrawColor(Color(255,255,255,Opacity))
-		surface.DrawTexturedRect(W*.7+20,H*.825,128,128)
+		surface.DrawTexturedRect(W*.7+20,H*.830,(Wep.AmmoType == "RPG_Round" and 175) or 128,100)
 		local Mag,Message,Cnt=Wep:Clip1(),"",ply:GetAmmoCount(Wep.AmmoType)
 		if Mag >= 0 then
 			Message=tostring(Mag)
@@ -393,6 +393,7 @@ function OpenAttachmentMenu()
 			end
 		end
 	end
+
 	local size=ScrW()/8.5
 
 	local DermaPanel=vgui.Create("DFrame")

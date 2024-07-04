@@ -85,20 +85,6 @@ function SavePlyInfo(ply) -- Сохранение игрока перед его
 end
 
 function GiveAttachments(ply)
-    local info = ply.Info
-    if(!info)then return end
-    for name, wepinfo in pairs(info.Weapons or {}) do
-		if wepinfo.Base == "wep_cat_base" then
-			ply.wep:SetNWBool("Sight", wepinfo.Sight)
-			ply.wep:SetNWBool("Sight2", wepinfo.Sight2)
-			ply.wep:SetNWBool("Sight3", wepinfo.Sight3)
-			ply.wep:SetNWBool("Laser", wepinfo.Laser)
-			ply.wep:SetNWBool("Suppressor", wepinfo.Suppressor)
-			ply.wep:SetNWBool("Rail", wepinfo.Rail)
-			ply.wep:SetNWBool("Romeo8T", wepinfo.Romeo8T)
-			ply.wep:SetNWBool("Scope1", wepinfo.Scope1)
-		end
-    end
 end
 
 function GetFakeWeapon(ply)
@@ -258,6 +244,7 @@ function Faking(ply) -- функция падения
 			ply:ChatPrint("Your both legs are broken")
 		return false end
 		local rag = ply:GetNWEntity("Ragdoll")
+		ply.lasthitgroup = nil
 		if IsValid(rag) then
 			if IsValid(rag.bull) then
 				rag.bull:Remove()
@@ -1013,7 +1000,7 @@ hook.Add("Player Think","FakeControl",function(ply,time) --управление 
 				ang:RotateAroundAxis(eyeangs:Forward(),90)
 				local shadowparams = {
 					secondstoarrive=0.5,
-					pos=head:GetPos()+eyeangs:Forward()*(180/math.Clamp(rag:GetVelocity():Length()/300,1,6)),
+					pos=head:GetPos()+eyeangs:Up()*-10+eyeangs:Forward()*(200/math.Clamp(rag:GetVelocity():Length()/300,1,6)),
 					angle=ang,
 					maxangular=370,
 					maxangulardamp=100,
@@ -1031,7 +1018,6 @@ hook.Add("Player Think","FakeControl",function(ply,time) --управление 
 			if(ply:KeyDown(IN_ATTACK))then--KeyDown if an automatic gun
 			end
 		end
-		
 		if(ply:KeyDown(IN_ATTACK2))then
 			local physa = rag:GetPhysicsObjectNum( 7 )
 			local phys = rag:GetPhysicsObjectNum( 5 ) --rhand
@@ -1045,15 +1031,15 @@ hook.Add("Player Think","FakeControl",function(ply,time) --управление 
 
 
 			local shadowparams = {
-				secondstoarrive=0.5,
-				pos=head:GetPos()+eyeangs:Forward()*(180/math.Clamp(rag:GetVelocity():Length()/150,1,6)),
-				angle=ang,
-				maxangular=370,
-				maxangulardamp=100,
-				maxspeeddamp=10,
-				maxspeed=110,
-				teleportdistance=0,
-				deltatime=deltatime,
+					secondstoarrive=0.5,
+					pos=head:GetPos()+eyeangs:Forward()*(180/math.Clamp(rag:GetVelocity():Length()/300,1,6)),
+					angle=ang,
+					maxangular=370,
+					maxangulardamp=100,
+					maxspeeddamp=10,
+					maxspeed=110,
+					teleportdistance=0,
+					deltatime=deltatime,
 			}
 			physa:Wake()
 			if (!ply.suiciding or TwoHandedOrNo[ply.curweapon]) then
@@ -1073,7 +1059,6 @@ hook.Add("Player Think","FakeControl",function(ply,time) --управление 
 				end
 			else
 				if ply.FakeShooting and IsValid(ply.wep) then
-					print("Pizda")
 					shadowparams.maxspeed=500
 					shadowparams.maxangular=500
 					shadowparams.pos=head:GetPos()-ply.wep:GetAngles():Forward()*12

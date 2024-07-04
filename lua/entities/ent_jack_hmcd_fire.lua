@@ -134,7 +134,6 @@ if SERVER then
 
 			if owner:IsPlayer() and IsValid(self.Initiator) then
 				owner.LastIgniter = self.Initiator
-				print(owner.LastIgniter)
 			end
 		end
 	end

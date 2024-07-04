@@ -94,27 +94,26 @@ end
 
 function SWEP:PrimaryAttack()
 	if not IsFirstTimePredicted() then return end
-
+	local Ply, LifeID = self:GetOwner(), self:GetOwner().LifeID
 	self:SetNextPrimaryFire(CurTime() + 3)
 	self:SetNextSecondaryFire(CurTime() + 3)
-	self:GetOwner():SetAnimation(PLAYER_ATTACK1)
+	Ply:SetAnimation(PLAYER_ATTACK1)
 	self:DoBFSAnimation("inject")
 	if CLIENT then return end
 
 	timer.Simple(2, function()
 		if IsValid(self) then
 			self:GetOwner():ViewPunch(Angle(2, 0, 0))
-
+			Ply.pain = Ply.pain - 300
+			Ply.overdose = Ply.overdose + 2
 			for i = 1, 3 do
-				sound.Play("snd_jack_hmcd_needleprick.wav", self:GetOwner():GetShootPos() + VectorRand(), 60, math.random(90, 110))
+				sound.Play("snd_jack_hmcd_needleprick.wav", Ply:GetShootPos() + VectorRand(), 60, math.random(90, 110))
 			end
 		end
 	end)
 
-	local Ply, LifeID = self:GetOwner(), self:GetOwner().LifeID
-
 	timer.Simple(2.1, function()
-		if IsValid(self) and self:GetOwner():GetActiveWeapon() == self then
+		if IsValid(self) and Ply:GetActiveWeapon() == self then
 			self:Remove()
 
 			timer.Simple(1.9, function()

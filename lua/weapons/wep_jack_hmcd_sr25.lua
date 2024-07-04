@@ -151,7 +151,8 @@ SWEP.Attachments = {
 				up = 93,
 				forward = 30
 			},
-			model = "models/weapons/upgrades/w_sr25_silencer.mdl"
+			model = "models/weapons/upgrades/w_sr25_silencer.mdl",
+			num = HMCD_RIFLESUPP
 		},
 		["Laser"] = {
 			bone = "A_LaserFlashlight",
@@ -246,73 +247,32 @@ SWEP.Attachments = {
 			aimpos = Vector(-1.8, -3, .425),
 			num = HMCD_EOTECH
 		},
-		["Romeo8T"] = {
+		["TSRS02"] = {
 			bone = "A_Optic",
 			pos = {
 				right = -0.65,
 				forward = 0,
 				up = 0
-			},
-			ang = {
-				up = 90,
-				right = 90
-			},
-			scale = 1,
-			model = "models/weapons/arc9/darsu_eft/mods/scope_7mm_vomz_target_ring.mdl",
-			sightpos = {
-				right = 0.3,
-				forward = 0,
-				up = 20
-			},
-			sightang = {
-				up = -90,
-				forward = 180,
-				right = 90
-			},
-			aimpos = Vector(-1.8, -3, 0),
-			num = HMCD_EOTECH
-		},
-		["Scope1"] = {
-			bone = "A_Optic",
-			pos = {
-				right = 0.1,
-				forward = 0,
-				up = 0
-			},
-			ang = {
-				up = 90,
-				right = 90
-			},
-			scale = 1,
-			model = "models/weapons/arc9/darsu_eft/mods/scope_nightforce_atacr.mdl",
-			sightpos = {
-				right = 0.3,
-				forward = 0,
-				up = 20
-			},
-			sightang = {
-				up = -90,
-				forward = 180,
-				right = 0
-			},
-			aimpos = Vector(-1.8, 0.2, 0.6),
-			num = HMCD_EOTECH
-		},
-		["Rearsight"] = {
-			bone = "A_Optic",
-			pos = {
-				right = -0.65,
-				forward = 0,
-				up = 13
 			},
 			ang = {
 				up = 90,
 				right = 90
 			},
 			scale = .7,
-			model = "models/weapons/arc9_eft_shared/atts/ironsight/eft_rearsight_mbus.mdl",
-			aimpos = Vector(-1.8, -3, .5),
-			num = HMCD_KOBRA
+			model = "models/weapons/arc9/darsu_eft/mods/scope_all_trijicon_srs_02.mdl",
+			sightpos = {
+				right = 0.4,
+				forward = 0,
+				up = 20
+			},
+			sightang = {
+				up = -90,
+				forward = 180,
+				right = 90
+			},
+			aimpos = Vector(-1.8, -3, .425),
+			thermal = true,
+			num = 9
 		}
 	},
 	["Viewer"] = {

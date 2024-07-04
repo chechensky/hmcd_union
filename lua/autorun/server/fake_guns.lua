@@ -159,7 +159,6 @@ function SpawnWeapon(ply,clip1)
 			ply.wep:SetAngles(rag:GetPhysicsObjectNum(rag:TranslateBoneToPhysBone(rag:LookupBone( "ValveBiped.Bip01_R_Hand" ))):GetAngles()-(Angle_Normalize[ply.curweapon] or Angle(0,0,-180)))
 
 			ply.wep:SetCollisionGroup(COLLISION_GROUP_WEAPON)
-			GiveAttachments(ply)
 			ply.wep:Spawn()
 			ply:SetNWEntity("wep",ply.wep)
 			ply.wep:GetPhysicsObject():SetMass(0)
@@ -198,6 +197,16 @@ function SpawnWeapon(ply,clip1)
 					end
 				end
 			end
+    		local info = ply.Info
+			local sex = info.Weapons[ply.wep.curweapon]
+			PrintTable(info.Weapons)
+			ply.wep:SetNWBool("Sight", sex.Sight)
+			ply.wep:SetNWBool("Sight2", sex.Sight2)
+			ply.wep:SetNWBool("Sight3", sex.Sight3)
+			ply.wep:SetNWBool("Laser", sex.Laser)
+			ply.wep:SetNWBool("Suppressor", sex.Suppressor)
+			ply.wep:SetNWBool("Rail", sex.Rail)
+			ply.wep:SetNWBool("Romeo8T", sex.Romeo8T)
 		end
 	end
 end
@@ -313,9 +322,9 @@ function Reload(wep)
 		ReloadSound(wep)
 		timer.Create("reload"..wep:EntIndex(), weptable.ReloadTime, 1, function()
 			if IsValid(wep) then
-				local oldclip = wep.Clip
-				wep.Clip = math.Clamp(wep.Clip + wep.Amt, 0, wep.MaxClip)
-				local needed = wep.Clip - oldclip
+				local oldclip = wep.RoundsInMag
+				wep.RoundsInMag = math.Clamp(wep.RoundsInMag + wep.Amt, 0, wep.MaxClip)
+				local needed = wep.RoundsInMag - oldclip
 				wep.Amt=wep.Amt-needed
 				ply.Info.Ammo[wep.AmmoType]=wep.Amt
 			end
@@ -652,8 +661,6 @@ function FireShot(wep)
 		bullet.Damage		= guninfo.Damage
 		bullet.Attacker 	= ply
 	--]]
-	ParticleEffectAttach("pcf_jack_mf_barrelsmoke",PATTACH_POINT_FOLLOW,wep,(wep:LookupAttachment("muzzle")) or 1)
-
 	wep:FireBullets( bullet )
 	--wep:EmitSound(weptable.Primary.Sound,511,math.random(100,120),1,CHAN_WEAPON,0,0)
 	wep:EmitSound(weptable.CloseFireSound,100,math.random(90,110),1,CHAN_WEAPON,0,0)

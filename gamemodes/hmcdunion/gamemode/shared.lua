@@ -31,6 +31,9 @@ function GM:CreateTeams()
 	team.SetUp(1,"Players",Color(57,62,213))
 end
 
+PrecacheParticleSystem("blood_impact")
+PrecacheParticleSystem("swb_muzzle")
+
 HMCD_REMOVEEQUIPMENT=-1
 HMCD_ARMOR3A=1
 HMCD_ARMOR3=2
@@ -217,7 +220,7 @@ HMCD_Loadout_Firearms = {
 	},
 	["Gunman"] = {
 		[1] = {"wep_jack_hmcd_smallpistol"},
-		[2] = {"wep_jack_hmcd_rifle","wep_jack_hmcd_shotgun"},
+		[2] = {"wep_jack_hmcd_rifle"},
 		[3] = {"wep_jack_hmcd_smallpistol"},
 		[4] = {"wep_jack_hmcd_revolver"},
 		[5] = {""}
@@ -757,6 +760,9 @@ concommand.Add("hmcd_attachrequest",function(ply,cmd,args)
 		if ply.Equipment[HMCD_EquipmentNames[attachment]] then ply:PrintMessage(HUD_PRINTTALK, "You already have this attachment!") return end
 		wep:SetNWBool(atts_simplified[attachment],false)
 		ply.Equipment[HMCD_EquipmentNames[attachment]]=true
+		if (wep:GetNWBool("Rail", false) == true) and (attachment==HMCD_KOBRA or attachment==HMCD_AIMPOINT or attachment==HMCD_EOTECH) then
+			wep:SetNWBool("Rail", false)
+		end
 		net.Start("hmcd_equipment")
 		net.WriteInt(attachment,6)
 		net.WriteBit(true)
@@ -774,7 +780,7 @@ concommand.Add("hmcd_attachrequest",function(ply,cmd,args)
 			ply:PrintMessage(HUD_PRINTTALK, "You already have a sight attached!")
 			return
 		end
-		if wep:GetClass() == "wep_jack_hmcd_akm" and attachment==HMCD_KOBRA or attachment==HMCD_AIMPOINT or attachment==HMCD_EOTECH then
+		if wep:GetClass() == "wep_jack_hmcd_akm" and (attachment==HMCD_KOBRA or attachment==HMCD_AIMPOINT or attachment==HMCD_EOTECH) then
 			wep:SetNWBool("Rail", true)
 		end
 		wep:SetNWBool(atts_simplified[attachment],true)

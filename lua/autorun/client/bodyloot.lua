@@ -137,7 +137,7 @@ net.Receive("inventory",function()
 	local x,y = 5,20
 
 	local corner = 6
-	print(lootEnt:GetNWString("Bodyvest", ""))
+
 	if lootEnt:IsPlayer() then
 
 		--bodyvest
@@ -204,7 +204,6 @@ net.Receive("inventory",function()
 			else surface.SetDrawColor(255,255,255,0) end		
 			surface.DrawTexturedRect(2,2,w - 4,h - 4)
 		end
-
 		bodyvest.DoClick = function()
 			if bodyvest.Armor != "" then
 				net.Start("ply_take_armor")
@@ -241,7 +240,6 @@ net.Receive("inventory",function()
 	end
 
 	for wep in pairs(items) do
-		print(wep)
 		local wepTbl = weapons.Get(wep) or WeaponByModel[wep] or wep
 		local CarryWeight
 		if blackListedWeps[wep] then continue end

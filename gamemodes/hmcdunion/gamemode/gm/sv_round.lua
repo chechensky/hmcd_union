@@ -83,6 +83,7 @@ function GM:StartRound()
             until gunman != traitor
             traitor.Role = "Traitor"
             traitor:SetNWString("RoleShow", "Traitor")
+            traitor:SetRoleColor(164,26,26)
             if GAMEMODE.RoundType != 5 then
                 gunman.SecretRole = "Gunman"
                 gunman:SetNWString("RoleShow", "Gunman")
@@ -101,7 +102,7 @@ function GM:StartRound()
 		            for i,wep in pairs(HMCD_Loadout_Firearms[ply:GetNWString("RoleShow", "")][GAMEMODE.RoundType]) do
                         if wep != "" then
 				            ply:Give(wep)
-                            ply:GiveAmmo(weapons.Get(wep).Primary.ClipSize, weapons.Get(wep).Primary.Ammo, true)
+                            if ply:GetNWString("RoleShow", "") == "Traitor" then ply:GiveAmmo(weapons.Get(wep).Primary.ClipSize, weapons.Get(wep).Primary.Ammo, true) end
                             if GAMEMODE.RoundType == 2 and ply.Role == "Traitor" then
                                 ply.Equipment[6]=true
 		                        net.Start("hmcd_equipment")
@@ -158,8 +159,6 @@ function GM:StartRound()
                 ply:GiveAmmo(weapons.Get(secwep).Primary.ClipSize * 0.5, weapons.Get(mainwep).Primary.Ammo, true)
                 for i=1, math.random(1, 4) do
                     local atth = math.random(6,15)
-                    print("ATTH", atth)
-                    print("I", i)
                     ply.Equipment[atth]=true
 		            net.Start("hmcd_equipment")
 		            net.WriteInt(atth,6)
@@ -177,15 +176,11 @@ function GM:StartRound()
             }
 	        for _,ply in pairs(ply_GetAll())do
                 local class = table.Random(Classes)
-
                 if _ % 2 == 0 then
                     ply.Role = "Rebel"
-                    local rpg = GetRandomRolePlayer("Rebel")
-                    local crossbow = GetRandomRolePlayer("Rebel")
+
                     ply:SetNWString("HL2_Class", class)
-                    ply:SetNWInt("RoleColor_R", 178)
-                    ply:SetNWInt("RoleColor_G", 119)
-                    ply:SetNWInt("RoleColor_B", 17)
+                    ply:SetRoleColor(29,125,19)
 
                     timer.Simple(1,function()
                         ply:SetNWString("Bodyvest", table.Random(bodyvest))
@@ -193,11 +188,6 @@ function GM:StartRound()
                             ply:SetNWString("Helmet", "ACH")
                         end
                     end)
-
-                    rpg:Give("wep_jack_hmcd_rpg", false)
-                    rpg:GiveAmmo(1, "RPG_Round", true)
-                    crossbow:Give("wep_jack_hmcd_crossbow", false)
-                    crossbow:GiveAmmo(5, "XBowBolt", true)
                     if ply:GetNWString("HL2_Class", "") == "Medic" then
                         ply:SetModel(table.Random(Medic_RebelModels[ply.ModelSex]))
                     else
@@ -209,9 +199,7 @@ function GM:StartRound()
                 else
                     ply.Role = "Combine"
                     ply.ModelSex = "combine"
-                    ply:SetNWInt("RoleColor_R", 32)
-                    ply:SetNWInt("RoleColor_G", 98)
-                    ply:SetNWInt("RoleColor_B", 185)
+                    ply:SetRoleColor(32,98,185)
                     ply:SetNWString("Character_Name", "Combine #" .. math.random(8000, 9000))
                     ply:SetNWString("HL2_Class", table.Random(ClassesCombine))
                     ply:SetModel(CombineModels[ply:GetNWString("HL2_Class","")])
@@ -239,6 +227,15 @@ function GM:StartRound()
                 GAMEMODE.RoundState = 1
 	        end
         end)
+        local rpg = GetRandomRolePlayer("Rebel")
+        local crossbow
+        repeat
+            crossbow = GetRandomRolePlayer("Rebel")
+        until crossbow != rpg
+        rpg:Give("wep_jack_hmcd_rpg", false)
+        rpg:GiveAmmo(1, "RPG_Round", true)
+        crossbow:Give("wep_jack_hmcd_crossbow", false)
+        crossbow:GiveAmmo(5, "XBowBolt", true)
     end
     timer.Simple(.5, function()
 	    for _,ply in pairs(ply_GetAll())do
@@ -250,10 +247,10 @@ end
 
 hook.Add("PlayerPostThink", "IncreaseFOVOnSprint", function(ply)
     if !IsValid(ply) or !ply:Alive() then return end
-    if ply:KeyDown(IN_SPEED) then
-        ply:SetFOV(100, 0.08)
+    if ply:KeyDown(IN_FORWARD) and ply:KeyDown(IN_SPEED) then
+        ply:SetFOV(105, 0.1)
     else
-        ply:SetFOV(GetConVar("fov_desired"):GetInt(), 0.08)
+        ply:SetFOV(95, 0.1)
     end
 end)
 
@@ -296,7 +293,7 @@ function GM:Think()
     return end
     local alive_ply = GetAlivePlayerCount()
     if alive_ply <= 0 then
-        GAMEMODE:EndRound(1, table.Random(player.GetAll()))
+        GAMEMODE:EndRound(1, table.Random(player.GetAll()), nil)
     end
 
     if GAMEMODE.RoundName != "homicide" then
@@ -326,11 +323,8 @@ function GM:Think()
 
             elseif alive_traitor < 1 and alive_innocent > 0 then
                 GAMEMODE:EndRound(2, GAMEMODE.Traitor.LastAttacker)
-                if GAMEMODE.Traitor.LastDamageType or type(DieReason[GAMEMODE.Traitor.LastDamageType]) == string then
-                    print(GAMEMODE.Traitor.LastDamageType)
-                    PrintMessage(HUD_PRINTTALK, "The murderer died because of " .. DieReason[GAMEMODE.Traitor.LastDamageType])
-                elseif !GAMEMODE.Traitor.LastDamageType or type(DieReason[GAMEMODE.Traitor.LastDamageType]) != string then
-                    PrintMessage(HUD_PRINTTALK, "The murderer died in mysterious circumstances.")
+                if GAMEMODE.Traitor.LastDamageType then
+                    PrintMessage(HUD_PRINTTALK, "The murderer died because of " .. GAMEMODE.Traitor.LastDamageType)
                 end
             end
 
@@ -341,7 +335,6 @@ end
 
 hook.Add("PlayerPostThink", "Spectating", function(ply)
     if !ply:GetNWBool("Spectating", false) then return end
-
 	local plyselect = ply:GetNWEntity("SelectPlayer", Entity(-1))
     if !IsValid(ply:GetNWEntity("SelectPlayer", Entity(-1))) then ply:SetNWEntity("SelectPlayer", table.Random(player.GetAll())) end
     ButtonInput = 0
@@ -383,6 +376,5 @@ hook.Add("PlayerPostThink", "Spectating", function(ply)
 end)
 
 hook.Add("PlayerDeathThink", "DeathThink", function(ply)
-    ply:SetNWBool("Spectating", true)
-    if GAMEMODE.RoundName != "sandbox" then return false end
+    return false
 end)

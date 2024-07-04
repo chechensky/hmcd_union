@@ -97,7 +97,6 @@ local function ImersiveCam(ply,pos,ang,fov)
 	end
 	if ply:Alive() and ply:GetNWBool("fake") and IsValid(ragdoll) then
 		ragdoll:ManipulateBoneScale(ragdoll:LookupBone("ValveBiped.Bip01_Head1"),vecZero)
-		local PosAng = ragdoll:GetAttachment(ragdoll:LookupAttachment("anim_attachment_lh"))
 		local PosAngHead= ragdoll:GetAttachment(ragdoll:LookupAttachment("eyes"))
 		local camfake = {
 			origin = PosAngHead.Pos,

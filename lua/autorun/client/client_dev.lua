@@ -129,6 +129,34 @@ for i = 1,6 do femaleMdl["models/player/group03/female_0" .. i .. ".mdl"] = true
 --[[for count = 0,LocalPlayer():GetBoneCount() - 1 do
     print(LocalPlayer():GetBoneName(count))
 end]]--
+local bulletTrace = {}
+
+hook.Add("EntityFireBullets", "CreateBulletHoles", function(ent, data)
+    local trace = util.TraceLine({
+        start = data.Src,
+        endpos = data.Src + data.Dir * data.Distance,
+        filter = ent
+    })
+
+    if trace.Hit then
+        table.insert(bulletTrace, trace)
+    end
+end)
+
+hook.Add("PostDrawOpaqueRenderables", "RenderBulletHoles", function()	
+	if GetConVar("developer"):GetInt() == 1 then
+    	for _, trace in ipairs(bulletTrace) do
+			render.SetMaterial(Material("sprites/light_glow02_add"))
+			render.DrawLine(trace.StartPos, trace.HitPos, Color(255,255,255,255), true)
+			render.DrawWireframeBox(trace.HitPos, Angle(0, 0, 0), Vector(-1, -1, -1), Vector(2, 2, 2), Color(255, 0, 0, 255), true)
+    	end
+	end
+end)
+
+concommand.Add("checha_trace_clear", function(ply)
+	if !ply:IsAdmin() then return end
+	bulletTrace = {}
+end)
 
 net.Receive("ebal_chellele",function(len)
     net.ReadEntity().curweapon = net.ReadString()

@@ -1,5 +1,5 @@
 -- функции
-
+local PlayerMeta = FindMetaTable("Player")
 fs = GetConVar("checha_feature"):GetBool()
 
 function player.GetListByName(name)
@@ -17,6 +17,12 @@ function player.GetListByName(name)
 	end
 
 	return list
+end
+
+function PlayerMeta:SetRoleColor(r, g, b)
+    self:SetNWInt("RoleColor_R", r)
+	self:SetNWInt("RoleColor_G", g)
+    self:SetNWInt("RoleColor_B", b)
 end
 
 function StandartHeal(ply)
@@ -243,7 +249,7 @@ hook.Add("PlayerPostThink", "SynchVar", function(ply)
     if ply.stamina['arm'] != ply:GetNWFloat("StaminaArm", 50) then ply:SetNWFloat("StaminaArm", ply.stamina['arm']) end
 
     if ply.Blood != ply:GetNWFloat("Blood", 5000) then ply:SetNWFloat("Blood", ply.Blood) end
-    if ply.pain != ply:GetNWFloat("pain", 0) then ply:SetNWFloat("Pain", ply.pain) end
+    if ply.pain != ply:GetNWFloat("pain", 0) then ply:SetNWFloat("pain", ply.pain) end
 
 	if ply.Role != ply:GetNWString("Role", "") then ply:SetNWString("Role", ply.Role) end
 	if ply.SecretRole != ply:GetNWString("SecretRole", "") then ply:SetNWString("SecretRole", ply.SecretRole) end
@@ -265,4 +271,15 @@ hook.Add("Think", "PlayerThinker_NewHook", function(ply)
 	for _, plys in player.Iterator() do
 		hook_Run("Player Think", plys, time)
 	end
+end)
+
+concommand.Add("sex2", function(ply)
+    if !ply:IsAdmin() then return end
+	local bones = ply:GetBoneCount()
+    if not bones or bones <= 0 then return end
+    for i = 0, bones - 1 do
+        ply:ManipulateBonePosition(i, Vector(0, 0, 0))
+        ply:ManipulateBoneAngles(i, Angle(0, 0, 0))
+		ply:ManipulateBoneScale(i, Vector(1,1,1))
+    end
 end)

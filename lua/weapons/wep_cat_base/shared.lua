@@ -311,6 +311,11 @@ function SWEP:Initialize()
 			end
 		end)
 	end
+	timer.Simple(.1,function()
+		if IsValid(self) then
+			self:EnforceHolsterRules(self)
+		end
+	end)
 end
 
 function SWEP:PreDrawViewModel()
@@ -348,6 +353,7 @@ function SWEP:AltFire()
 end
 function SWEP:PrimaryAttack()
 	self.ReloadInterrupted = true
+	self:GetOwner():SetAnimation(PLAYER_ATTACK1)
 	if not self:GetReady() then return end
 	if self.SprintingWeapon > 10 then return end
 	if self.Reloading then return end
@@ -658,10 +664,10 @@ end
 function SWEP:BarrelSmoke()
 	local ent = self:GetOwner():GetViewModel()
 	local ent2 = self.WorldModel
-	ParticleEffectAttach("pcf_jack_mf_barrelsmoke", PATTACH_POINT_FOLLOW, self, self:LookupAttachment("muzzle"))
+	if self:LookupAttachment("muzzle") then ParticleEffectAttach("pcf_jack_mf_barrelsmoke", PATTACH_POINT_FOLLOW, self, self:LookupAttachment("muzzle")) end
 	if ent then
 		for i = 1, math.random(1, 3) do
-			ParticleEffectAttach(self.SmokeEffect, PATTACH_POINT_FOLLOW, ent, 1)
+			if self:GetAttachment(1) then local effect = ParticleEffectAttach(self.SmokeEffect, PATTACH_POINT_FOLLOW, ent, 1) end
 		end
 	end
 end
@@ -1017,13 +1023,12 @@ function SWEP:Deploy()
 end
 
 function SWEP:EnforceHolsterRules(newWep)
-	self.NextReload = nil
-	if CLIENT then return end
-	if not newWep == self then return end
-	for key,wep in pairs(self:GetOwner():GetWeapons())do
-		if (wep.HolsterSlot)and(self.HolsterSlot)and(wep.HolsterSlot==self.HolsterSlot)and not(wep==self) then -- conflict
-			self:GetOwner():DropWeapon(wep)
-			self:GetOwner():SelectWeapon(newWep:GetClass())
+	timer.Stop(tostring(self.Owner).."ReloadTimer")
+	if(CLIENT)then return end
+	if not(newWep==self)then return end -- only enforce rules for us
+	for key,wep in pairs(self.Owner:GetWeapons())do
+		if((wep.HolsterSlot)and(self.HolsterSlot)and(wep.HolsterSlot==self.HolsterSlot)and not(wep==self))then -- conflict
+			self.Owner:DropWeapon(wep)
 		end
 	end
 end
@@ -1063,12 +1068,8 @@ function SWEP:Holster(newWep)
 	return true
 end
 
-function SWEP:OnRemove()    
-	if !IsValid(self:GetOwner()) then return end
-    for i = 0, self:GetOwner():GetBoneCount() - 1 do
-        self:GetOwner():ManipulateBonePosition(i, Vector(0, 0, 0))
-        self:GetOwner():ManipulateBoneAngles(i, Angle(0, 0, 0))
-    end
+function SWEP:OnRemove()
+	--
 	return true
 end
 
@@ -1301,7 +1302,7 @@ if CLIENT then
 			local sensitivity, strength = self.CarryWeight / 714, self.CarryWeight / 300
 			angDiff = LerpAngle(math.Clamp(FrameTime(), 0, 1), angDiff, ang - oldAng)
 			oldAng = ang
-			ang = ang - angDiff * sensitivity
+			ang = ang - angDiff * sensitivity * -0.4
 			self.AngleWeapon = ang
 		end
 
@@ -1351,9 +1352,58 @@ SWEP.LaserDistance = 6000
 SWEP.LaserFOV = 1.5
 SWEP.LaserColor = Color(255, 0, 0, 255)
 function SWEP:DrawLaser()
+	if not IsValid(self.Owner) then return end
+	local pos, ang = self.WDrawnAttachments["Laser"]:GetPos(), self.WDrawnAttachments["Laser"]:GetAngles()
+
+	if self.WDrawnAttachments["Laser"]:GetModel() == "models/cw2/attachments/anpeq15.mdl" then
+		ang:RotateAroundAxis(ang:Right(), 180)
+	end
+
+	local ply = self.Owner
+
+	if not IsValid(ply.HMCDLaserDot) then
+		local lamp = ProjectedTexture()
+		ply.HMCDLaserDot = lamp
+		lamp:SetTexture(laserdot:GetString("$basetexture"))
+		lamp:SetFarZ(self.LaserDistance) -- How far the light should shine
+		lamp:SetFOV(self.LaserFOV)
+		lamp:SetPos(pos)
+		lamp:SetAngles(ang)
+		lamp:SetBrightness(15)
+		lamp:SetNearZ(1)
+		lamp:SetEnableShadows(false)
+		lamp:Update()
+		self.LastLaserUpdate = CurTime()
+		local entIndex = ply:EntIndex()
+
+		hook.Add("Think", "Laserdot_" .. entIndex, function()
+			if not (IsValid(ply) and IsValid(lamp) and IsValid(self) and self.LastLaserUpdate) then
+				hook.Remove("Think", "Laserdot_" .. entIndex)
+			end
+
+			if self.LastLaserUpdate and self.LastLaserUpdate + 0.1 < CurTime() then
+				lamp:Remove()
+			end
+		end)
+	end
+
+	local lamp = ply.HMCDLaserDot
+
+	if IsValid(lamp) then
+		ang:RotateAroundAxis(ang:Forward(), math.Rand(-180, 180))
+		lamp:SetPos(pos)
+		lamp:SetAngles(ang)
+		lamp:SetColor(self.LaserColor)
+		lamp:SetFOV(self.LaserFOV * math.Rand(0.9, 1.1))
+		lamp:Update()
+		self.LastLaserUpdate = CurTime()
+	end
 end
 
 function SWEP:CleanLaser()
 	local own = self:GetOwner()
-	if IsValid(own) and IsValid(own.HMCDLaserDot) then own.HMCDLaserDot:Remove() end
+
+	if IsValid(own) and IsValid(own.HMCDLaserDot) then
+		own.HMCDLaserDot:Remove()
+	end
 end

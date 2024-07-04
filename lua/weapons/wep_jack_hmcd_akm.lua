@@ -15,7 +15,7 @@ SWEP.Instructions = "This is a wooden/steel 7.62×39mm selective fire 30-round-c
 SWEP.Primary.ClipSize = 31
 SWEP.Primary.DefaultClip = SWEP.Primary.ClipSize * 2
 SWEP.ViewModel = "models/btk/v_nam_akm.mdl"
-SWEP.WorldModel = "models/pwb/weapons/w_akm.mdl"
+SWEP.WorldModel = "models/btk/w_nam_akm.mdl"
 SWEP.ViewModelFlip = false
 SWEP.Damage = 30
 SWEP.Category="HMCD: Union - Rifles"
@@ -56,7 +56,7 @@ SWEP.Supersonic = true
 SWEP.Accuracy = .999
 SWEP.ShotPitch = 100
 SWEP.ENT = "ent_jack_hmcd_akm"
-SWEP.FuckedWorldModel = false
+SWEP.FuckedWorldModel = true
 SWEP.DeathDroppable = false
 SWEP.CommandDroppable = true
 SWEP.Spawnable = true
@@ -243,6 +243,32 @@ SWEP.Attachments = {
 			aimpos = Vector(-1.63, -4, -1.15),
 			num = HMCD_LASERBIG
 		},
+		["TSRS02"] = {
+			bone = "Weapon",
+			pos = {
+				right = -2,
+				forward = 0,
+				up = 2.75
+			},
+			ang = {
+				up = -90
+			},
+			scale = .8,
+			model = "models/weapons/arc9/darsu_eft/mods/scope_all_trijicon_srs_02.mdl",
+			sightpos = {
+				right = 0.4,
+				forward = 0,
+				up = 20
+			},
+			sightang = {
+				up = -90,
+				forward = 180,
+				right = 90
+			},
+			aimpos = Vector(-1.63, -5, -1),
+			thermal = true,
+			num = 9
+		}
 	},
 	["Viewer"] = {
 		["Weapon"] = {

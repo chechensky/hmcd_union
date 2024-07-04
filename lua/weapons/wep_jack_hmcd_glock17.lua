@@ -38,17 +38,7 @@ SWEP.TriggerDelay = .05
 SWEP.AttBone = "glock in my rari"
 SWEP.FuckedWorldModel = true
 SWEP.Recoil = .5
-SWEP.TPIK = true
-
-SWEP.TPIK_PosAngles = {
-    ["ValveBiped.Bip01_R_Forearm"] = Angle(0, 0, 0),
-	["ValveBiped.Bip01_R_Clavicle"] = Angle(0, 0, 0),
-	["ValveBiped.Bip01_R_Hand"] = Angle(0, 0, 0)
-}
-
-SWEP.TPIK_PosVectors = {
-	["ValveBiped.Bip01_R_Clavicle"] = Vector(5,0,0)
-}
+SWEP.TPIK = false
 
 SWEP.Supersonic = true
 SWEP.AmmoType = "Pistol"

@@ -8,6 +8,9 @@ hook.Add("PlayerTick", "Glaza", function (ply)
 end)
 
 hook.Add( "PlayerFootstep", "CustomFootstep", function( ply, pos, foot, sound, volume, rf )
+	if ply.Role=="combine" then
+		ply:EmitSound( "npc/combine_soldier/gear"..math.random(1,6)..".wav" )
+	end
 	if ply:IsSprinting() and foot == 0 then
 		ply:ViewPunch(Angle((ply.Bones["LeftLeg"] < 1 and 3) or 1,0,0))
 	elseif ply:IsSprinting() and foot == 1 then
@@ -18,7 +21,6 @@ end)
 hook.Add("PropBreak", "SystemLoot", function(ply, prop)
 	if not IsValid(ply) or not ply:Alive() then return end
 	local pos = prop:GetPos()
-	print(ply)
     local chance_empty = math.random(1,100)
 
 	local hdrop
@@ -102,6 +104,7 @@ end)
 local function WorkOtrub(ply)
 	if ply.Blood <= 3100 or ply.pain >= 250 or ply.o2 <= 0.4 then
 		ply.Otrub = true
+		ply:SetNWBool("Breath", true)
 		ply:ScreenFade(SCREENFADE.IN, color_black, 0.5, 0.5)
 		ply:SetDSP(14)
 	else 

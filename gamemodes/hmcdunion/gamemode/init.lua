@@ -24,7 +24,6 @@ function GM:PlayerSpawn(ply)
 	ply:SetMaxHealth(150)
 	ply:SetSlowWalkSpeed(75)
 	ply:SetLadderClimbSpeed(75)
-
 	plymanag.SetPlayerClass(ply,"player_default")
 	timer.Simple(1, function()
 		plymanag.TranslatePlayerHands(ply:GetModel())

@@ -47,7 +47,6 @@ function SWEP:RicochetOrPenetrate(initialTrace)
 				SearchDist = SearchDist + 5
 			end
 		end
-
 		if Penetrated then
 			local StopMul = SearchDist / MaxDist
 			self:FireBullets({
@@ -94,6 +93,7 @@ function SWEP:RicochetOrPenetrate(initialTrace)
 			Num = 1,
 			Tracer = 0,
 			TracerName = "",
+			Distance = 600,
 			Dir = -NewVec,
 			Spread = Vector(0, 0, 0),
 			Src = IPos + TNorm
