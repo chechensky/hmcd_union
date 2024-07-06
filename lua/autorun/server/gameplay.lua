@@ -141,15 +141,15 @@ local delaybutton = 0
 hook.Add("PlayerButtonDown", "F1_ShowHelp", function(ply, button)
 	ply.delaybutton = ply.delaybutton or delaybutton
 	if ply.delaybutton < CurTime() then
-		ply.delaybutton = ply.delaybutton + 120
+		ply.delaybutton = ply.delaybutton + 5
     	if button == KEY_F1 then
     	    ply:ConCommand("gm_showhelp")
     	end
 	end
 end)
 
-hook.Add("Move", "FakeBecauseHitWall", function(ply,mv)
-    --[[local speed = mv:GetVelocity():LengthSqr()
+--[[hook.Add("Move", "FakeBecauseHitWall", function(ply,mv)
+    local speed = mv:GetVelocity():LengthSqr()
     local need = 75000
     if speed > need then
         local trace = util.TraceLine({
@@ -163,11 +163,11 @@ hook.Add("Move", "FakeBecauseHitWall", function(ply,mv)
 				Faking(ply)
 			end
         end
-    end]]--
-end)
+    end
+end)]]--
 
-hook.Add("Think", "CheckPlayerCollisionSpeed", function()
-    --[[for _, ply in ipairs(player.GetAll()) do
+--[[hook.Add("Think", "CheckPlayerCollisionSpeed", function()
+    for _, ply in ipairs(player.GetAll()) do
         if not IsValid(ply) or not ply:Alive() then continue end
 
         local pos = ply:GetPos()
@@ -188,8 +188,8 @@ hook.Add("Think", "CheckPlayerCollisionSpeed", function()
 				end
 			end
         end
-    end]]--
-end)
+    end
+end)]]--
 
 concommand.Add("hmcd_holdbreath", function(ply)
 	if not ply:Alive() then return end

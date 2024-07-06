@@ -671,7 +671,8 @@ Box_DropGunFreeZone = {
 	"ent_jack_hmcd_axe",
 	"ent_jack_hmcd_ducttape",
 	"ent_jack_hmcd_oldgrenade_dm",
-	"ent_jack_hmcd_bugbait"
+	"ent_jack_hmcd_bugbait",
+	"ent_jack_hmcd_softarmor"
 }
 
 HeavyBox_DropGunFreeZone = {
@@ -710,7 +711,20 @@ Box_Drop = {
 	"ent_jack_hmcd_shotgun",
 	"ent_jack_hmcd_dbarrel",
 	"ent_jack_hmcd_remington",
-	"ent_jack_hmcd_bugbait"
+	"ent_jack_hmcd_bugbait",
+	"ent_jack_hmcd_nvg",
+	"ent_jack_hmcd_softarmor",
+	"ent_jack_hmcd_hardarmor",
+	"ent_jack_hmcd_helmet",
+	"ent_jack_hmcd_laserbig",
+	"ent_jack_hmcd_eotech",
+	"ent_jack_hmcd_kobra",
+	"ent_jack_hmcd_uspsuppressor",
+	"ent_jack_hmcd_aksuppressor",
+	"ent_jack_hmcd_pistolsuppressor",
+	"ent_jack_hmcd_riflesuppressor",
+	"ent_jack_hmcd_shotgunsuppressor",
+	"ent_jack_hmcd_laser"
 }
 
 HeavyBox_Drop = {
@@ -725,7 +739,20 @@ HeavyBox_Drop = {
 	"ent_jack_hmcd_mp7",
 	"ent_jack_hmcd_shotgun",
 	"ent_jack_hmcd_dbarrel",
-	"ent_jack_hmcd_remington"
+	"ent_jack_hmcd_remington",
+	"ent_jack_hmcd_nvg",
+	"ent_jack_hmcd_softarmor",
+	"ent_jack_hmcd_hardarmor",
+	"ent_jack_hmcd_helmet",
+	"ent_jack_hmcd_laserbig",
+	"ent_jack_hmcd_eotech",
+	"ent_jack_hmcd_kobra",
+	"ent_jack_hmcd_uspsuppressor",
+	"ent_jack_hmcd_aksuppressor",
+	"ent_jack_hmcd_pistolsuppressor",
+	"ent_jack_hmcd_riflesuppressor",
+	"ent_jack_hmcd_shotgunsuppressor",
+	"ent_jack_hmcd_laser"
 }
 
 AmmoType_Drop = {
@@ -738,6 +765,20 @@ AmmoType_Drop = {
 	"SMG1",
 	"XBowBolt",
 	"AirboatGun"
+}
+
+local atts_ents = {
+	[HMCD_PISTOLSUPP]="ent_jack_hmcd_pistolsuppressor",
+	[HMCD_RIFLESUPP]="ent_jack_hmcd_riflesuppressor",
+	[HMCD_SHOTGUNSUPP]="ent_jack_hmcd_shotgunsuppressor",
+	[HMCD_LASERSMALL]="ent_jack_hmcd_laser",
+	[HMCD_LASERBIG]="ent_jack_hmcd_laserbig",
+	[HMCD_KOBRA]="ent_jack_hmcd_kobra",
+	[HMCD_AIMPOINT]="ent_jack_hmcd_eq_base",
+	[HMCD_EOTECH]="ent_jack_hmcd_eotech",
+	[HMCD_PBS]="ent_jack_hmcd_aksuppressor",
+	[HMCD_OSPREY]="ent_jack_hmcd_uspsuppressor",
+	[HMCD_FLASHLIGHT]="ent_jack_hmcd_flashlight"
 }
 
 local atts_simplified={
@@ -756,6 +797,7 @@ local atts_simplified={
 concommand.Add("hmcd_attachrequest",function(ply,cmd,args)
 	local attachment=math.Round(args[1])
 	local wep=ply:GetActiveWeapon()
+	
 	if wep:GetNWBool(atts_simplified[attachment]) then
 		if ply.Equipment[HMCD_EquipmentNames[attachment]] then ply:PrintMessage(HUD_PRINTTALK, "You already have this attachment!") return end
 		wep:SetNWBool(atts_simplified[attachment],false)
@@ -790,4 +832,30 @@ concommand.Add("hmcd_attachrequest",function(ply,cmd,args)
 		net.WriteBit(false)
 		net.Send(ply)
 	end
+end)
+
+concommand.Add("hmcd_droprequest",function(ply,cmd,args)
+	local attachment=math.Round(args[1])
+	local wep=ply:GetActiveWeapon()
+
+	local attachmentsuka=ents.Create(atts_ents[attachment])
+	attachmentsuka.HmcdSpawned=true
+	attachmentsuka:SetPos(ply:GetShootPos()+ply:GetAimVector()*20)
+	attachmentsuka:Spawn()
+	attachmentsuka:Activate()
+	attachmentsuka:GetPhysicsObject():SetVelocity(ply:GetVelocity()+ply:GetAimVector()*100)
+
+	-- вот эта нижняя строка самая длинная ее не надо разбирать, это убирание рэйла при убирании прицела
+	if wep:GetClass() == "wep_jack_hmcd_akm" and (attachment==HMCD_KOBRA or attachment==HMCD_AIMPOINT or attachment==HMCD_EOTECH) then wep:SetNWBool("Rail", false) end
+	--
+
+	if attachment != 5 then wep:SetNWBool(atts_simplified[attachment],false) end
+	if attachment == 5 then ply:AllowFlashlight(false) end
+
+	ply.Equipment[HMCD_EquipmentNames[attachment]]=false
+	net.Start("hmcd_equipment")
+	net.WriteInt(attachment, 6)
+	net.WriteBit(false)
+	net.Send(ply)
+
 end)

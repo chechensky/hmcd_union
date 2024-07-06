@@ -135,6 +135,10 @@ function GM:DrawGameHUD(ply)
 	local Bright=Color(255,255,255,255)
 
 	local tr = ply:GetEyeTraceNoCursor()
+	if ply:GetNWBool("LostInnocence", false) then
+		surface.SetDrawColor(10,10,10,50)
+		drawTextShadow("You have lost your innocence.", "DefaultFont", ScrW() * .5, ScrH()*.85, Color(90,20,20), 1, TEXT_ALIGN_CENTER)
+	end
 
 	if IsValid(tr.Entity) and tr.HitPos:Distance(tr.StartPos) < 60 then
 		if tr.Entity:IsPlayer() or tr.Entity:IsRagdoll() then
@@ -387,10 +391,16 @@ function OpenAttachmentMenu()
 		end
 		if ply.Equipment then
 			for i,attachment in pairs(atts) do
-				if(ply.Equipment[HMCD_EquipmentNames[attachment]])then
+				if ply.Equipment[HMCD_EquipmentNames[attachment]] then
 					table.insert(List,attachment)
 				end
 			end
+		end
+	end
+
+	if ply.Equipment then
+		if ply.Equipment[HMCD_EquipmentNames[5]] then
+			table.insert(List, 5)
 		end
 	end
 
@@ -415,7 +425,6 @@ function OpenAttachmentMenu()
 	end
 
 	local amtselect=vgui.Create("DNumSlider",MainPanel)
-
 	local AttachmentList=vgui.Create("DListView",MainPanel)
 	AttachmentList:SetMultiSelect(false)
 	AttachmentList:AddColumn("Type")
@@ -424,19 +433,37 @@ function OpenAttachmentMenu()
 	end
 	AttachmentList:SetPos(5,5)
 	AttachmentList:SetSize(size*0.93,size*0.5)
-	AttachmentList.OnRowSelected=function(panel,ind,row)
-		attType=row.Type
-	end
-	AttachmentList:SelectFirstItem()
 	local gobutton=vgui.Create("Button",MainPanel)
 	gobutton:SetSize(size*0.9,size*0.15)
 	gobutton:SetPos(size/30,size*0.73)
 	gobutton:SetText("Attach")
 	gobutton:SetVisible(true)
+	gobutton:SetEnabled(false)
 	gobutton.DoClick=function()
 		DermaPanel:Close()
 		RunConsoleCommand("hmcd_attachrequest",attType)
 	end
+	local dropbutton=vgui.Create("Button",MainPanel)
+	dropbutton:SetSize(size*0.9,size*0.15)
+	dropbutton:SetPos(size/30,size*0.55)
+	dropbutton:SetText("Drop")
+	dropbutton:SetVisible(true)
+	dropbutton:SetEnabled(false)
+	dropbutton.DoClick=function()
+		DermaPanel:Close()
+		RunConsoleCommand("hmcd_droprequest",attType)
+	end
+
+	AttachmentList.OnRowSelected=function(panel,ind,row)
+		attType=row.Type
+		dropbutton:SetEnabled(true)
+		if attType == 5 then
+			gobutton:SetEnabled(false)
+		else
+			gobutton:SetEnabled(true)
+		end
+	end
+
 end
 
 concommand.Add("attachmentsmenu", OpenAttachmentMenu)

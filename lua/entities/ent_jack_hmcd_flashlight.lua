@@ -43,20 +43,6 @@ if SERVER then
 		self.HMCD_Light:Spawn()
 		self.HMCD_Light:Input("SpotlightTexture", NULL, NULL, "effects/flashlight001")
 
-		if self.CreationTime and self.CreationTime == CurTime() then
-			timer.Simple(.1, function()
-				net.Start("hmcd_flashlight_light")
-				net.WriteEntity(self)
-				net.WriteBit(true)
-				net.Send(player.GetAll())
-			end)
-		else
-			net.Start("hmcd_flashlight_light")
-			net.WriteEntity(self)
-			net.WriteBit(true)
-			net.Send(player.GetAll())
-		end
-
 		self:Spawn()
 		self:Activate()
 	end

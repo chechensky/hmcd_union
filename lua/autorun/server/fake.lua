@@ -1000,7 +1000,7 @@ hook.Add("Player Think","FakeControl",function(ply,time) --управление 
 				ang:RotateAroundAxis(eyeangs:Forward(),90)
 				local shadowparams = {
 					secondstoarrive=0.5,
-					pos=head:GetPos()+eyeangs:Up()*-10+eyeangs:Forward()*(200/math.Clamp(rag:GetVelocity():Length()/300,1,6)),
+					pos=head:GetPos()+eyeangs:Up()*-10+eyeangs:Forward()*(120/math.Clamp(rag:GetVelocity():Length()/300,1,6)),
 					angle=ang,
 					maxangular=370,
 					maxangulardamp=100,
@@ -1032,7 +1032,7 @@ hook.Add("Player Think","FakeControl",function(ply,time) --управление 
 
 			local shadowparams = {
 					secondstoarrive=0.5,
-					pos=head:GetPos()+eyeangs:Forward()*(180/math.Clamp(rag:GetVelocity():Length()/300,1,6)),
+					pos=head:GetPos()+eyeangs:Forward()*(100/math.Clamp(rag:GetVelocity():Length()/300,1,6)),
 					angle=ang,
 					maxangular=370,
 					maxangulardamp=100,
@@ -1047,7 +1047,7 @@ hook.Add("Player Think","FakeControl",function(ply,time) --управление 
 					shadowparams.angle:RotateAroundAxis(eyeangs:Up(),45)
 					shadowparams.pos=shadowparams.pos+eyeangs:Right()*50
 					shadowparams.pos=shadowparams.pos+eyeangs:Up()*40
-					shadowparams.angle:RotateAroundAxis(eyeangs:Forward(),-90)
+					shadowparams.angle:RotateAroundAxis(eyeangs:Forward(),-910)
 					ply.wep:GetPhysicsObject():ComputeShadowControl(shadowparams)
 					--shadowparams.maxspeed=20
 					phys:ComputeShadowControl(shadowparams) --if 2handed

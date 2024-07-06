@@ -45,9 +45,21 @@ hook.Add("HOOK_UNION_Damage","GuiltLogic",function(ply,hitgroup,dmginfo,rag)
     end
 
     if !attacker:IsPlayer() then return end
+
+    if dmginfo:GetDamage() > 5 and attacker.Role != "Traitor" then
+        if attacker:GetNWBool("LostInnocence", false) != true then
+            attacker:SetNWBool("LostInnocence", true)
+        end
+        -- простите вот кодеры если таймеры это хуйня но сука я не могу придумать через что это можно сделать
+        timer.Simple(10, function()
+            if attacker:GetNWBool("LostInnocence", false) == true then
+                attacker:SetNWBool("LostInnocence", false)
+            end
+        end)
+    end
     if attacker.Role != victim.Role then
-        
         if ply:GetNWString("Round", "") == "homicide" and attacker.Role == "Traitor" then return end
+        if ply:GetNWString("Round", "") == "homicide" and victim.Role == "Traitor" then return end
         if ply:GetNWString("Round", "") == "dm" then return end
         local guiltint = math.ceil(dmginfo:GetDamage() / math.random(2, 4)) -- АХВХАВХАВХАХВ ceil вместо floor XDXDXDXDXDXDXDX ТУДА НАХУЙ ЭТИХ ТИМКИЛЛЕРОВ
         attacker:GuiltAdd( guiltint )

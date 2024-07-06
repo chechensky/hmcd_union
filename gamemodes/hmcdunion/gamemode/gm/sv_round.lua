@@ -45,6 +45,14 @@ concommand.Add("union_homicidetype", function(ply,cmd,args)
     end
 end)
 
+concommand.Add("union_pidorsflash", function(ply,cmd,args)
+	local attachmentsuka=ents.Create("ent_jack_hmcd_flashlight")
+	attachmentsuka.HmcdSpawned=true
+	attachmentsuka:SetPos(ply:GetShootPos()+ply:GetAimVector()*20)
+    attachmentsuka:TurnOn()
+	attachmentsuka:GetPhysicsObject():SetVelocity(ply:GetVelocity()+ply:GetAimVector()*100)
+end)
+
 ---------- round logics???)())))))))
 local pitch = math.random(80, 120)
 function GM:StartRound()
@@ -91,7 +99,6 @@ function GM:StartRound()
 
             GAMEMODE.Traitor = traitor
             GAMEMODE.RoundState = 1
-
 	        for _,ply in pairs(ply_GetAll())do
 	            if HMCD_Loadout[ply:GetNWString("RoleShow", "")][GAMEMODE.RoundType] then
 		            for i,wep in pairs(HMCD_Loadout[ply:GetNWString("RoleShow", "")][GAMEMODE.RoundType]) do
@@ -109,6 +116,14 @@ function GM:StartRound()
 		                        net.WriteInt(6,6)
 		                        net.WriteBit(true)
 		                        net.Send(ply)
+                            end
+                            if ply.Role == "Traitor" then
+			                    ply:AllowFlashlight(true)
+			                    ply.Equipment[HMCD_EquipmentNames[5]] = true
+			                    net.Start("hmcd_equipment")
+			                    net.WriteInt(5, 6)
+			                    net.WriteBit(true)
+			                    net.Send(ply)
                             end
                         end
 	            	end

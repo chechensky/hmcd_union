@@ -432,15 +432,15 @@ hook.Add("Think", "Effects", function()
 				if not IsValid(ply.NVGLamp) then
 					ply.NVGLamp = ProjectedTexture()
 					ply.NVGLamp:SetTexture("effects/flashlight001")
-					ply.NVGLamp:SetBrightness(.025)
+					ply.NVGLamp:SetBrightness(.2)
 				else
 					local Dir = ply:GetAimVector()
 					local Ang = Dir:Angle()
-					ply.NVGLamp:SetPos(EyePos() + Dir * 60)
+					ply.NVGLamp:SetPos(EyePos() + Dir * 120)
 					ply.NVGLamp:SetAngles(Ang)
-					local FoV = 120
+					local FoV = 300
 					ply.NVGLamp:SetFOV(FoV)
-					ply.NVGLamp:SetFarZ(FoV)
+					ply.NVGLamp:SetFarZ(300)
 					ply.NVGLamp:Update()
 				end
 			end

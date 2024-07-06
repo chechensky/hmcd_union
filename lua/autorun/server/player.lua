@@ -371,7 +371,8 @@ hook.Add("Vars Player", "VarsS", function(ply)	-- Alive give
 	ply.SeizureReps = 0
 	ply:ConCommand("-attack")
 	ply:SetNWBool("Headcrab", false)
-	
+	ply:AllowFlashlight(false)
+	ply:SetNWBool("LostInnocence", false)
 	umsg.Start("Skin_Appearance", ply)
 	umsg.End()
 	
@@ -435,14 +436,14 @@ hook.Add("PlayerSpawn", "VarsIS", function(ply)
 		ply.LastAttacker = nil
 		ply:SetNWBool("Spectating",false)
 		hook_run("Identity", ply)
+		hook_run("Vars Player", ply)
 	end
-	hook_run("Vars Player", ply)
 end)
 
 hook.Add("PlayerDeath", "VarsD", function(ply)
 	ply:SetTeam(1)
-	hook_run("Die Reason", ply)
 	hook_run("Vars Player", ply)
+	ply:AllowFlashlight(true)
     ply:SetNWBool("Spectating", true)
 end)
 
