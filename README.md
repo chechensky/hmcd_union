@@ -10,3 +10,5 @@ end
 
 плыв плыв плыв
 плыв
+
+vsem privet ya sozdatel
