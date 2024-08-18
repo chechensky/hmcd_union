@@ -262,8 +262,8 @@ end
 
 hook.Add("PlayerPostThink", "IncreaseFOVOnSprint", function(ply)
     if !IsValid(ply) or !ply:Alive() then return end
-    if ply:KeyDown(IN_FORWARD) and ply:KeyDown(IN_SPEED) then
-        ply:SetFOV(105, 0.1)
+    if ply:KeyDown(IN_FORWARD) and ply:KeyDown(IN_SPEED) then -- Говно резкое.. Надо с ванильного хомисайда портануть смену фова
+        ply:SetFOV(105, 0.1) -- Попробовал закинуть в cl_hud, как обычно рубат момент нихрена на клиенте не работает хотя на вики написано обратное
     else
         ply:SetFOV(95, 0.1)
     end

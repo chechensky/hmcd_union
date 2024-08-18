@@ -1,9 +1,9 @@
 DeriveGamemode("sandbox")
 
 GM.Name = "Homicide: Union"
-GM.Author = "checha+Mannytko+Nab+quezkaly"
+GM.Author = "By checha, Bara, Mannytko and quezkaly. "
 GM.Email = "N/A"
-GM.Website = "N/A"
+GM.Website = "https://discord.gg/Y8WgzQSM"
 GM.TeamBased = true
 
 -- checha gm ints!!!
@@ -12,7 +12,7 @@ GM.RoundName = "homicide"
 GM.RoundNext = "homicide"
 GM.RoundType = 2
 GM.RoundState = 3
-GM.Version = "0.0.3"
+GM.Version = "Version 0.0.4 (Still Alive)"
 GM.Traitor = nil
 GM.MVP = nil
 
@@ -28,7 +28,7 @@ include("loader.lua")
 GM.papkago("hmcdunion/gamemode/gm/")
 
 function GM:CreateTeams()
-	team.SetUp(1,"Players",Color(57,62,213))
+	team.SetUp(1, "Players", Color(57,62,213))
 end
 
 PrecacheParticleSystem("blood_impact")
@@ -524,9 +524,9 @@ AccessoryList={
 AccessoryListWithoutEmpty={
 	["Очки"]={"models/captainbigbutt/skeyler/accessories/glasses01.mdl","ValveBiped.Bip01_Head1",{Vector(2.1,3,0),Angle(0,-70,-90),.9},{Vector(2.75,2,0),Angle(0,-70,-90),.8},false,0},
 	["Солнцезащитные очки"]={"models/captainbigbutt/skeyler/accessories/glasses02.mdl","ValveBiped.Bip01_Head1",{Vector(2.9,2.2,0),Angle(0,-70,-90),.9},{Vector(3.5,1.25,0),Angle(0,-70,-90),.8},false,0},
-	["Большие Солнцезащитные Очки"]={"models/captainbigbutt/skeyler/accessories/glasses04.mdl","ValveBiped.Bip01_Head1",{Vector(3.25,2.4,0),Angle(0,-70,-90),.9},{Vector(3.5,1.25,0),Angle(0,-70,-90),.8},false,0},
-	["Очки Авиаторы"]={"models/gmod_tower/aviators.mdl","ValveBiped.Bip01_Head1",{Vector(2.2,2.9,0),Angle(0,-75,-90),.9},{Vector(2.8,1.9,0),Angle(0,-75,-90),.85},false,0},
-	["Очки Ботана"]={"models/gmod_tower/klienerglasses.mdl","ValveBiped.Bip01_Head1",{Vector(2.6,2.9,0),Angle(0,-75,-90),1},{Vector(2.6,2.3,0),Angle(0,-80,-90),.9},false,0},
+	["Большие солнцезащитные очки"]={"models/captainbigbutt/skeyler/accessories/glasses04.mdl","ValveBiped.Bip01_Head1",{Vector(3.25,2.4,0),Angle(0,-70,-90),.9},{Vector(3.5,1.25,0),Angle(0,-70,-90),.8},false,0},
+	["Очки авиаторы"]={"models/gmod_tower/aviators.mdl","ValveBiped.Bip01_Head1",{Vector(2.2,2.9,0),Angle(0,-75,-90),.9},{Vector(2.8,1.9,0),Angle(0,-75,-90),.85},false,0},
+	["Очки ботана"]={"models/gmod_tower/klienerglasses.mdl","ValveBiped.Bip01_Head1",{Vector(2.6,2.9,0),Angle(0,-75,-90),1},{Vector(2.6,2.3,0),Angle(0,-80,-90),.9},false,0},
 	["Наушники"]={"models/gmod_tower/headphones.mdl","ValveBiped.Bip01_Head1",{Vector(.5,3,0),Angle(0,-90,-90),.9},{Vector(1,2.3,0),Angle(0,-90,-90),.8},false,0},
 	["Бейсболка"]={"models/gmod_tower/jaseballcap.mdl","ValveBiped.Bip01_Head1",{Vector(.05,5.1,0),Angle(0,-75,-90),1.125},{Vector(0,4.2,0),Angle(0,-75,-90),1.1},true,0},
 	["Шляпа"]={"models/captainbigbutt/skeyler/hats/fedora.mdl","ValveBiped.Bip01_Head1",{Vector(.25,5.5,0),Angle(0,-75,-90),.7},{Vector(0,4.8,0),Angle(0,-75,-90),.65},true,0},
@@ -577,7 +577,7 @@ AccessoryListWithoutEmpty={
 	["Большой красный рюкзак"]={"models/modified/backpack_1.mdl","ValveBiped.Bip01_Spine4",{Vector(-2,-8,0),Angle(0,90,90),1},{Vector(-2,-8,0),Angle(0,90,90),.9},false,0},
 	["Большой серый рюкзак"]={"models/modified/backpack_1.mdl","ValveBiped.Bip01_Spine4",{Vector(-2,-8,0),Angle(0,90,90),1},{Vector(-2,-8,0),Angle(0,90,90),.9},false,1},
 
-	["Обычный Рюкзак"]={"models/modified/backpack_3.mdl","ValveBiped.Bip01_Spine4",{Vector(-3,-6,0),Angle(0,90,90),.9},{Vector(-3,-6,0),Angle(0,90,90),.8},false,0},
+	["Обычный рюкзак"]={"models/modified/backpack_3.mdl","ValveBiped.Bip01_Spine4",{Vector(-3,-6,0),Angle(0,90,90),.9},{Vector(-3,-6,0),Angle(0,90,90),.8},false,0},
 	["Серый рюкзак"]={"models/modified/backpack_3.mdl","ValveBiped.Bip01_Spine4",{Vector(-3,-6,0),Angle(0,90,90),.9},{Vector(-3,-6,0),Angle(0,90,90),.8},false,1}
 }
 
@@ -847,8 +847,6 @@ concommand.Add("hmcd_droprequest",function(ply,cmd,args)
 
 	-- вот эта нижняя строка самая длинная ее не надо разбирать, это убирание рэйла при убирании прицела
 	if wep:GetClass() == "wep_jack_hmcd_akm" and (attachment==HMCD_KOBRA or attachment==HMCD_AIMPOINT or attachment==HMCD_EOTECH) then wep:SetNWBool("Rail", false) end
-	--
-
 	if attachment != 5 then wep:SetNWBool(atts_simplified[attachment],false) end
 	if attachment == 5 then ply:AllowFlashlight(false) end
 
@@ -857,5 +855,4 @@ concommand.Add("hmcd_droprequest",function(ply,cmd,args)
 	net.WriteInt(attachment, 6)
 	net.WriteBit(false)
 	net.Send(ply)
-
 end)

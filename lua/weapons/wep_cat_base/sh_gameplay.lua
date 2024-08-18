@@ -17,7 +17,7 @@ if SERVER then
 					wep:SetSuiciding(true)
 					ply:SetDSP(130)
 				else
-					ply:PrintMessage(HUD_PRINTTALK, "Your weapon is too long. Take the suppressor off.")
+					ply:ChatPrint("Your weapon is too long. Take the suppressor off.")
 				end
 			end
 		end

@@ -344,7 +344,7 @@ net.Receive("ply_take_item",function(len,ply)
 			wep1:SetClip1(wepInfo.Clip1 or 0)
 		end
 		ply:SelectWeapon(actwep:GetClass())
-        print(lootEnt:IsPlayer())
+        --print(lootEnt:IsPlayer())
         if lootEnt:IsPlayer() then lootEnt:StripWeapon(wep) end
 		lootInfo.Weapons[wep] = nil
 		table.RemoveByValue(lootInfo.Weapons2,wep)

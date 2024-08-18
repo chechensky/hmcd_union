@@ -73,7 +73,6 @@ local function DrawRandomPizdec()
 end
 
 local fullbright = 255
-
 function GM:DrawHeadCrabHud()
 	if LocalPlayer():GetNWBool("Headcrab", false) == true then
 
@@ -170,20 +169,34 @@ function GM:DrawGameHUD(ply)
 		["AirboatGun"]=surface.GetTextureID("vgui/hud/hmcd_nail"),
 		["RPG_Round"]=surface.GetTextureID("vgui/hud/rpg_round")
 	}
-	if ply.AmmoShow and ply.AmmoShow>CurTime() and ply:GetActiveWeapon().AmmoType != nil then
-		local Wep,TimeLeft,Opacity=ply:GetActiveWeapon(),ply.AmmoShow-CurTime(),255
-		if TimeLeft < 1 then Opacity=150 end
-		surface.SetTexture(RoundTextures[Wep.AmmoType])
-		surface.SetDrawColor(Color(255,255,255,Opacity))
-		surface.DrawTexturedRect(W*.7+20,H*.830,(Wep.AmmoType == "RPG_Round" and 175) or 128,100)
-		local Mag,Message,Cnt=Wep:Clip1(),"",ply:GetAmmoCount(Wep.AmmoType)
-		if Mag >= 0 then
-			Message=tostring(Mag)
-			if Cnt > 0 then Message=Message.." + "..tostring(Cnt) end
-		else
-			Message=tostring(Cnt)
+	--[[ Глупый мотылёк догорал на свечке
+	Жаркий уголёк, дымные колечки
+	Звёздочка упала в лужу у крыльца
+	Отряд не заметил потери бойца
+	Отряд не заметил потери бойца
+	Мёртвый не воскрес, хворый не загнулся
+	Зрячий не ослеп, спящий не проснулся
+	Весело стучали храбрые сердца
+	Отряд не заметил потери бойца
+	Отряд не заметил потери бойца ]]
+	if ply.AmmoShow and (ply.AmmoShow > CurTime()) and ply:GetActiveWeapon().AmmoType != nil then
+		local Wep, TimeLeft, Opacity = ply:GetActiveWeapon(), ply.AmmoShow - CurTime(), 255
+		if Opacity <= 0 then return end -- Взял со своего гитхабовского хомисайда чтобы плавненько было
+		Opacity = TimeLeft * 255
+		if Wep.CanAmmoShow then
+			surface.SetTexture(RoundTextures[Wep.AmmoType])
+			surface.SetDrawColor(Color(255, 255, 255, Opacity))
+			surface.DrawTexturedRect(W * .7 + 20, H * .830, (Wep.AmmoType == "RPG_Round" and 175) or 128, 100)
+			local Mag, Message, Cnt = Wep:Clip1(), "", ply:GetAmmoCount(Wep.AmmoType)
+			if Mag >= 0 then
+				Message = tostring(Mag)
+				if Cnt > 0 then Message = Message .. " + " .. tostring(Cnt) end
+			else
+				Message = tostring(Cnt)
+			end
+
+			drawTextShadow(Message, "FontSmall", W * .7 + 30, H * .8 + 45, Color(255, 255, 255, Opacity), 0, TEXT_ALIGN_TOP)
 		end
-		drawTextShadow(Message,"FontSmall",W*.7+30,H*.8+45,Color(255,255,255,Opacity),0,TEXT_ALIGN_TOP)
 	end
 end
 
@@ -744,7 +757,7 @@ function GM:ScoreboardShow()
 			self:SetSize(w,h)
 		end
 
-		local lab = Label("by checha; Mannytko; quezkaly. Version " .. tostring(GAMEMODE.Version or "error"), menu.Credits)
+		local lab = Label(GAMEMODE.Author .. tostring(GAMEMODE.Version or "error"), menu.Credits)
 		lab:Dock(RIGHT)
 		lab:SetFont("FontSmall")
 		lab.PerformLayout = name.PerformLayout
@@ -774,3 +787,11 @@ end
 function GM:HUDDrawScoreBoard()
 end
 
+function GM:AdjustMouseSensitivity(def)
+	local ply = LocalPlayer()
+	if ply:IsSprinting() and ply:KeyDown(IN_FORWARD) then
+		return 0.5
+	else
+		return 1
+	end
+end

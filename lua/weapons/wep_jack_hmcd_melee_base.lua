@@ -844,9 +844,9 @@ if CLIENT then
 
 	function SWEP:GetViewModelPosition(pos, ang)
 		if self:GetOwner():KeyDown(IN_SPEED) then
-			DownAmt = math.Clamp(DownAmt + .6, 0, 50)
+			DownAmt = math.Clamp(DownAmt + .4, 0, 20)
 		else
-			DownAmt = math.Clamp(DownAmt - .6, 0, 50)
+			DownAmt = math.Clamp(DownAmt - .4, 0, 20)
 		end
 
 		ang:RotateAroundAxis(ang:Forward(), 10)

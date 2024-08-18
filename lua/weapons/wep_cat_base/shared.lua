@@ -890,7 +890,7 @@ function SWEP:Reload()
 	if self.SprintingWeapon > 0 then return end
 	if self.SuicideAmt > 0 then return end
 	if CLIENT then self:GetOwner().AmmoShow = CurTime() + 2 end
-	print(self:GetOwner():GetAmmoCount("AR2"))
+	--print(self:GetOwner():GetAmmoCount("AR2"))
 	if (self:Clip1() < self.Primary.ClipSize) and (self:GetOwner():GetAmmoCount(self.Primary.Ammo) > 0) then
 		local TacticalReload = self:Clip1() > 0
 		if self:GetClass() == "wep_jack_hmcd_dbarrel" then TacticalReload = self:Clip1() >= 1 or self:GetOwner():GetAmmoCount("Buckshot") == 1 end

@@ -80,7 +80,7 @@ function SWEP:RicochetOrPenetrate(initialTrace)
 			self.CurrentDamage = self.CurrentDamage * math.Clamp((1 - StopMul) * 1.2, 0.01, 1)
 		end
 	elseif ApproachAngle < (MaxRicAngle * .75) then
-		sound.Play("snd_jack_hmcd_ricochet_" .. math.random(1, 22) .. ".wav", IPos, 70, math.random(90, 100))
+		sound.Play("snd_jack_hmcd_ricochet_" .. math.random(1, 2) .. ".wav", IPos, 70, math.random(90, 100))
 		local NewVec = AVec:Angle()
 		NewVec:RotateAroundAxis(TNorm, 180)
 		local AngDiffNormal = math.deg(math.acos(NewVec:Forward():Dot(TNorm))) - 90
