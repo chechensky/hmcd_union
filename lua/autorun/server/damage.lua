@@ -92,6 +92,7 @@ end)
 hook.Add("HOOK_UNION_Damage","Hit",function(ply,hitgroup,dmginfo,rag)
     local ent = rag or ply
     local inf = dmginfo:GetInflictor()
+    print("12123")
     if IsValid(inf) and inf:GetClass() == "npc_headcrab" then
         inf:Remove()
         ply:SetNWBool("Headcrab", true)

@@ -1,5 +1,5 @@
-hook.Add("EntityTakeDamage", "AntiDamageWithDM", function(ply, dmginfo)
-	if GAMEMODE.DMTime >= 1 then return false end
+hook.Add("PlayerShouldTakeDamage", "AntiDamageWithDM", function(ply, att)
+	if GetGlobalInt("DMTime", 10) >= 1 then return false end
 end)
 
 local CTime = CurTime()
@@ -8,6 +8,7 @@ hook.Add("PlayerTick", "Glaza", function (ply)
 end)
 
 hook.Add( "PlayerFootstep", "CustomFootstep", function( ply, pos, foot, sound, volume, rf )
+	print(ply:GetNWInt("RoundType", 1))
 	if ply.Role=="combine" then
 		ply:EmitSound( "npc/combine_soldier/gear"..math.random(1,6)..".wav" )
 	end

@@ -99,144 +99,11 @@ net.Receive("Player_Push", function(len,ply)
 	pushed:ViewPunch( Angle( math.random( -30, 30 ), math.random( -30, 30 ), 0 ) )
 end)
 
-util.AddNetworkString("MK_CheckLeftArm")
-net.Receive("MK_CheckLeftArm", function(len,ply)
-    local dude = net.ReadEntity()
-    ply:ChatPrint(dude.Wounds["left_hand"] .. " wounds.")
-    if dude.BleedOuts["left_hand"] > 0 then
-        ply:ChatPrint("Bleeding.")
-    else
-         ply:ChatPrint("No bleeding.")
-    end
-end)
-
-util.AddNetworkString("MK_CheckRightArm")
-net.Receive("MK_CheckRightArm", function(len,ply)
-    local dude = net.ReadEntity()
-    ply:ChatPrint(dude.Wounds["right_hand"] .. " wounds.")
-    if dude.BleedOuts["right_hand"] > 0 then
-        ply:ChatPrint("Bleeding.")
-    else
-         ply:ChatPrint("No bleeding.")
-    end
-end)
-
-util.AddNetworkString("MK_CheckRightLeg")
-net.Receive("MK_CheckRightLeg", function(len,ply)
-    local dude = net.ReadEntity()
-    ply:ChatPrint(dude.Wounds["right_leg"] .. " wounds.")
-    if dude.BleedOuts["right_leg"] > 0 then
-        ply:ChatPrint("Bleeding.")
-    else
-         ply:ChatPrint("No bleeding.")
-    end
-end)
-
-util.AddNetworkString("MK_CheckLeftLeg")
-net.Receive("MK_CheckLeftLeg", function(len,ply)
-    local dude = net.ReadEntity()
-    ply:ChatPrint(dude.Wounds["left_leg"] .. " wounds.")
-    if ply.BleedOuts["left_leg"] > 0 then
-        ply:ChatPrint("Bleeding.")
-    else
-         ply:ChatPrint("No bleeding.")
-    end
-end)
-
-util.AddNetworkString("MK_CheckStomach")
-net.Receive("MK_CheckStomach", function(len,ply)
-    local dude = net.ReadEntity()
-    ply:ChatPrint(dude.Wounds["stomach"] .. " wounds.")
-    if dude.BleedOuts["stomach"] > 0 then
-        ply:ChatPrint("Bleeding.")
-    else
-         ply:ChatPrint("No bleeding.")
-    end
-end)
-
-util.AddNetworkString("MK_CheckChest")
-net.Receive("MK_CheckChest", function(len,ply)
-    local dude = net.ReadEntity()
-    ply:ChatPrint(dude.Wounds["chest"] .. " wounds.")
-    if dude.BleedOuts["chest"] > 0 then
-        ply:ChatPrint("Bleeding.")
-    else
-        ply:ChatPrint("No bleeding.")
-    end
-end)
-
------------------
-
-util.AddNetworkString("MK_LeftArm")
-net.Receive("MK_LeftArm", function(len,ply)
-    local dude = net.ReadEntity()
-    if ply:GetActiveWeapon().Resource <= 0 then ply:ChatPrint("Zero medicaments.") return end
-    StandartHeal(ply)
-    dude.pain = dude.pain - 40
-    dude:SetHealth(dude:Health() + 50)
-    if dude.BleedOuts["left_hand"] > 30 then
-        dude.BleedOuts["left_hand"] = dude.BleedOuts["left_hand"] - 30
-    end
-end)
-
-util.AddNetworkString("MK_RightArm")
-net.Receive("MK_RightArm", function(len,ply)
-    local dude = net.ReadEntity()
-    if ply:GetActiveWeapon().Resource <= 0 then ply:ChatPrint("Zero medicaments.") return end
-    StandartHeal(ply)
-    dude.pain = dude.pain - 40
-    dude:SetHealth(dude:Health() + 50)
-    dude.BleedOuts["right_hand"] = dude.BleedOuts["right_hand"] - 30
-end)
-
-util.AddNetworkString("MK_RightLeg")
-net.Receive("MK_RightLeg", function(len,ply)
-    local dude = net.ReadEntity()
-    if ply:GetActiveWeapon().Resource <= 0 then ply:ChatPrint("Zero medicaments.") return end
-    StandartHeal(ply)
-    dude.pain = dude.pain - 40
-    dude:SetHealth(dude:Health() + 50)
-    dude.BleedOuts["right_leg"] = dude.BleedOuts["right_leg"] - 30
-end)
-
-util.AddNetworkString("MK_LeftLeg")
-net.Receive("MK_LeftLeg", function(len,ply)
-    local dude = net.ReadEntity()
-    if ply:GetActiveWeapon().Resource <= 0 then ply:ChatPrint("Zero medicaments.") return end
-    StandartHeal(ply)
-    dude.pain = dude.pain - 40
-    dude:SetHealth(dude:Health() + 50)
-    dude.BleedOuts["left_leg"] = dude.BleedOuts["left_leg"] - 30
-end)
-
-util.AddNetworkString("MK_Stomach")
-net.Receive("MK_Stomach", function(len,ply)
-    local dude = net.ReadEntity()
-    if ply:GetActiveWeapon().Resource <= 0 then ply:ChatPrint("Zero medicaments.") return end
-    StandartHeal(ply)
-    dude.pain = dude.pain - 40
-    dude:SetHealth(dude:Health() + 50)
-    dude.BleedOuts["stomach"] = dude.BleedOuts["stomach"] - 30
-end)
-
-util.AddNetworkString("MK_Chest")
-net.Receive("MK_Chest", function(len,ply)
-    local dude = net.ReadEntity()
-    if ply:GetActiveWeapon().Resource <= 0 then ply:ChatPrint("Zero medicaments.") return end
-    StandartHeal(ply)
-    dude.pain = dude.pain - 40
-    dude:SetHealth(dude:Health() + 50)
-    dude.BleedOuts["chest"] = dude.BleedOuts["chest"] - 30
-end)
-
-
 -- bodyloot
 util.AddNetworkString("inventory")
 util.AddNetworkString("ply_take_item")
 util.AddNetworkString("ply_take_ammo")
 util.AddNetworkString("ply_take_armor")
-util.AddNetworkString("ply_drop_item")
-util.AddNetworkString("ply_drop_ammo")
 
 
 local function send(ply,lootEnt,remove)
@@ -344,50 +211,16 @@ net.Receive("ply_take_item",function(len,ply)
 			wep1:SetClip1(wepInfo.Clip1 or 0)
 		end
 		ply:SelectWeapon(actwep:GetClass())
-        print(lootEnt:IsPlayer())
         if lootEnt:IsPlayer() then lootEnt:StripWeapon(wep) end
 		lootInfo.Weapons[wep] = nil
 		table.RemoveByValue(lootInfo.Weapons2,wep)
 	end
+	net.Start("inventory")
+		net.WriteEntity(lootEnt)
 
-	send(nil,lootEnt)
-end)
-
-net.Receive("ply_drop_item",function(len,ply)
-
-	local lootEnt = net.ReadEntity()
-	if not IsValid(lootEnt) then return end
-
-	local wep = net.ReadString()
-
-	local lootInfo = lootEnt.Info
-	local wepInfo = lootInfo.Weapons[wep]
-	
-	if not wepInfo then return end
-
-	if lootEnt:IsPlayer() and (lootEnt.curweapon == wep and not lootEnt.Otrub) then return end
-		
-	ply.slots = ply.slots or {}
-	local realwep = weapons.Get(wep)
-		
-	if IsValid(lootEnt.wep) and lootEnt.curweapon == wep then
-		DespawnWeapon(lootEnt)
-		lootEnt.wep:Remove()
-	end
-
-	local actwep = ply:GetActiveWeapon()
-	local wep1 = ents.Create(weapons.Get(wep).ENT)
-    wep1:SetPos(lootEnt.fakeragdoll:GetPos()+lootEnt:GetUp()*3)
-    wep1:Activate()
-    wep1:Spawn()
-	if IsValid(wep1) and wep1:IsWeapon() then
-		wep1:SetClip1(wepInfo.Clip1 or 0)
-	end
-    if lootEnt:IsPlayer() then lootEnt:StripWeapon(wep) end
-	lootInfo.Weapons[wep] = nil
-	table.RemoveByValue(lootInfo.Weapons2,wep)
-
-	send(nil,lootEnt)
+		net.WriteTable(lootEnt.Info.Weapons)
+		net.WriteTable(lootEnt.Info.Ammo)
+	net.Send(ply)
 end)
 
 net.Receive("ply_take_armor",function(len,ply)
@@ -411,23 +244,10 @@ net.Receive("ply_take_ammo",function(len,ply)
 	ply:GiveAmmo(lootInfo.Ammo[ammo],ammo)
 	lootInfo.Ammo[ammo] = nil
 
-	send(nil,lootEnt)
-end)
+	net.Start("inventory")
+		net.WriteEntity(lootEnt)
 
-net.Receive("ply_drop_ammo",function(len,ply)
-	local lootEnt = net.ReadEntity()
-	if not IsValid(lootEnt) then return end
-	local ammo = net.ReadFloat()
-	local lootInfo = lootEnt.Info
-	if not lootInfo.Ammo[ammo] then return end
-
-	local ammow = ents.Create("ent_jack_hmcd_ammo")
-    ammow:SetPos(lootEnt.fakeragdoll:GetPos()+lootEnt:GetUp()*3)
-    ammow.AmmoType=game.GetAmmoName(ammo)
-	ammow.Rounds=lootInfo.Ammo[ammo] 
-    ammow:Activate()
-    ammow:Spawn()		
-    lootInfo.Ammo[ammo] = nil
-
-	send(nil,lootEnt)
+		net.WriteTable(lootEnt.Info.Weapons)
+		net.WriteTable(lootEnt.Info.Ammo)
+	net.Send(ply)
 end)

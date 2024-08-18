@@ -397,7 +397,6 @@ hook.Add("DoPlayerDeath","blad",function(ply,att,dmginfo)
 	net.Send(ply)
 	if IsValid(rag.bull) then rag.bull:Remove() end
 	rag:SetNWBool("Dead", true)
-
 	if checkAllBleedOuts_bolshe(ply, 0) then
 		rag.IsBleeding=true
 		rag.bloodNext = CurTime()
@@ -450,13 +449,13 @@ hook.Add("DoPlayerDeath","blad",function(ply,att,dmginfo)
 
 	end
 	timer.Create("collision"..ent:EntIndex(),15,1,function()
-		if IsValid(ent) and GAMEMODE.RoundName != "homicide" then rag:SetCollisionGroup(COLLISION_GROUP_WEAPON) end
+		if IsValid(ent) and GetGlobalString("RoundName", "homicide") != "homicide" then rag:SetCollisionGroup(COLLISION_GROUP_WEAPON) end
 	end)
 	timer.Create("stopbleed"..ent:EntIndex(),30,1,function()
 		if IsValid(ent) then ent.IsBleeding = false end
 	end)
 	timer.Create("delete"..ent:EntIndex(),120,1,function()
-		if IsValid(ent) and GAMEMODE.RoundName != "homicide" then ent:Remove() end
+		if IsValid(ent) and GetGlobalString("RoundName", "homicide") != "homicide" then ent:Remove() end
 	end)
 end)
 

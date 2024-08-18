@@ -68,7 +68,7 @@ local panel
 net.Receive("inventory",function()
 	local lply = LocalPlayer()
 
-	if IsValid(panel) and IsValid(armor) then panel.override = true panel:Remove() armor:Remove() end
+	if IsValid(panel) then panel.override = true panel:Remove() armor:Remove() end
 
 	local lootEnt = net.ReadEntity()
 	local success,items = pcall(net.ReadTable)
@@ -108,10 +108,6 @@ net.Receive("inventory",function()
 		net.WriteEntity(lootEnt)
 		net.SendToServer()
 		armor:Remove()
-	end
-
-	function armor:OnRemove()
-		panel:Remove()
 	end
 
 	panel.Paint = function(self, w, h)
@@ -277,45 +273,16 @@ net.Receive("inventory",function()
 		function button:OnRemove() if IsValid(model) then model:Remove() end end
 
 		button.DoRightClick = function()
-			local action = DermaMenu()
-			local take = action:AddOption("Take")
-			local drop = action:AddOption("Drop")
-			take:SetIcon("icon16/box.png")
-			drop:SetIcon("icon16/brick.png")
-			function take:DoClick()
-				net.Start("ply_take_item")
+			net.Start("ply_take_item")
 				net.WriteEntity(lootEnt)
 				net.WriteString(tostring(wep))
-				net.SendToServer()
-			end
-			function drop:DoClick()
-				net.Start("ply_drop_item")
-				net.WriteEntity(lootEnt)
-				net.WriteString(tostring(wep))
-				net.SendToServer()
-			end
-			action:Open()
+			net.SendToServer()
 		end
-
 		button.DoClick = function()
-			local action = DermaMenu()
-			local take = action:AddOption("Take")
-			local drop = action:AddOption("Drop")
-			take:SetIcon("icon16/box.png")
-			drop:SetIcon("icon16/brick.png")
-			function take:DoClick()
-				net.Start("ply_take_item")
+			net.Start("ply_take_item")
 				net.WriteEntity(lootEnt)
 				net.WriteString(tostring(wep))
-				net.SendToServer()
-			end
-			function drop:DoClick()
-				net.Start("ply_drop_item")
-				net.WriteEntity(lootEnt)
-				net.WriteString(tostring(wep))
-				net.SendToServer()
-			end
-			action:Open()
+			net.SendToServer()
 		end
 	end
 
@@ -349,44 +316,16 @@ net.Receive("inventory",function()
 			end
 		end
 		button.DoRightClick = function()
-			local action = DermaMenu()
-			local take = action:AddOption("Take")
-			local drop = action:AddOption("Drop")
-			take:SetIcon("icon16/box.png")
-			drop:SetIcon("icon16/brick.png")
-			function take:DoClick()
-				net.Start("ply_take_ammo")
+			net.Start("ply_take_ammo")
 				net.WriteEntity(lootEnt)
 				net.WriteFloat(tonumber(ammo))
-				net.SendToServer()
-			end
-			function drop:DoClick()
-				net.Start("ply_drop_ammo")
-				net.WriteEntity(lootEnt)
-				net.WriteFloat(tonumber(ammo))
-				net.SendToServer()
-			end
-			action:Open()
+			net.SendToServer()
 		end
 		button.DoClick = function()
-			local action = DermaMenu()
-			local take = action:AddOption("Take")
-			local drop = action:AddOption("Drop")
-			take:SetIcon("icon16/box.png")
-			drop:SetIcon("icon16/brick.png")
-			function take:DoClick()
-				net.Start("ply_take_ammo")
+			net.Start("ply_take_ammo")
 				net.WriteEntity(lootEnt)
 				net.WriteFloat(tonumber(ammo))
-				net.SendToServer()
-			end
-			function drop:DoClick()
-				net.Start("ply_drop_ammo")
-				net.WriteEntity(lootEnt)
-				net.WriteFloat(tonumber(ammo))
-				net.SendToServer()
-			end
-			action:Open()
+			net.SendToServer()
 		end
 		button.DoRightClick = button.DoClick
 	end

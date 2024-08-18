@@ -371,7 +371,6 @@ hook.Add("Vars Player", "VarsS", function(ply)	-- Alive give
 	ply.SeizureReps = 0
 	ply:ConCommand("-attack")
 	ply:SetNWBool("Headcrab", false)
-	ply:AllowFlashlight(false)
 	ply:SetNWBool("LostInnocence", false)
 	umsg.Start("Skin_Appearance", ply)
 	umsg.End()
@@ -425,7 +424,7 @@ hook.Add("PlayerSpawn", "VarsIS", function(ply)
 		if ply:GetNWInt("Guilt", 0) > 0 then
 			ply:GuiltRemove(math.random(1,20))
 		end
-
+		ply:AllowFlashlight(false)
 		if ply:GetNWInt("Guilt") < 0 then ply:GuiltSet(0) end
 
 		timer.Simple(.1, function() 

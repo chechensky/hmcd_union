@@ -23,6 +23,12 @@ hook.Add("Think","LipSync",function()
 	end
 end)--липсинк ОЧЕНЬ СМЕНШОЙ!!! ALERT!! с хмгд, легкий
 
+hook.Add("PlayerSpawn", "sex", function(ply)
+	if !PLYSPAWN_OVERRIDE then
+		ply.Equipment = {}
+	end
+end)
+
 hook.Add("PostDrawOpaqueRenderables", "LaserChecha", function()
 	local ply = LocalPlayer()
 	local weapon = ply:GetActiveWeapon()
@@ -46,41 +52,7 @@ end) -- лазеры ЧЕЧИ!!!
 
 dev = GetConVar( "developer" )
 
-hook.Add("PostDrawTranslucentRenderables","hitboxs",function()
-	if dev:GetInt() == 1 or dev:GetInt() == 3 then
-		--[[for _, ent in ipairs(player.GetAll()) do
-			local cho = IsValid(ent:GetNWEntity("Ragdoll")) and ent:GetNWEntity("Ragdoll") or ent
-        	local pos,ang = cho:GetBonePosition(cho:LookupBone('ValveBiped.Bip01_Spine2'))
-       		render.DrawWireframeBox( pos, ang, Vector(-1,0,-6),Vector(10,6,6), Color(200,200,200) )
-
-			local pos,ang = cho:GetBonePosition(cho:LookupBone('ValveBiped.Bip01_Head1'))
-        	render.DrawWireframeBox( pos, ang, Vector(2,-4,-3),Vector(6,1,3), Color(206,199,199) )
-			
-			render.DrawWireframeBox( pos, ang, Vector(-3,-2,-2),Vector(0,-1,-1), Color(206,199,199) )
-       		render.DrawWireframeBox( pos, ang, Vector(-3,-2,1),Vector(0,-1,2), Color(206,199,199) )
-
-			local pos,ang = cho:GetBonePosition(cho:LookupBone('ValveBiped.Bip01_Spine1'))
-       		render.DrawWireframeBox( pos, ang, Vector(-4,-1,-6),Vector(2,5,-1), Color(206,199,199) )
-		
-			local pos,ang = cho:GetBonePosition(cho:LookupBone('ValveBiped.Bip01_Spine1'))
-       		render.DrawWireframeBox( pos, ang, Vector(-4,-1,-1),Vector(2,5,6), Color(206,199,199) )
-		
-			local pos,ang = cho:GetBonePosition(cho:LookupBone('ValveBiped.Bip01_Spine'))
-       		render.DrawWireframeBox( pos, ang, Vector(-4,-1,-6),Vector(1,5,6), Color(206,199,199) )
-		
-			local pos,ang = cho:GetBonePosition(cho:LookupBone('ValveBiped.Bip01_Spine2'))
-		    render.DrawWireframeBox( pos, ang, Vector(1,0,-1),Vector(5,4,3), Color(206,199,199) )
-		
-			local pos = cho:GetBonePosition(cho:LookupBone('ValveBiped.Bip01_Spine4'))
-		    render.DrawWireframeBox( pos, ang, Vector(-8,-1,-1),Vector(2,0,1), Color(206,199,199) )
-
-			local pos = cho:GetBonePosition(cho:LookupBone('ValveBiped.Bip01_Spine1'))
-		    render.DrawWireframeBox( pos, ang, Vector(-8,-3,-1),Vector(2,-2,1), Color(206,199,199) )
-		end]]--
-	end
-end )--хбоксы кста хуйня с чедарабокса взял залупа член убрать надо будет или переделать нахуй
-
-function createCircle(x, y, radius, seg)
+local function createCircle(x, y, radius, seg)
     local cir = {}
 
     for i = 1, seg do

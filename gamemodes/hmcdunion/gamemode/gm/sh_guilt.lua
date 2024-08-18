@@ -46,7 +46,7 @@ hook.Add("HOOK_UNION_Damage","GuiltLogic",function(ply,hitgroup,dmginfo,rag)
 
     if !attacker:IsPlayer() then return end
 
-    if dmginfo:GetDamage() > 5 and attacker.Role != "Traitor" then
+    if dmginfo:GetDamage() > 5 and attacker.Role != "Traitor" and ply:GetNWString("Round", "") == "homicide" then
         if attacker:GetNWBool("LostInnocence", false) != true then
             attacker:SetNWBool("LostInnocence", true)
         end
@@ -82,7 +82,6 @@ hook.Add("SeizureGuilt", "GuiltSuka", function(ply)
     if !ply.Seizure then return end
     ply.SeizureReps = ply.SeizureReps + 1
     ply:ViewPunch(Angle ( math.random(0.3, 2), math.random(0.3, 0.5), math.random(0.1, 1) ) )
-    timer.Simple(1.1,function() ply:SetEyeAngles(Angle( math.random(10, 80), math.random(20, 40), -math.random(10, 30)) ) end)
     ply:ConCommand("+attack")
     if ply.SeizureReps >= 10 then
         ply.Seizure = false

@@ -102,8 +102,8 @@ function GM:DrawHeadCrabHud()
 	end
 end
 function GM:DrawDMTime()
-	if LocalPlayer():GetNWString("Round","") == "dm" and LocalPlayer():GetNWInt("DMTime", 10) >= 1 then
-		drawTextShadow(LocalPlayer():GetNWInt("DMTime", 10),"DefaultFont",950,50,team.GetColor(1), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+	if GetGlobalString("RoundName", "homicide") == "dm" and GetGlobalInt("DMTime", 10) >= 1 then
+		drawTextShadow(GetGlobalInt("DMTime", 10),"DefaultFont",950,50,team.GetColor(1), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 	end
 end
 
@@ -398,12 +398,6 @@ function OpenAttachmentMenu()
 		end
 	end
 
-	if ply.Equipment then
-		if ply.Equipment[HMCD_EquipmentNames[5]] then
-			table.insert(List, 5)
-		end
-	end
-
 	local size=ScrW()/8.5
 
 	local DermaPanel=vgui.Create("DFrame")
@@ -443,25 +437,10 @@ function OpenAttachmentMenu()
 		DermaPanel:Close()
 		RunConsoleCommand("hmcd_attachrequest",attType)
 	end
-	local dropbutton=vgui.Create("Button",MainPanel)
-	dropbutton:SetSize(size*0.9,size*0.15)
-	dropbutton:SetPos(size/30,size*0.55)
-	dropbutton:SetText("Drop")
-	dropbutton:SetVisible(true)
-	dropbutton:SetEnabled(false)
-	dropbutton.DoClick=function()
-		DermaPanel:Close()
-		RunConsoleCommand("hmcd_droprequest",attType)
-	end
-
 	AttachmentList.OnRowSelected=function(panel,ind,row)
 		attType=row.Type
-		dropbutton:SetEnabled(true)
-		if attType == 5 then
-			gobutton:SetEnabled(false)
-		else
 			gobutton:SetEnabled(true)
-		end
+
 	end
 
 end
@@ -521,7 +500,7 @@ local function addPlayerItem(self, mlist, ply, pteam)
 				s = s + 32
 			end
 
-			if GAMEMODE.RoundState == 0 then
+			if GetGlobalInt("RoundState", 0) == 0 then
 				show_charactername = ply:GetNWString("Character_Name", "")
 			else
 				show_charactername = ""

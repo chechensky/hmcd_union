@@ -7,11 +7,12 @@ GM.Website = "N/A"
 GM.TeamBased = true
 
 -- checha gm ints!!!
-GM.DMTime = 10
-GM.RoundName = "homicide"
-GM.RoundNext = "homicide"
-GM.RoundType = 2
-GM.RoundState = 3
+SetGlobalInt("DMTime", 10)
+SetGlobalString("RoundName", "homicide")
+SetGlobalString("RoundNext", "homicide")
+SetGlobalInt("RoundType", 2)
+SetGlobalInt("RoundNextType", 2)
+SetGlobalInt("RoundState", 3)
 GM.Version = "0.0.3"
 GM.Traitor = nil
 GM.MVP = nil
@@ -147,7 +148,6 @@ DM_LoadoutMain = {
 	"wep_jack_hmcd_mp7",
 	"wep_jack_hmcd_mp5",
 	"wep_jack_hmcd_dbarrel",
-	"wep_jack_hmcd_remington",
 	"wep_jack_hmcd_shotgun",
 	"wep_jack_hmcd_spas"
 }

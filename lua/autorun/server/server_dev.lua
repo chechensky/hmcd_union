@@ -59,24 +59,6 @@ function checkAllBleedOuts_menshe(ply, check)
 end
 -- две верхние функции это просто пиздец
 
-function addBulletTraceHit(ply, startpos, hitpos, hitnormal)
-	local infobullet = {}
-	infobullet.shootnumber = ply.shootnumb
-	infobullet.startpos = startpos
-	infobullet.hitpos = hitpos
-	infobullet.hitnormal = hitnormal
-	table.insert(ply.BulletTrace_Hit, infobullet)
-end
-
-function addModelPlayerHit(ply, pos, angles, model)
-	local infomodel = {}
-	infomodel.shootnumber = ply.shootnumb
-	infomodel.pos = pos
-	infomodel.angle = angles
-	infomodel.model = model
-	table.insert(ply.ModelPlayer_Hit, infomodel)
-end
-
 function BloodParticle(ply)
 	local rn = math.Rand(-0.35, 0.35)
 	local rnn = math.Rand(-0.35, 0.35)
