@@ -9,7 +9,7 @@ game.AddDecal("ArBlood3", "decals/checha/ar_blood3")
 game.AddDecal("ArBlood4", "decals/checha/ar_blood4")
 game.AddDecal("ArBlood5", "decals/checha/ar_blood5")
 
-hook.Add("InitPostEntity", "loh", function()
+hook.Add("InitPostEntity", "loh", function() -- Ххахахахахаха
 	if game.SinglePlayer() then
 		if CLIENT then
 			Derma_Query(
@@ -254,7 +254,7 @@ function HMCD_ExplosiveType(self)
 	-- 1 = inert (default HE), 2 = fragmentary, 3 = incendiary
 	if not IsValid(self) then return 1 end
 	local Phys = self:GetPhysicsObject()
-	print(Phys:GetMaterial())
+	--print(Phys:GetMaterial())
 
 	if IsValid(Phys) then
 		if HMCD_FlammableModels[string.lower(self:GetModel())] and not self:GetNWBool("NoPropane") then return 3 end

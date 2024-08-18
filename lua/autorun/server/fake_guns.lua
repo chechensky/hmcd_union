@@ -58,7 +58,7 @@ local Vectors = {
 	["wep_jack_hmcd_mp5"]=Vector(5,-1.8,-1),
 	["wep_jack_hmcd_m249"]=Vector(5.5,-1.8,-2),
 	["wep_jack_hmcd_combinesniper"]=Vector(15,-1.8,-2),
-	["wep_jack_hmcd_ar2"]=Vector(5.5,-1.5,-2),
+	["wep_jack_hmcd_ar2"]=Vector(6,-2,0),
 	["wep_jack_hmcd_ptrd"]=Vector(4,-1.8,-2),
 	["wep_jack_hmcd_remington"]=Vector(5,-1.3,-4),
 	["wep_jack_hmcd_shotgun"]=Vector(0,-1.3,1),
@@ -67,7 +67,7 @@ local Vectors = {
 	["wep_jack_hmcd_dbarrel"]=Vector(1.5,-1,-1),
 	["wep_jack_hmcd_glock17"]=Vector(3.5,-1,-3),
 	
-	--["wep_jack_hmcd_makarych"]=Vector(5,-1.5,-1),
+	["wep_jack_hmcd_makarych"]=Vector(5,-1.5,-1),
 	["wep_jack_hmcd_suppressed"]=Vector(4.8,-1.5,-2),
 	["wep_jack_hmcd_smallpistol"]=Vector(0,-.5,0),
 	["wep_jack_hmcd_revolver"]=Vector(-2,-1,1.5),
@@ -87,7 +87,7 @@ local Vectors2 = {
 	["wep_jack_hmcd_mp5"]=Vector(12,-2.8,-3.5),
 	["wep_jack_hmcd_m249"]=Vector(10,-3.8,-1),
 	["wep_jack_hmcd_combinesniper"]=Vector(10,-3.8,-1),
-	["wep_jack_hmcd_ar2"]=Vector(10,-3.9,-1),
+	["wep_jack_hmcd_ar2"]=Vector(15,-3.8,-4),
 	["wep_jack_hmcd_ptrd"]=Vector(13,-4.5,-5.5),
 	["wep_jack_hmcd_remington"]=Vector(14,-3.8,-3),
 	["wep_jack_hmcd_shotgun"]=Vector(18,-3,-1.5),
@@ -96,14 +96,14 @@ local Vectors2 = {
 	["wep_jack_hmcd_dbarrel"]=Vector(10,-3.9,-2)
 }
 
-local bullets = {
+local bullets = { --!! НЕ ИСПОЛЬЗУЕТСЯ (починить нада)
 	["wep_jack_hmcd_remington"] = 0.08,
 	["wep_jack_hmcd_shotgun"] = 0.08,
 	["wep_jack_hmcd_spas"] = 0.08,
 	["wep_jack_hmcd_dbarrel"] = 0.1
 }
 
-local cir = {
+local cir = { --!! НЕ ИСПОЛЬЗУЕТСЯ (починить нада)
 	["wep_jack_hmcd_remington"] = 8,
 	["wep_jack_hmcd_shotgun"] = 8,
 	["wep_jack_hmcd_spas"] = 12,
@@ -111,7 +111,6 @@ local cir = {
 }
 
 -- checha tables
-
 local Angle_Normalize = {
 	["wep_jack_hmcd_ar2"]=Angle(0,145,180)
 }
@@ -119,18 +118,20 @@ local Angle_Normalize = {
 -- в первом векторе обязательнор нахуй поставить - в начале, мне лень было кодить там что бы автоматом - ставился
 local RecoilVector1 = {
 	["wep_jack_hmcd_akm"]=-150,
-	["wep_jack_hmcd_glock17"]=-35,
-	["wep_jack_hmcd_smallpistol"]=-25
+	["wep_jack_hmcd_glock17"]=-45,
+	["wep_jack_hmcd_smallpistol"]=-35
 }
-local RecoilVector2 = {
+
+local RecoilVector2 = { --!! НАХЕРА ОТДЕЛЬНЫЙ ТЕЙБЛ ДЛЯ ТЕХ ЖЕ ЗНАЧЕНИЙ НО БЕЗ МИНУСА (починить нада)
 	["wep_jack_hmcd_akm"]=150,
-	["wep_jack_hmcd_glock17"]=35,
-	["wep_jack_hmcd_smallpistol"]=25
+	["wep_jack_hmcd_glock17"]=45,
+	["wep_jack_hmcd_smallpistol"]=35
 }
+
 local RecoilUp = {
 	["wep_jack_hmcd_akm"]=100,
-	["wep_jack_hmcd_glock17"]=10,
-	["wep_jack_hmcd_smallpistol"]=15
+	["wep_jack_hmcd_glock17"]=20,
+	["wep_jack_hmcd_smallpistol"]=25
 }
 
 local W_Models = {}
@@ -667,10 +668,10 @@ function FireShot(wep)
 	if wep.curweapon == "wep_jack_hmcd_rifle" then wep:EmitSound("snd_jack_hmcd_boltcycle.wav",55,100,1,CHAN_ITEM,0,0) end
 	local ply = wep:GetOwner()
 
-	local vector1 = RecoilVector1[wep.curweapon] or -30
-	local vector2 = RecoilVector2[wep.curweapon] or 30
+	local vector1 = RecoilVector1[wep.curweapon] or -45
+	local vector2 = RecoilVector2[wep.curweapon] or 45
 
-	wep:GetPhysicsObject():ApplyForceCenter(wep:GetAngles():Forward()*-damage*3+wep:GetAngles():Right()*VectorRand(vector1,vector2)+wep:GetAngles():Up()*(RecoilUp[wep.curweapon] or 50))
+	wep:GetPhysicsObject():ApplyForceCenter(wep:GetAngles():Forward()*-damage*3+wep:GetAngles():Right()*VectorRand(vector1,vector2)+wep:GetAngles():Up()*(RecoilUp[wep.curweapon] or 45))
 
 	wep.Clip=wep.Clip-1
 	ply.wep.RoundsInMag = wep.Clip

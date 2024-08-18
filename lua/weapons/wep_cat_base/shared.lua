@@ -889,7 +889,7 @@ function SWEP:Reload()
 	if self.SprintingWeapon > 0 then return end
 	if self.SuicideAmt > 0 then return end
 	if CLIENT then self:GetOwner().AmmoShow = CurTime() + 2 end
-	print(self:GetOwner():GetAmmoCount("AR2"))
+	--print(self:GetOwner():GetAmmoCount("AR2"))
 	if (self:Clip1() < self.Primary.ClipSize) and (self:GetOwner():GetAmmoCount(self.Primary.Ammo) > 0) then
 		local TacticalReload = self:Clip1() > 0
 		if self:GetClass() == "wep_jack_hmcd_dbarrel" then TacticalReload = self:Clip1() >= 1 or self:GetOwner():GetAmmoCount("Buckshot") == 1 end
@@ -1115,19 +1115,23 @@ function SWEP:OnDrop()
 	if self:GetSuiciding() and IsValid(self:GetOwner()) then self:GetOwner():SetDSP(0) end
 	self.NextReload = nil
 	local Ent = ents.Create(self.ENT)
-	Ent.HmcdSpawned = self.HmcdSpawned
-	Ent:SetPos(self:GetPos())
-	Ent:SetAngles(self:GetAngles())
-	if self.Attachments and self.Attachments["Owner"] then
-		for attachment, info in pairs(self.Attachments["Owner"]) do
-			Ent:SetNWBool(attachment, self:GetNWBool(attachment))
+	if IsValid(Ent) then
+		Ent.HmcdSpawned = self.HmcdSpawned
+		Ent:SetPos(self:GetPos())
+		Ent:SetAngles(self:GetAngles())
+		if self.Attachments and self.Attachments["Owner"] then
+			for attachment, info in pairs(self.Attachments["Owner"]) do
+				Ent:SetNWBool(attachment, self:GetNWBool(attachment))
+			end
+		end
+
+		Ent:Spawn()
+		Ent:Activate()
+		Ent.RoundsInMag = self.RoundsInMag or self:Clip1()
+		if IsValid(Ent:GetPhysicsObject()) then
+			Ent:GetPhysicsObject():SetVelocity(self:GetVelocity() / 2)
 		end
 	end
-
-	Ent:Spawn()
-	Ent:Activate()
-	Ent.RoundsInMag = self.RoundsInMag or self:Clip1()
-	Ent:GetPhysicsObject():SetVelocity(self:GetVelocity() / 2)
 	self:Remove()
 end
 

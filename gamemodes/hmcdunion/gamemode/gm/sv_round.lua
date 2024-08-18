@@ -1,5 +1,16 @@
 local ply_GetAll = player.GetAll
 
+<<<<<<< HEAD
+=======
+hook.Add("Think", "roundsynch", function(ply)
+    for _, who in ipairs(ply_GetAll()) do
+        who:SetNWString("Round", GAMEMODE.RoundName)
+        who:SetNWInt("RoundType", GAMEMODE.RoundType)
+        who:SetNWInt("DMTime", GAMEMODE.DMTime)
+    end
+end)
+
+>>>>>>> d44a84bc83d3f2e5937a97c3d003dfa74263fa66
 concommand.Add("union_gamemode", function(ply,cmd,args)
     if not ply:IsAdmin() then return end
     if args[1] == "homicide" then
@@ -93,8 +104,12 @@ function GM:StartRound()
         SetGlobalInt("RoundNextType", math.random(1, 5))
     end
     game.CleanUpMap(false, { "env_fire", "entityflame", "_firesmoke" })
+<<<<<<< HEAD
 	for _,ply in pairs(ply_GetAll())do
 
+=======
+	for _,ply in ipairs(ply_GetAll())do
+>>>>>>> d44a84bc83d3f2e5937a97c3d003dfa74263fa66
         if ply.fake then
             Faking(ply)
         end
@@ -123,10 +138,17 @@ function GM:StartRound()
             end
 
             GAMEMODE.Traitor = traitor
+<<<<<<< HEAD
             SetGlobalInt("RoundState", 1)
 	        for _,ply in pairs(ply_GetAll())do
 	            if HMCD_Loadout[ply:GetNWString("RoleShow", "")][GetGlobalInt("RoundType", 2)] then
 		            for i,wep in pairs(HMCD_Loadout[ply:GetNWString("RoleShow", "")][GetGlobalInt("RoundType", 2)]) do
+=======
+            GAMEMODE.RoundState = 1
+	        for _,ply in ipairs(ply_GetAll())do
+	            if HMCD_Loadout[ply:GetNWString("RoleShow", "")][GAMEMODE.RoundType] then
+		            for i,wep in pairs(HMCD_Loadout[ply:GetNWString("RoleShow", "")][GAMEMODE.RoundType]) do
+>>>>>>> d44a84bc83d3f2e5937a97c3d003dfa74263fa66
 				        ply:Give(wep)
 	            	end
 	            end
@@ -155,9 +177,15 @@ function GM:StartRound()
 	            end
 	        end
         end)
+<<<<<<< HEAD
     elseif GetGlobalString("RoundName", "homicide") == "sandbox" then
         timer.Simple(.1,function()
 	        for _,ply in pairs(ply_GetAll())do
+=======
+    elseif GAMEMODE.RoundName == "sandbox" then
+        timer.Simple(.3,function()
+	        for _,ply in ipairs(ply_GetAll())do
+>>>>>>> d44a84bc83d3f2e5937a97c3d003dfa74263fa66
                 ply.Role = "Sandboxer"
                 SetGlobalInt("RoundState", 1)
 	        end
@@ -218,7 +246,11 @@ function GM:StartRound()
                 "Level IIIA",
                 "Level III"
             }
+<<<<<<< HEAD
 	        for _, ply in pairs(ply_GetAll())do
+=======
+	        for _,ply in ipairs(ply_GetAll())do
+>>>>>>> d44a84bc83d3f2e5937a97c3d003dfa74263fa66
                 local class = table.Random(Classes)
 
                 if _ % 2 == 0 then
@@ -295,8 +327,13 @@ function GM:StartRound()
             SetGlobalInt("RoundState", 1)
         end)
     end
+<<<<<<< HEAD
     timer.Simple(1, function()
 	    for _,ply in pairs(ply_GetAll())do
+=======
+    timer.Simple(.5, function()
+	    for _,ply in ipairs(ply_GetAll())do
+>>>>>>> d44a84bc83d3f2e5937a97c3d003dfa74263fa66
 	        net.Start("StartRound")
 	        net.Send(ply)
 	    end
@@ -305,8 +342,8 @@ end
 
 hook.Add("PlayerPostThink", "IncreaseFOVOnSprint", function(ply)
     if !IsValid(ply) or !ply:Alive() then return end
-    if ply:KeyDown(IN_FORWARD) and ply:KeyDown(IN_SPEED) then
-        ply:SetFOV(105, 0.1)
+    if ply:KeyDown(IN_FORWARD) and ply:KeyDown(IN_SPEED) then -- Говно резкое.. Надо с ванильного хомисайда портануть смену фова
+        ply:SetFOV(105, 0.1) -- Попробовал закинуть в cl_hud, как обычно рубат момент нихрена на клиенте не работает хотя на вики написано обратное
     else
         ply:SetFOV(95, 0.1)
     end

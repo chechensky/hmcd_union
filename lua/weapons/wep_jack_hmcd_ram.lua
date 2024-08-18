@@ -217,7 +217,6 @@ function SWEP:Think()
 	end
 
 	local Sprintin, Aimin, SprintAmt = self:GetOwner():KeyDown(IN_SPEED), self:GetOwner():KeyDown(IN_ATTACK2), self:GetSprinting()
-
 	if Sprintin then
 		self:SetSprinting(math.Clamp(SprintAmt + 40 * (1 / self.BearTime), 0, 100))
 	elseif Aimin and self:GetOwner():OnGround() and (self.Alt == 0) and not ((self.CycleType == "manual") and (self.LastFire + .75 > CurTime())) then

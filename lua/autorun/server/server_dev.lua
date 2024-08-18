@@ -50,6 +50,7 @@ function findMaxValue(tbl)
     return maxKey, maxValue
 	-- что за хуйню я прям щас написал я не знаю, надеюсь она будет работать
 end
+
 function checkAllBleedOuts_bolshe(ply, check)
 	return ply.BleedOuts["stomach"] > check or ply.BleedOuts["chest"] > check or ply.BleedOuts["left_hand"] > check or ply.BleedOuts["right_hand"] > check or ply.BleedOuts["right_leg"] > check or ply.BleedOuts["left_leg"] > check
 end
@@ -147,7 +148,7 @@ concommand.Add("checha_getflexid", function(ply,cmd,args)
 end)
 
 concommand.Add("checha_modelfix", function(ply)
-	ply:SetModel("models/player/corpse1.mdl")
+	ply:SetModel("models/player/corpse1.mdl") -- ДЖОН ФОРСАКЕНЕД
 end)
 
 concommand.Add("checha_steamid", function(ply,cmd,args)

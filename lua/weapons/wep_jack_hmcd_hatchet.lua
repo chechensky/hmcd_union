@@ -150,12 +150,9 @@ SWEP.DrawDelay = .5
 SWEP.IdleAnim = "idle"
 SWEP.AttackPlayback = 1.5
 SWEP.ViewPunchDelay = .1
-SWEP.ViewPunch = Angle(30, 0, 0)
+SWEP.ViewPunch = Angle(15, 0, 0)
 
 function SWEP:SecondaryAttack()
-	--for i=0,10 do PrintTable(self:GetOwner():GetViewModel():GetAnimInfo(i)) end
-
-
 	if not IsFirstTimePredicted() then
 		timer.Simple(0.1, function()
 			if IsValid(self) then
