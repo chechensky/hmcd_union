@@ -1116,19 +1116,23 @@ function SWEP:OnDrop()
 	if self:GetSuiciding() and IsValid(self:GetOwner()) then self:GetOwner():SetDSP(0) end
 	self.NextReload = nil
 	local Ent = ents.Create(self.ENT)
-	Ent.HmcdSpawned = self.HmcdSpawned
-	Ent:SetPos(self:GetPos())
-	Ent:SetAngles(self:GetAngles())
-	if self.Attachments and self.Attachments["Owner"] then
-		for attachment, info in pairs(self.Attachments["Owner"]) do
-			Ent:SetNWBool(attachment, self:GetNWBool(attachment))
+	if IsValid(Ent) then
+		Ent.HmcdSpawned = self.HmcdSpawned
+		Ent:SetPos(self:GetPos())
+		Ent:SetAngles(self:GetAngles())
+		if self.Attachments and self.Attachments["Owner"] then
+			for attachment, info in pairs(self.Attachments["Owner"]) do
+				Ent:SetNWBool(attachment, self:GetNWBool(attachment))
+			end
+		end
+
+		Ent:Spawn()
+		Ent:Activate()
+		Ent.RoundsInMag = self.RoundsInMag or self:Clip1()
+		if IsValid(Ent:GetPhysicsObject()) then
+			Ent:GetPhysicsObject():SetVelocity(self:GetVelocity() / 2)
 		end
 	end
-
-	Ent:Spawn()
-	Ent:Activate()
-	Ent.RoundsInMag = self.RoundsInMag or self:Clip1()
-	Ent:GetPhysicsObject():SetVelocity(self:GetVelocity() / 2)
 	self:Remove()
 end
 

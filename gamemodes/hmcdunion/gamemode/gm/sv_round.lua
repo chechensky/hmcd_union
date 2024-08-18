@@ -1,7 +1,7 @@
 local ply_GetAll = player.GetAll
 
 hook.Add("Think", "roundsynch", function(ply)
-    for _, who in pairs(ply_GetAll()) do
+    for _, who in ipairs(ply_GetAll()) do
         who:SetNWString("Round", GAMEMODE.RoundName)
         who:SetNWInt("RoundType", GAMEMODE.RoundType)
         who:SetNWInt("DMTime", GAMEMODE.DMTime)
@@ -71,7 +71,7 @@ function GM:StartRound()
         GAMEMODE.RoundNextType = math.random(1, 5)
     end
     game.CleanUpMap(false, { "env_fire", "entityflame", "_firesmoke" })
-	for _,ply in pairs(ply_GetAll())do
+	for _,ply in ipairs(ply_GetAll())do
         if ply.fake then
             Faking(ply)
         end
@@ -99,7 +99,7 @@ function GM:StartRound()
 
             GAMEMODE.Traitor = traitor
             GAMEMODE.RoundState = 1
-	        for _,ply in pairs(ply_GetAll())do
+	        for _,ply in ipairs(ply_GetAll())do
 	            if HMCD_Loadout[ply:GetNWString("RoleShow", "")][GAMEMODE.RoundType] then
 		            for i,wep in pairs(HMCD_Loadout[ply:GetNWString("RoleShow", "")][GAMEMODE.RoundType]) do
 				        ply:Give(wep)
@@ -132,7 +132,7 @@ function GM:StartRound()
         end)
     elseif GAMEMODE.RoundName == "sandbox" then
         timer.Simple(.3,function()
-	        for _,ply in pairs(ply_GetAll())do
+	        for _,ply in ipairs(ply_GetAll())do
                 ply.Role = "Sandboxer"
                 GAMEMODE.RoundState = 1
 	        end
@@ -189,7 +189,7 @@ function GM:StartRound()
                 "Level IIIA",
                 "Level III"
             }
-	        for _,ply in pairs(ply_GetAll())do
+	        for _,ply in ipairs(ply_GetAll())do
                 local class = table.Random(Classes)
                 if _ % 2 == 0 then
                     ply.Role = "Rebel"
@@ -253,7 +253,7 @@ function GM:StartRound()
         crossbow:GiveAmmo(5, "XBowBolt", true)
     end
     timer.Simple(.5, function()
-	    for _,ply in pairs(ply_GetAll())do
+	    for _,ply in ipairs(ply_GetAll())do
 	        net.Start("StartRound")
 	        net.Send(ply)
 	    end
