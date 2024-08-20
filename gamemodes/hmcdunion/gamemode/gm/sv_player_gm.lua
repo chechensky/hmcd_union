@@ -24,9 +24,9 @@ function PlayerMeta:DropAmmo(type,amt)
 end
 
 function GM:PlayerCanHearChatVoice(listener, talker, typ)
-	if GAMEMODE.RoundState == 0 then return true end
-	if not talker:Alive() or talker:Team() != 1 then 
-		return not listener:Alive() or listener:Team() != 1 
+	if GetGlobalInt("RoundState", 0) == 0 then return true end
+	if not talker:Alive() then 
+		return not listener:Alive()
 	end
 	local ply = listener
 
@@ -53,7 +53,7 @@ function GM:PlayerCanSeePlayersChat(text, teamOnly, listener, speaker)
 end
 
 function GM:PlayerSay(ply,text,teem)
-	if ply:Team() == 1 and ply:Alive() and GAMEMODE.RoundState != 0 then
+	if ply:Team() == 1 and ply:Alive() and GetGlobalInt("RoundState", 0) != 0 then
 
 		local Wep, WalkieTalkie = ply:GetActiveWeapon(), false
 		if IsValid(Wep) and (Wep:GetClass() == "wep_jack_hmcd_walkietalkie") then
@@ -89,7 +89,7 @@ function GM:PlayerLeavePlay(ply)
 		ply:DropWeapon(ply:GetWeapon("wep_jack_hmcd_smallpistol"))
 	end
 
-	if GAMEMODE.RoundState == 1 then
+	if GetGlobalInt("RoundState", 0) == 1 then
 		if ply.Role == "Traitor" then
 			GAMEMODE:EndRound(2, ply)
 		end

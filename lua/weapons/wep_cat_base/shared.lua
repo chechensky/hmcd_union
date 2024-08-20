@@ -616,7 +616,6 @@ function SWEP:PrimaryAttack()
 	if self.BipodAmt == 100 then Rec = Rec * .01 end
 	if Rec >= 10 then
 		if SERVER then
-			self:GetOwner().lastRagdollEndTime = nil
 			self:TakePrimaryAmmo(1)
 			self:GetOwner():ConCommand("fake")
 			timer.Simple(0.3, function() if IsValid(self:GetOwner():GetNWEntity("Ragdoll")) then self:GetOwner():GetNWEntity("Ragdoll"):GetPhysicsObject():SetVelocity(-self:GetOwner():GetAimVector() * 500) end end)

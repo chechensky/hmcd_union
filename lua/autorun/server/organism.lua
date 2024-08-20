@@ -151,6 +151,7 @@ hook.Add("Headcrab", "Headcrabwork", function(ply)
 end)
 
 hook.Add("Bleeding", "BleedWorkPulse", function(ply)
+	if not ply:Alive() then return end
 	local ent = IsValid(ply.fakeragdoll) and ply.fakeragdoll or ply
 
 	if ply.BleedOuts["right_hand"] > 0 then

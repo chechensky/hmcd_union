@@ -3,10 +3,10 @@ function GM:StartNewRound()
     local ply = LocalPlayer()
 	local startsound
 
-	if ply:GetNWInt("RoundType") != 0 then
-		startsound = HMCD_RoundStartSound[ply:GetNWInt("RoundType")]
+	if GetGlobalInt("RoundType", 2) != 0 then
+		startsound = HMCD_RoundStartSound[GetGlobalInt("RoundType", 2)]
 	else
-		startsound = RoundStartSound[ply:GetNWInt("Round")]
+		startsound = RoundStartSound[GetGlobalString("RoundName", "homicide")]
 	end
 
 	ply:EmitSound(startsound)
@@ -29,23 +29,15 @@ function GM:StartNewRound()
 	You:SetPos(0,ScrH()/2-textHeight*1.5)
 	You:SizeToContents()
 	You:CenterHorizontal()
+	print(ply:GetNWString("RoleShow"))
 	local RoundLabel = Label(ply:GetNWString("RoleShow"),Panel)
 	RoundLabel:SetFont("DefaultFont")
 	RoundLabel:SizeToContents()
 	RoundLabel:Center()
 	RoundLabel:SetColor(Color(ply:GetNWInt("RoleColor_R"),ply:GetNWInt("RoleColor_G"),ply:GetNWInt("RoleColor_B"),255))
 
-	if ply:GetNWString("RoleShow", "") == "Gunman" and ply:GetNWInt("RoundType") != 5 then
-		local Instructions = Label( (ply:GetNWInt("RoundType") == 2 and "with a large weapon") or "with a lawful concealed firearm", Panel)
-		Instructions:SetFont("FontSmall")
-		Instructions:SizeToContents()
-		Instructions:Center()
-		Instructions:SetPos(Instructions:GetX(),Instructions:GetY()+textHeight*1.5)	
-		Instructions:SetColor(Color(121,61,244))		
-	end
-	
-	if ply:GetNWString("Round") == "hl2" then
-		local Instructions = Label("You class: " .. ply:GetNWString("HL2_Class", ""), Panel)
+	if ply:GetNWString("RoleShow", "") == "Gunman" and GetGlobalInt("RoundType", 2) != 5 then
+		local Instructions = Label( (GetGlobalInt("RoundType", 2) == 2 and "with a large weapon") or "with a lawful concealed firearm", Panel)
 		Instructions:SetFont("FontSmall")
 		Instructions:SizeToContents()
 		Instructions:Center()
@@ -54,7 +46,7 @@ function GM:StartNewRound()
 	end
 
 	local probel
-	if ply:GetNWInt("Round") == "homicide" then
+	if GetGlobalString("RoundName", "homicide") == "homicide" then
 		probel = ": "
 	else
 		probel = " "
@@ -66,10 +58,12 @@ function GM:StartNewRound()
 	RoundLabel:SetFont("FontSmall")
 	RoundLabel:SizeToContents()
 	RoundLabel:Center()
+
 	local fontHeight=draw.GetFontHeight("FontSmall")
 	RoundLabel:SetPos(RoundLabel:GetX(),ScrH()-fontHeight*2)
 	RoundLabel:SetColor(Color(ply:GetNWInt("RoleColor_R"),ply:GetNWInt("RoleColor_G"),ply:GetNWInt("RoleColor_B"),255))
-	local RoundLabel = Label( RoundsNormalise[ply:GetNWString("Round")] .. probel .. HMCD_RoundsTypeNormalise[ply:GetNWInt("RoundType")], Panel)
+	
+	local RoundLabel = Label( RoundsNormalise[GetGlobalString("RoundName", "homicide")] .. probel .. HMCD_RoundsTypeNormalise[GetGlobalInt("RoundType", 2)], Panel)
 	RoundLabel:SetFont("FontSmall")
 	RoundLabel:SizeToContents()
 	RoundLabel:CenterHorizontal()
@@ -91,7 +85,7 @@ function GM:DisplayEndRoundBoard(data)
 		menu:Close()
 	end
 	local Showin,Dude=false,GAMEMODE.MVP
-	if Dude and LocalPlayer():GetNWString("Round") == "homicide" then Showin=true end
+	if Dude and GetGlobalString("RoundName", "homicide") == "homicide" then Showin=true end
 	menu = vgui.Create("DFrame")
 	menu:SetSize(ScrW() * 0.8, ScrH() * 0.8)
 	menu:Center()
@@ -151,7 +145,7 @@ function GM:DisplayEndRoundBoard(data)
 		--
 	end
 
-	if data.murdererName and LocalPlayer():GetNWString("Round") == "homicide" and data.reason != 3 then
+	if data.murdererName and GetGlobalString("RoundName", "homicide") == "homicide" and data.reason != 3 then
 		local col = data.murdererColor
 		local msgs={}
 		msgs.text="The traitor was"
