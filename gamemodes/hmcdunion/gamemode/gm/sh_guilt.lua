@@ -46,7 +46,7 @@ hook.Add("HOOK_UNION_Damage", "GuiltLogic", function(ply,hitgroup,dmginfo,rag)
 
     if !attacker:IsPlayer() then return end
 
-    if dmginfo:GetDamage() > 5 and attacker.Role != "Traitor" then
+    if dmginfo:GetDamage() > 5 and attacker.Role != "Traitor" and attacker.Role != "Fighter" then
         if attacker:GetNWBool("LostInnocence", false) != true then
             attacker:SetNWBool("LostInnocence", true)
         end
