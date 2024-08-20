@@ -255,25 +255,25 @@ function GM:DrawPhraseMenu()
 
 			if ment.TransCode == "Hero" then
 				Main = "Hero"
-				Sub = "geroi(n)sm?"
+				Sub = "save the day"
 			elseif ment.TransCode == "Villain" then
 				Main = "Villain"
-				Sub = "sex"
+				Sub = "kill 'em all"
 			elseif ment.TransCode == "Help" then
 				Main = "Help"
-				Sub = "i wanna help"
+				Sub = "scream like a girl"
 			elseif ment.TransCode == "Random" then
 				Main = "Random"
-				Sub = "spizadanut kakueta huiniy"
+				Sub = "tell them"
 			elseif ment.TransCode == "Morose" then
 				Main = "Morose"
-				Sub = "moros"
+				Sub = "feel the sadness"
 			elseif ment.TransCode == "Response" then
     			Main = "Response"
-    			Sub = "che nahui"
+    			Sub = "answer them"
 			elseif ment.TransCode == "Happy" then
     			Main = "Happy"
-    			Sub = "veselo"
+    			Sub = "yay"
 			else
 				Main = "?"
 				Sub = "?"

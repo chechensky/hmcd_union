@@ -102,8 +102,8 @@ end
 
 usermessage.Hook("Skin_Appearance", Identity)
 
-hook.Add("Initialize","CVarsSet", function()
-	RunConsoleCommand( "cl_threaded_client_leaf_system", "1" )
+hook.Add("Initialize", "CVarsSet", function() -- Вы че бараны чтоли все поголовно
+	--[[RunConsoleCommand( "cl_threaded_client_leaf_system", "1" )
 	RunConsoleCommand( "cl_smooth", "0" )
 	RunConsoleCommand( "mat_queue_mode", "2" )
 	RunConsoleCommand( "cl_threaded_bone_setup", "1" )
@@ -113,19 +113,19 @@ hook.Add("Initialize","CVarsSet", function()
 	RunConsoleCommand( "r_threaded_renderables", "1" )
 	RunConsoleCommand( "r_threaded_particles", "1" )
 	RunConsoleCommand( "r_queued_ropes", "1" )
-	RunConsoleCommand( "studio_queue_mode", "1" )
+	RunConsoleCommand( "studio_queue_mode", "1" )]]
 	RunConsoleCommand( "r_decals", "9999" )
 	RunConsoleCommand( "mp_decals", "9999" )
 	RunConsoleCommand( "r_queued_decals", "1" )
 	RunConsoleCommand( "gm_demo_icon", "0" )
 	RunConsoleCommand("sv_alltalk", "2")
-	RunConsoleCommand( "r_radiosity", "4" )
+	--[[RunConsoleCommand( "r_radiosity", "4" )
 	RunConsoleCommand( "cl_cmdrate", "101" )
 	RunConsoleCommand( "cl_updaterate", "101" )
 	RunConsoleCommand( "cl_interp", "0.07" )
 	RunConsoleCommand( "cl_interp_npcs", "0.08" )
 	RunConsoleCommand( "cl_timeout", "2400" )
-	RunConsoleCommand( "r_flashlightdepthres", "512" )
+	RunConsoleCommand( "r_flashlightdepthres", "512" )]]
 end)
 
 local meta = FindMetaTable("Player")
@@ -372,7 +372,7 @@ function GM:PostPlayerDraw(ply)
 end
 
 function GM:PostDrawOpaqueRenderables(drawingDepth, drawingSkybox)
-	for key, ply in pairs(player.GetAll()) do
+	for key, ply in player.Iterator() do
 		if ply ~= LocalPlayer() then
 			if !ply:GetNWBool("fake") then
 				self:RenderArmor(ply)

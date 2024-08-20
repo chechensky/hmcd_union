@@ -97,16 +97,13 @@ end
 util.AddNetworkString("ragplayercolor")
 function EntityMeta:BetterSetPlayerColor(col)
 	if not (col or self) then return end
-	timer.Simple(
-		.1,
-		function()
-			if not IsValid(self) then return end
-			net.Start("ragplayercolor")
-			net.WriteEntity(self)
-			net.WriteVector(col)
-			net.Broadcast()
-		end
-	)
+	timer.Simple(.1, function()
+		if not IsValid(self) then return end
+		net.Start("ragplayercolor")
+		net.WriteEntity(self)
+		net.WriteVector(col)
+		net.Broadcast()
+	end)
 end
 
 function SavePlyInfoPreSpawn(ply) -- Сохранение игрока перед вставанием
@@ -121,7 +118,7 @@ function ReturnPlyInfo(ply) -- возвращение информации иг�
     ClearFakeWeapon(ply)
 	ply:SetSuppressPickupNotices(true)
     local info = ply.Info
-    if(!info)then return end
+    if (!info) then return end
 
     ply:StripWeapons()
     ply:StripAmmo()
@@ -299,9 +296,9 @@ function Faking(ply) -- функция падения
 	end
 end
 
-hook.Add("CanExitVehicle","fakefastcar",function(veh,ply)
-    --if veh:GetPhysicsObject():GetVelocity():Length() > 100 then Faking(ply) return false end
-end)
+--[[hook.Add("CanExitVehicle", "fakefastcar", function(veh,ply)
+    if veh:GetPhysicsObject():GetVelocity():Length() > 100 then Faking(ply) return false end
+end)]]
 
 function FakeBullseyeTrigger(rag,owner)
 	if not IsValid(rag.bull) then return end
@@ -355,26 +352,25 @@ end
 util.AddNetworkString("pophead")
 
 function PlayerMeta:PickupEnt()
-local ply = self
-local rag = ply:GetNWEntity("Ragdoll")
-local phys = rag:GetPhysicsObjectNum(7)
-local offset = phys:GetAngles():Right()*5
-local traceinfo={
-start=phys:GetPos(),
-endpos=phys:GetPos()+offset,
-filter=rag,
-output=trace,
-}
-local trace = util.TraceLine(traceinfo)
-if trace.Entity == Entity(0) or trace.Entity == NULL or !trace.Entity.canpickup then return end
-if trace.Entity:GetClass()=="wep" then
-    ply:Give(trace.Entity.curweapon,true):SetClip1(trace.Entity.Clip)
-    --SavePlyInfo(ply)
-    ply.wep.RoundsInMag=trace.Entity.Clip
-    trace.Entity:Remove()
+	local ply = self
+	local rag = ply:GetNWEntity("Ragdoll")
+	local phys = rag:GetPhysicsObjectNum(7)
+	local offset = phys:GetAngles():Right()* 5
+	local traceinfo={
+		start=phys:GetPos(),
+		endpos=phys:GetPos()+offset,
+		filter=rag,
+		output=trace,
+	}
+	local trace = util.TraceLine(traceinfo)
+	if trace.Entity == Entity(0) or trace.Entity == NULL or !trace.Entity.canpickup then return end
+	if trace.Entity:GetClass()=="wep" then
+		ply:Give(trace.Entity.curweapon,true):SetClip1(trace.Entity.Clip)
+		--SavePlyInfo(ply)
+		ply.wep.RoundsInMag=trace.Entity.Clip
+		trace.Entity:Remove()
+	end
 end
-end
-
 
 hook.Add("DoPlayerDeath","blad",function(ply,att,dmginfo)
 	if IsValid(ply.wep) then
@@ -447,7 +443,6 @@ hook.Add("DoPlayerDeath","blad",function(ply,att,dmginfo)
 				end)
 			end
 		end)
-
 	end
 	timer.Create("collision"..ent:EntIndex(),15,1,function()
 		if IsValid(ent) and GAMEMODE.RoundName != "homicide" then rag:SetCollisionGroup(COLLISION_GROUP_WEAPON) end
@@ -460,20 +455,16 @@ hook.Add("DoPlayerDeath","blad",function(ply,att,dmginfo)
 	end)
 end)
 
-hook.Add("PostPlayerDeath","fuckyou",function(ply)
-
-end)
-
 hook.Add("PhysgunDrop", "DropPlayer", function(ply,ent)
 	ent.isheld=false
 end)
 
-hook.Add("PlayerDisconnected","saveplyinfo",function(ply)
-	--if ply:Alive() then
-		--SavePlyInfo(ply)
-		--ply:Kill()
-	--end
-end)
+--[[hook.Add("PlayerDisconnected","saveplyinfo",function(ply)
+	if ply:Alive() then
+		SavePlyInfo(ply)
+		ply:Kill()
+	end
+end)]]
 
 hook.Add("PhysgunPickup", "DropPlayer2", function(ply,ent)
 
@@ -514,7 +505,7 @@ hook.Add("PlayerSpawn","resetfakebody",function(ply) --обнуление рег
 	ply:SetNWEntity("Ragdoll",nil)
 end)
 
-local function hasWeapon(ply, weaponName)
+local function hasWeapon(ply, weaponName) -- И че это за чатгпт кодинг але
     if not IsValid(ply) or not ply:IsPlayer() then return false end -- Проверяем, является ли объект игроком и существует ли он
     
     for _, weapon in pairs(ply:GetWeapons()) do -- Перебираем все оружия игрока
@@ -544,17 +535,16 @@ concommand.Add("fake",function(ply)
 	end
 end)
 
-hook.Add("PreCleanupMap","cleannoobs",function() --все игроки встают после очистки карты
-	for i, v in player.Iterator() do
-		if v.fake then Faking(v) end
+hook.Add("PreCleanupMap", "cleannoobs", function() --все игроки встают после очистки карты
+	for _, ply in player.Iterator() do
+		if ply.fake then Faking(ply) end
 	end
 
 	BleedingEntities = {}
-
 end)
 
-local function Remove(self,ply)
-end
+--[[local function Remove(self,ply)
+end]]
 
 local CustomWeight = {
 	["models/player/police_fem.mdl"] = 50,
@@ -920,7 +910,6 @@ hook.Add( "KeyPress", "Shooting", function( ply, key )
 end )
 
 local dvec = Vector(0,0,-64)
-
 hook.Add("Player Think","FakeControl",function(ply,time) --управление в фейке
 	if not ply:Alive() then return end
 	local rag = ply:GetNWEntity("Ragdoll")
@@ -976,15 +965,15 @@ hook.Add("Player Think","FakeControl",function(ply,time) --управление 
 			if Try > (7*RopeCount) or ((rag.IsWeld or 0) > 0) then
 				if RopeCount>1 or (rag.IsWeld or 0 > 0) then
 					if RopeCount > 1 then
-						ply:ChatPrint("Осталось: "..RopeCount - 1)
+						ply:ChatPrint("Rope remaining: "..RopeCount - 1)
 					end
 					if (rag.IsWeld or 0) > 0 then
-						ply:ChatPrint("Осталось отбить гвоздей: "..tostring(math.ceil(rag.IsWeld)))
+						ply:ChatPrint("Nails remaining: "..tostring(math.ceil(rag.IsWeld)))
 						ply.BleedOuts["right_leg"] = ply.BleedOuts["right_leg"] + 10
 						ply.pain_add = ply.pain_add + 10
 					end
 				else
-					ply:ChatPrint("Ты развязался")
+					ply:ChatPrint("Ты развязался") --!! Я без интернета сижу без переводчика забыл как на английском..бля
 				end
 				
 				if Ropes and Ropes[1] and Ropes[1].Constraint then
@@ -1369,15 +1358,12 @@ concommand.Add("checha_setarmor",function(ply,cmd,args)
 	huyply:SetNWString(args[2], args[3])
 end)
 
-hook.Add("PlayerSay","dropweaponhuy",function(ply,text)
-end)
-
 hook.Add("UpdateAnimation","huy",function(ply,event,data)
 	ply:RemoveGesture(ACT_GMOD_NOCLIP_LAYER)
 end)
 
-hook.Add("Player Think","holdentity",function(ply,time)
-	--[[if IsValid(ply.holdEntity) then
+--[[hook.Add("Player Think","holdentity",function(ply,time)
+	if IsValid(ply.holdEntity) then
 
-	end--]]
-end)
+	end
+end)]]

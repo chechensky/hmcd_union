@@ -167,30 +167,35 @@ local function addElement(transCode, code)
 	table.insert(elements, t)
 end
 
-concommand.Add(
-	"+menu",
-	function(client, com, args, full)
-		if client:GetNWBool("Phraseopen") then return end
-		if client:GetNWBool("Otrub", false) == true then return end
-		if client:Alive() then
-			local Wep = client:GetActiveWeapon()
-			elements = {}
-			addElement("Ammo Menu","hmcd_ammo")
-			addElement("Phrase_Category","phrase")
-			addElement("attach", "attach")
-			if client:GetNWBool("Mask", "") == "NVG" then 			addElement("nvg", "nvg") end
-			if fs then addElement("MenuUse_Category","usemenu") end
-			if IsValid(Wep) then
-				if Wep:GetClass() ~= "wep_jack_hmcd_hands" then addElement("Drop", "drop") end
-				if Wep:GetNWBool("Laser", false) then addElement("LaserOn","laser") end
-        		if Wep:Clip1() > 0 then
-					addElement("UnloadWep", "unloadwep")
-				end
-			end
-			GAMEMODE:OpenRadialMenu(elements)
+concommand.Add("+menu",function(client, com, args, full)
+	if client:GetNWBool("Phraseopen") then return end
+	if client:GetNWBool("Otrub", false) == true then return end
+	if client:Alive() then
+		local Wep = client:GetActiveWeapon()
+		local Ammos = {}
+		for key,name in pairs(HMCD_AmmoNames) do
+			local Amownt = client:GetAmmoCount(key)
+			if (Amownt > 0) then Ammos[key] = Amownt end
 		end
+
+		elements = {}
+		if #table.GetKeys(Ammos) > 0 then addElement("Ammo Menu","hmcd_ammo") end
+		addElement("Phrase_Category","phrase")
+		if client:GetNWBool("Mask", "") == "NVG" then addElement("nvg", "nvg") end
+		if fs then addElement("MenuUse_Category","usemenu") end
+		if IsValid(Wep) then
+			if Wep:GetClass() ~= "wep_jack_hmcd_hands" then
+				addElement("Drop", "drop")
+				addElement("attach", "attach")
+			end
+			if Wep:GetNWBool("Laser", false) then addElement("LaserOn","laser") end
+       		if Wep:Clip1() > 0 then
+				addElement("UnloadWep", "unloadwep")
+			end
+		end
+		GAMEMODE:OpenRadialMenu(elements)
 	end
-)
+end)
 
 concommand.Add(
 	"-menu",
@@ -302,7 +307,7 @@ function GM:DrawRadialMenu()
 
 			if ment.TransCode == "Ammo Menu" then
 				Main = "Ammo Menu"
-				Sub = "open ammo menu"
+				Sub = "drop ammo"
 			elseif ment.TransCode == "UnloadWep" then
 				Main = "Unload Ammo"
 				Sub = "unload weapon in your hands"
@@ -311,16 +316,16 @@ function GM:DrawRadialMenu()
 				Sub = "drop weapon in your hands"
 			elseif ment.TransCode == "Phrase_Category" then
 				Main = "Phrase"
-				Sub = "open phrases category"
+				Sub = "say something"
 			elseif ment.TransCode == "LaserOn" then
 				Main = "Laser"
 				Sub = (ply:GetActiveWeapon():GetNWBool("LaserStatus") and "Disable") or "Enable"
 			elseif ment.TransCode == "MenuUse_Category" then
 				Main = "Actions Menu"
-				Sub = "action menu, interacts with the environment"
+				Sub = "interact with the environment"
 			elseif ment.TransCode == "attach" then
 				Main = "Modify weapon"
-				Sub = "attachments menu, WHAT THE FUCK OH SHIT..."
+				Sub = "equip weapon attachments"
 			elseif ment.TransCode == "nvg" then
 				Main = "NVG"
 				Sub = "up or down nvg"

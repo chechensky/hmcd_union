@@ -35,6 +35,7 @@ SWEP.AmmoType = "AR2"
 SWEP.Primary.Ammo = "AR2"
 SWEP.TriggerDelay = .1
 SWEP.CycleTime = 0.035
+SWEP.IconOverride = "vgui/inventory/weapon_nam_akm"
 
 SWEP.TPIK = false
 

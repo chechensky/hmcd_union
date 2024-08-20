@@ -147,7 +147,7 @@ function SWEP:PrimaryAttack()
 	usedmed:SetPos(ply:GetPos())
 	usedmed:SetCollisionGroup(COLLISION_GROUP_DEBRIS)
 	local phys = usedmed:GetPhysicsObject()
-	if IsValid(usedmed) then
+	if IsValid(usedmed and ply) then
     	usedmed:ApplyForceCenter(ply:GetForward() * 500)
 	end
 	timer.Simple(30, function()

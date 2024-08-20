@@ -45,7 +45,7 @@ end
 
 SWEP.IconTexture = "vgui/wep_jack_hmcd_fooddrink"
 SWEP.PrintName = "Small Consumable"
-SWEP.Category = "HMCD: Union - Food"
+SWEP.Category = "HMCD: Union - Other"
 SWEP.Instructions = "This is an item that you can eat/drink. Doing so grants a stamina-regeneration boost as well as some slow health regeneration.\n\nLMB to eat/drink."
 SWEP.Author = ""
 SWEP.Contact = ""

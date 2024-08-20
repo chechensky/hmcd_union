@@ -119,7 +119,7 @@ local function RollBone(ply, bone, roll)
 end
 
 function TFALeanModel()
-	for k, ply in ipairs(player.GetAll()) do
+	for k, ply in player.Iterator() do
 		ply.TFALean = Lerp(FrameTime() * 5, ply.TFALean or 0, ply:GetNW2Int("TFALean")) --unpredicted lean which gets synched with our predicted lean status
 		local lean = ply.TFALean
 		local bone = ply:LookupBone("ValveBiped.Bip01_Spine")
@@ -166,7 +166,7 @@ hook.Add("Move", "TFALeanThink", function(ply)
 	ply:SetNW2Int("TFALean", targ)
 
 	if SERVER then
-		for _, v in ipairs(player.GetAll()) do
+		for _, v in player.Iterator() do
 			v.TFALean = Lerp(FrameTime() * 40, v.TFALean or 0, v:GetNW2Int("TFALean")) --unpredicted lean which gets synched with our predicted lean status
 		end
 	end
@@ -174,7 +174,7 @@ end)
 
 if SERVER and not game.SinglePlayer() then
 	timer.Create("TFALeanSynch", 0.2, 0, function()
-		for k, v in ipairs(player.GetAll()) do
+		for k, v in player.Iterator() do
 			local lean = v:GetNW2Int("TFALean")
 			v.OldLean = v.OldLean or lean
 

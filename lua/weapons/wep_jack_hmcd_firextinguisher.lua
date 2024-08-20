@@ -318,9 +318,7 @@ function SWEP:Think()
 end
 
 function SWEP:PrimaryAttack()
-
-
-	if not self.SafetyOn and self:GetAmount() ~= 0 then
+	if not self.SafetyOn and self:GetAmount() ~= 0 and not self:GetOwner():IsSprinting() then
 		local effectdata = EffectData()
 		local Pos, Ang = self:GetOwner():GetBonePosition(self:GetOwner():LookupBone("ValveBiped.Bip01_R_Hand"))
 		effectdata:SetEntity(self.Weapon)
@@ -335,7 +333,7 @@ function SWEP:PrimaryAttack()
 
 		util.Effect("eff_jack_hmcd_fireextparticle", effectdata)
 		self:EmitSound("fire_extinguisher/fire_extinguisger_startloop.wav", 60, 120)
-	elseif self.SafetyOn then
+	elseif self.SafetyOn and not self:GetOwner():IsSprinting() then
 		if not IsFirstTimePredicted() then
 			timer.Simple(.2, function()
 				if IsValid(self) then

@@ -1,7 +1,7 @@
 local ply_GetAll = player.GetAll
 
 hook.Add("Think", "roundsynch", function(ply)
-    for _, who in ipairs(ply_GetAll()) do
+    for _, who in player.Iterator() do
         who:SetNWString("Round", GAMEMODE.RoundName)
         who:SetNWInt("RoundType", GAMEMODE.RoundType)
         who:SetNWInt("DMTime", GAMEMODE.DMTime)
@@ -55,6 +55,10 @@ end)
 
 ---------- round logics???)())))))))
 local pitch = math.random(80, 120)
+local bodyvest = {
+	"Level IIIA",
+	"Level III"
+}
 function GM:StartRound()
 	if #ply_GetAll()<2 then return end
     local hmcd_roundtype = math.random(1,5)
@@ -70,8 +74,8 @@ function GM:StartRound()
         GAMEMODE.RoundType = 0
         GAMEMODE.RoundNextType = math.random(1, 5)
     end
-    game.CleanUpMap(false, { "env_fire", "entityflame", "_firesmoke" })
-	for _,ply in ipairs(ply_GetAll())do
+    game.CleanUpMap(false, {"env_fire", "entityflame", "_firesmoke"})
+	for _,ply in player.Iterator() do
         if ply.fake then
             Faking(ply)
         end
@@ -99,7 +103,7 @@ function GM:StartRound()
 
             GAMEMODE.Traitor = traitor
             GAMEMODE.RoundState = 1
-	        for _,ply in ipairs(ply_GetAll())do
+	        for _,ply in player.Iterator()do
 	            if HMCD_Loadout[ply:GetNWString("RoleShow", "")][GAMEMODE.RoundType] then
 		            for i,wep in pairs(HMCD_Loadout[ply:GetNWString("RoleShow", "")][GAMEMODE.RoundType]) do
 				        ply:Give(wep)
@@ -132,7 +136,7 @@ function GM:StartRound()
         end)
     elseif GAMEMODE.RoundName == "sandbox" then
         timer.Simple(.3,function()
-	        for _,ply in ipairs(ply_GetAll())do
+	        for _, ply in player.Iterator() do
                 ply.Role = "Sandboxer"
                 GAMEMODE.RoundState = 1
 	        end
@@ -150,11 +154,6 @@ function GM:StartRound()
             end)
         end)
         timer.Simple(.3, function()
-            local bodyvest = {
-                "Level IIIA",
-                "Level III"
-            }
-
 	        for _,ply in pairs(ply_GetAll())do
                 ply.Role = "Fighter"
                 ply:SetNWString("RoleShow", "Fighter")
@@ -185,11 +184,7 @@ function GM:StartRound()
         end)
     elseif GAMEMODE.RoundName == "hl2" then
         timer.Simple(.3, function()
-            local bodyvest = {
-                "Level IIIA",
-                "Level III"
-            }
-	        for _,ply in ipairs(ply_GetAll())do
+	        for _, ply in player.Iterator() do
                 local class = table.Random(Classes)
                 if _ % 2 == 0 then
                     ply.Role = "Rebel"
@@ -215,7 +210,7 @@ function GM:StartRound()
                     ply.Role = "Combine"
                     ply.ModelSex = "combine"
                     ply:SetRoleColor(32,98,185)
-                    ply:SetNWString("Character_Name", "Combine #" .. math.random(8000, 9000))
+                    ply:SetNWString("Character_Name", "OTA Unit #" .. math.random(126, 978))
                     ply:SetNWString("HL2_Class", table.Random(ClassesCombine))
                     ply:SetModel(CombineModels[ply:GetNWString("HL2_Class","")])
                     if ply:GetNWString("HL2_Class","") == "Shotguner" then
@@ -253,7 +248,7 @@ function GM:StartRound()
         crossbow:GiveAmmo(5, "XBowBolt", true)
     end
     timer.Simple(.5, function()
-	    for _,ply in ipairs(ply_GetAll())do
+	    for _,ply in player.Iterator()do
 	        net.Start("StartRound")
 	        net.Send(ply)
 	    end
@@ -303,12 +298,12 @@ function GM:Think()
     if #ply_GetAll() < 2 then GAMEMODE.RoundState = 2 end
     if GAMEMODE.RoundState == 0 or GAMEMODE.RoundState == 2 then 
         if GAMEMODE.RoundState == 2 and #ply_GetAll() > 1 then 
-            GAMEMODE:EndRound(1, table.Random(player.GetAll()), nil) 
+            GAMEMODE:EndRound(1, table.Random(ply_GetAll()), nil) 
         end
     return end
     local alive_ply = GetAlivePlayerCount()
     if alive_ply <= 0 then
-        GAMEMODE:EndRound(1, table.Random(player.GetAll()), nil)
+        GAMEMODE:EndRound(1, table.Random(ply_GetAll()), nil)
     end
 
     if GAMEMODE.RoundName != "homicide" then
@@ -351,14 +346,14 @@ end
 hook.Add("PlayerPostThink", "Spectating", function(ply)
     if !ply:GetNWBool("Spectating", false) then return end
 	local plyselect = ply:GetNWEntity("SelectPlayer", Entity(-1))
-    if !IsValid(ply:GetNWEntity("SelectPlayer", Entity(-1))) then ply:SetNWEntity("SelectPlayer", table.Random(player.GetAll())) end
+    if !IsValid(ply:GetNWEntity("SelectPlayer", Entity(-1))) then ply:SetNWEntity("SelectPlayer", table.Random(ply_GetAll())) end
     ButtonInput = 0
     ply.ButtonInput = ply.ButtonInput or ButtonInput
 
         if ply:KeyDown(IN_ATTACK) and ply.ButtonInput < CurTime() then
             ply.ButtonInput = CurTime() + math.random(0.1, 0.5)
             repeat
-                 ply:SetNWEntity("SelectPlayer", table.Random(player.GetAll()))
+                 ply:SetNWEntity("SelectPlayer", table.Random(ply_GetAll()))
             until ply != ply:GetNWEntity("SelectPlayer", Entity(-1))    
         end
         if ply:KeyDown(IN_ATTACK2) and ply.ButtonInput < CurTime() then

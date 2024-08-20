@@ -3,58 +3,9 @@ local EntityMeta = FindMetaTable("Entity")
 local hook_run = hook.Run
 util.AddNetworkString("hmcd_equipment")
 
-Male_Names={
-	"Tumbochka",
-	"Coder ZCity",
-	"Fred",
-	"Matthew",
-	"Nikita",
-	"Buyanov",
-	"Alfredo",
-	"Chonahui",
-	"BoSvin"
-}
-Female_Names={
-	"Mary",
-	"Patricia",
-	"Linda",
-	"Barbara",
-	"Elizabeth",
-	"Jennifer",
-	"Shalava",
-	"DuraEbannaya",
-	"Leah",
-	"Penny",
-	"Kay",
-	"Priscilla",
-	"Naomi",
-	"Carole",
-	"Brandy",
-	"Olga",
-	"Billie",
-	"Dianne",
-	"Tracey",
-	"Leona",
-	"Jenny",
-	"Felicia",
-	"Sonia",
-	"Miriam",
-	"Velma",
-	"Becky",
-	"Bobbie",
-	"Violet",
-	"Kristina",
-	"Makayla",
-	"Misty",
-	"Mae",
-	"Shelly",
-	"Daisy",
-	"Ramona",
-	"Sherri",
-	"Erika",
-	"Katrina",
-	"Claire"
-}
+Male_Names = {"Buyanov", "James", "John", "Robert", "Michael", "William", "David", "Richard", "Charles", "Joseph", "Thomas", "Christopher", "Daniel", "Paul", "Mark", "Donald", "George", "Kenneth", "Steven", "Edward", "Brian", "Ronald", "Anthony", "Kevin", "Jason", "Matthew", "Gary", "Timothy", "Jose", "Larry", "Jeffrey", "Frank", "Scott", "Eric", "Stephen", "Andrew", "Raymond", "Gregory", "Joshua", "Jerry", "Dennis", "Walter", "Patrick", "Peter", "Harold", "Douglas", "Henry", "Carl", "Arthur", "Ryan", "Roger", "Joe", "Juan", "Jack", "Albert", "Jonathan", "Justin", "Terry", "Gerald", "Keith", "Samuel", "Willie", "Ralph", "Lawrence", "Nicholas", "Roy", "Benjamin", "Bruce", "Brandon", "Adam", "Harry", "Fred", "Wayne", "Billy", "Steve", "Louis", "Jeremy", "Aaron", "Randy", "Howard", "Eugene", "Carlos", "Russell", "Bobby", "Victor", "Martin", "Ernest", "Phillip", "Todd", "Jesse", "Craig", "Alan", "Shawn", "Clarence", "Sean", "Philip", "Chris", "Johnny", "Earl", "Jimmy", "Antonio", "Danny", "Bryan", "Tony", "Luis", "Mike", "Stanley", "Leonard", "Nathan", "Dale", "Manuel", "Rodney", "Curtis", "Norman", "Allen", "Marvin", "Vincent", "Glenn", "Jeffery", "Travis", "Jeff", "Chad", "Jacob", "Lee", "Melvin", "Alfred", "Kyle", "Francis", "Bradley", "Jachai", "Herbert", "Frederick", "Ray", "Joel", "Edwin", "Don", "Eddie", "Ricky", "Troy", "Randall", "Barry", "Alexander", "Bernard", "Mario", "Leroy", "Francisco", "Marcus", "Micheal", "Theodore", "Clifford", "Miguel", "Oscar", "Jay", "Jim", "Tom", "Calvin", "Alex", "Jon", "Ronnie", "Bill", "Lloyd", "Tommy", "Leon", "Derek", "Warren", "Darrell", "Jerome", "Floyd", "Leo", "Alvin", "Tim", "Wesley", "Gordon", "Dean", "Greg", "Jorge", "Dustin", "Pedro", "Derrick", "Dan", "Lewis", "Zachary", "Corey", "Herman", "Trevor", "Vernon", "Roberto", "Clyde", "Glen", "Hector", "Shane", "Ricardo", "Sam", "Rick", "Lester", "Brent", "Ramon", "Charlie", "Tyler", "Gilbert", "Gene", "Marc", "Reginald", "Ruben", "Brett", "Jace", "Nathaniel", "Rafael", "Leslie", "Edgar", "Milton", "Raul", "Ben", "Chester", "Cecil", "Duane", "Franklin", "Andre", "Elmer", "Brad", "Gabriel", "Ron", "Mitchell", "Roland", "Arnold", "Harvey", "Jared", "Adrian", "Karl", "Cory", "Claude", "Erik", "Darryl", "Jamie", "Neil", "Jessie", "Christian", "Javier", "Fernando", "Clinton", "Ted", "Mathew", "Tyrone", "Darren", "Lonnie", "Lance", "Cody", "Julio", "Jimbo", "Kurt", "Allan", "Nelson", "Guy", "Clayton", "Hugh", "Max", "Dwayne", "Dwight", "Armando", "Felix", "Jimmie", "Everett", "Jordan", "Ian", "Wallace", "Ken", "Bob", "Jaime", "Casey", "Alfredo", "Alberto", "Dave", "Ivan", "Johnnie", "Sidney", "Byron", "Julian", "Isaac", "Morris", "Clifton", "Willard", "Daryl", "Ross", "Virgil", "Andy", "Marshall", "Salvador", "Perry", "Kirk", "Sergio", "Marion", "Tracy", "Seth", "Kent", "Terrance", "Rene", "Eduardo", "Terrence", "Enrique", "Freddie", "Wade", "Oleg", "Nab"}
+
+Female_Names = {"Mary", "Patricia", "Linda", "Barbara", "Elizabeth", "Jennifer", "Maria", "Susan", "Margaret", "Dorothy", "Lisa", "Nancy", "Karen", "Betty", "Helen", "Sandra", "Donna", "Carol", "Ruth", "Sharon", "Michelle", "Laura", "Sarah", "Kimberly", "Deborah", "Jessica", "Shirley", "Cynthia", "Angela", "Melissa", "Brenda", "Amy", "Anna", "Rebecca", "Virginia", "Kathleen", "Pamela", "Martha", "Debra", "Amanda", "Stephanie", "Carolyn", "Christine", "Marie", "Janet", "Catherine", "Frances", "Ann", "Joyce", "Diane", "Alice", "Julie", "Heather", "Teresa", "Doris", "Gloria", "Evelyn", "Jean", "Cheryl", "Mildred", "Katherine", "Joan", "Ashley", "Judith", "Rose", "Janice", "Kelly", "Nicole", "Judy", "Christina", "Kathy", "Theresa", "Beverly", "Denise", "Tammy", "Irene", "Jane", "Lori", "Rachel", "Marilyn", "Andrea", "Kathryn", "Louise", "Sara", "Anne", "Jacqueline", "Wanda", "Bonnie", "Julia", "Ruby", "Lois", "Tina", "Phyllis", "Norma", "Paula", "Diana", "Annie", "Lillian", "Emily", "Robin", "Peggy", "Crystal", "Gladys", "Rita", "Dawn", "Connie", "Taylor", "Tracy", "Edna", "Tiffany", "Carmen", "Rosa", "Cindy", "Grace", "Wendy", "Victoria", "Edith", "Kim", "Sherry", "Sylvia", "Josephine", "Thelma", "Shannon", "Sheila", "Ethel", "Ellen", "Elaine", "Marjorie", "Carrie", "Charlotte", "Monica", "Esther", "Pauline", "Emma", "Juanita", "Anita", "Rhonda", "Hazel", "Amber", "Eva", "Debbie", "April", "Leslie", "Clara", "Lucille", "Jamie", "Joanne", "Eleanor", "Valerie", "Danielle", "Megan", "Alicia", "Suzanne", "Michele", "Gail", "Bertha", "Darlene", "Veronica", "Jill", "Erin", "Geraldine", "Lauren", "Cathy", "Joann", "Lorraine", "Lynn", "Sally", "Regina", "Erica", "Beatrice", "Dolores", "Bernice", "Audrey", "Yvonne", "Annette", "June", "Samantha", "Marion", "Dana", "Stacy", "Ana", "Renee", "Ida", "Vivian", "Roberta", "Holly", "Brittany", "Melanie", "Loretta", "Yolanda", "Jeanette", "Laurie", "Katie", "Kristen", "Vanessa", "Alma", "Sue", "Elsie", "Beth", "Jeanne", "Vicki", "Carla", "Tara", "Rosemary", "Eileen", "Terri", "Gertrude", "Lucy", "Tonya", "Ella", "Stacey", "Wilma", "Gina", "Kristin", "Jessie", "Natalie", "Agnes", "Vera", "Willie", "Charlene", "Bessie", "Delores", "Melinda", "Pearl", "Arlene", "Maureen", "Colleen", "Allison", "Tamara", "Joy", "Georgia", "Constance", "Lillie", "Claudia", "Jaunnie", "Marcia", "Tanya", "Nellie", "Joanna", "Marlene", "Heidi", "Glenda", "Lydia", "Viola", "Courtney", "Marian", "Stella", "Caroline", "Dora", "Jo", "Vickie", "Mattie", "Terry", "Maxine", "Irma", "Mabel", "Marsha", "Myrtle", "Lena", "Christy", "Deanna", "Patsy", "Hilda", "Gwendolyn", "Jennie", "Nora", "Margie", "Nina", "Cassandra", "Leah", "Penny", "Kay", "Priscilla", "Naomi", "Carole", "Brandy", "Olga", "Billie", "Dianne", "Tracey", "Leona", "Jenny", "Felicia", "Sonia", "Miriam", "Velma", "Becky", "Bobbie", "Violet", "Kristina", "Makayla", "Misty", "Mae", "Shelly", "Daisy", "Ramona", "Sherri", "Erika", "Katrina", "Claire", "Alla"}
 
 -- functions meta
 
@@ -119,16 +70,13 @@ function EntityMeta:SetAccessory(acc)
 	if not acc then return end
 	self.Accessory = acc
 	local ent, sex = self, self.ModelSex
-	timer.Simple(
-		1,
-		function()
-			net.Start("accessory")
-			net.WriteEntity(ent)
-			net.WriteString(sex)
-			net.WriteString(acc)
-			net.Send(player.GetAll())
-		end
-	)
+	timer.Simple(1, function()
+		net.Start("accessory")
+		net.WriteEntity(ent)
+		net.WriteString(sex)
+		net.WriteString(acc)
+		net.Send(player.GetAll())
+	end)
 end
 
 function EntityMeta:GenerateAccessories()
@@ -219,26 +167,18 @@ end)
 local util_PCM = util.PrecacheModel
 
 hook.Add("Identity", "IDGive", function(ply)
-
 	timer.Simple(.2, function()
-
+		if PlayerModels then
 		local cl_playermodel, playerModel = ply:GetInfo("cl_playermodel"), table.Random(PlayerModels)
 		cl_playermodel = playerModel.model
 		local modelname = player_manager.TranslatePlayerModel(cl_playermodel)
-
 		if ply.CustomModel then
-		
 			for key, maudhayle in pairs(PlayerModels) do
-
 				if maudhayle.model == ply.CustomModel then
-
 					playerModel = maudhayle
 					break
-					
 				end
-
 			end
-
 		end
 
 		cl_playermodel = playerModel.model
@@ -258,8 +198,8 @@ hook.Add("Identity", "IDGive", function(ply)
 		ply:GenerateAccessories()
 		ply:GenerateName()
 		--ply:ManipulateBonePosition(ply:LookupBone("ValveBiped.Bip01_Spine2"), Vector((ply.Rost) or 0,0,0))
+		end
 		ply:SetupHands()
-
 	end)
 end)
 
@@ -423,13 +363,15 @@ hook.Add("PlayerSpawn", "VarsIS", function(ply)
 	ply:SetTeam(1)
 	if !PLYSPAWN_OVERRIDE then
 		if ply:GetNWInt("Guilt", 0) > 0 then
-			ply:GuiltRemove(math.random(1,20))
+			ply:GuiltRemove(math.random(1, 15))
 		end
 
 		if ply:GetNWInt("Guilt") < 0 then ply:GuiltSet(0) end
 
 		timer.Simple(.1, function() 
-			ply:ChatPrint("You guilt: " .. ply:GetNWInt("Guilt", 0) .. "%") 
+			if ply:GetNWInt("Guilt") >= 10 then
+				ply:ChatPrint("Your guilt is " .. ply:GetNWInt("Guilt", 0) .. "%") 
+			end
 		end)
 		ply.LastHitgroup = nil
 		ply.LastDamageType = nil

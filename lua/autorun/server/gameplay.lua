@@ -1,5 +1,6 @@
 hook.Add("EntityTakeDamage", "AntiDamageWithDM", function(ply, dmginfo)
-	if GAMEMODE.DMTime >= 1 then return false end
+	if engine.ActiveGamemode() ~= "hmcdunion" then return end
+	if GAMEMODE.DMTime and GAMEMODE.DMTime >= 1 then return false end
 end)
 
 local CTime = CurTime()
@@ -8,7 +9,7 @@ hook.Add("PlayerTick", "Glaza", function (ply)
 end)
 
 hook.Add( "PlayerFootstep", "CustomFootstep", function( ply, pos, foot, sound, volume, rf )
-	if ply.Role=="combine" then
+	if engine.ActiveGamemode() == "hmcdunion" and ply.Role == "combine" then
 		ply:EmitSound( "npc/combine_soldier/gear"..math.random(1,6)..".wav" )
 	end
 	if ply:IsSprinting() and foot == 0 then
@@ -55,14 +56,17 @@ hook.Add("PropBreak", "SystemLoot", function(ply, prop)
 end)
 
 hook.Add("PlayerPostThink", "CapsicumWork", function(ply)
-    if ply:GetNWString("HL2_Class","") == "Shotguner" then
+	if engine.ActiveGamemode() ~= "hmcdunion" then return end -- Чеча я убью тебя нахуй
+	if not IsValid(ply) then return end
+    if ply:GetNWString("HL2_Class", "") == "Shotguner" then
         ply:SetBodygroup(0, 1)
     end
-	ply.capsicumminus = ply.capsicumminus or CTime
-	if ply.capsicum < 0 then ply.capsicum = 0 end
-	if ply.capsicum > 0.1 then
+
+	if IsValid(ply) and engine.ActiveGamemode() == "hmcdunion" then ply.capsicumminus = ply.capsicumminus or CTime end
+	if ply.capsicum and ply.capsicum < 0 then ply.capsicum = 0 end
+	if ply.capsicum and ply.capsicum > 0.1 then
 		ply:ScreenFade(SCREENFADE.IN, color_black, 1, 3)
-		if ply.capsicumminus < CTime then
+		if ply.capsicumminus and ply.capsicumminus < CTime then
 			ply.capsicumminus = ply.capsicumminus + 0.08
 			ply.capsicum = ply.capsicum - 0.3
 		end
@@ -167,7 +171,7 @@ end)
 end)]]--
 
 --[[hook.Add("Think", "CheckPlayerCollisionSpeed", function()
-    for _, ply in ipairs(player.GetAll()) do
+    for _, ply in player.Iterator() do
         if not IsValid(ply) or not ply:Alive() then continue end
 
         local pos = ply:GetPos()
@@ -202,7 +206,6 @@ concommand.Add("hmcd_holdbreath", function(ply)
 end)
 
 -- headcrab infection
-
 hook.Add("PlayerPostThink", "StadeHeadcrab", function(ply)
 	if ply:GetNWBool("Headcrab", false) == true then
 		if ply.pain >= 130 then

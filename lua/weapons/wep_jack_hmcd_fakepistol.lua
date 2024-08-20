@@ -142,6 +142,7 @@ function SWEP:PrimaryAttack()
 			self:GetOwner().AmmoShow = CurTime() + 2
 		end
 
+		self:SetNextPrimaryFire(CurTime() + self.TriggerDelay + self.CycleTime)
 		return
 	end
 

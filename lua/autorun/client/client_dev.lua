@@ -1,7 +1,7 @@
 fs = GetConVar("checha_feature"):GetBool()
 
 hook.Add("Think","LipSync",function()
-	for i, ply in pairs(player.GetAll()) do
+	for i, ply in player.Iterator() do
 		if !ply:Alive() then
 			ply.Equipment = {}
 		end
@@ -48,7 +48,7 @@ dev = GetConVar( "developer" )
 
 hook.Add("PostDrawTranslucentRenderables","hitboxs",function()
 	if dev:GetInt() == 1 or dev:GetInt() == 3 then
-		--[[for _, ent in ipairs(player.GetAll()) do
+		--[[for _, ent in player.Iterator() do
 			local cho = IsValid(ent:GetNWEntity("Ragdoll")) and ent:GetNWEntity("Ragdoll") or ent
         	local pos,ang = cho:GetBonePosition(cho:LookupBone('ValveBiped.Bip01_Spine2'))
        		render.DrawWireframeBox( pos, ang, Vector(-1,0,-6),Vector(10,6,6), Color(200,200,200) )

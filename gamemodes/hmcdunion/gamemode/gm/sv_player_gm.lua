@@ -61,7 +61,7 @@ function GM:PlayerSay(ply,text,teem)
 		end
 
 		local col = ply:GetPlayerColor()
-		for k, ply2 in pairs(player.GetAll()) do
+		for k, ply2 in player.Iterator() do
 			local can = hook.Call("PlayerCanSeePlayersChat", GAMEMODE, text, teem, ply2, ply)
 			if can then
 				local ct = ChatText()

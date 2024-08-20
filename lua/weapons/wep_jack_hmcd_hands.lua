@@ -13,7 +13,7 @@ if SERVER then
 	SWEP.AutoSwitchTo = false
 	SWEP.AutoSwitchFrom = false
 else
-	SWEP.PrintName = "Руки"
+	SWEP.PrintName = "Hands"
 	SWEP.Slot = 0
 	SWEP.SlotPos = 1
 	SWEP.DrawAmmo = false
@@ -24,15 +24,16 @@ else
 	local HandTex, ClosedTex = surface.GetTextureID("vgui/hud/hmcd_hand"), surface.GetTextureID("vgui/hud/hmcd_closedhand")
 
 	function SWEP:DrawHUD()
-		local Fake = self:GetOwner():GetNWEntity("Ragdoll")
+		local owner = self:GetOwner()
+		local Fake = owner:GetNWEntity("Ragdoll")
 		if self:GetFists() then return end
-		local Tr = util.QuickTrace(self:GetOwner():GetShootPos(), self:GetOwner():GetAimVector() * self.ReachDistance, {self:GetOwner()})
+		local Tr = util.QuickTrace(owner:GetShootPos(), owner:GetAimVector() * self.ReachDistance, {owner})
 
 		if Tr.Hit then
 			if self:CanPickup(Tr.Entity) then
-				local Size = math.Clamp(1 - ((Tr.HitPos - self:GetOwner():GetShootPos()):Length() / self.ReachDistance) ^ 2, .2, 1)
+				local Size = math.Clamp(1 - ((Tr.HitPos - owner:GetShootPos()):Length() / self.ReachDistance) ^ 2, .2, 1)
 
-				if self:GetOwner():KeyDown(IN_ATTACK2) then
+				if owner:KeyDown(IN_ATTACK2) then
 					surface.SetTexture(ClosedTex)
 				else
 					surface.SetTexture(HandTex)
@@ -45,12 +46,14 @@ else
 	end
 end
 
+SWEP.Category = "HMCD: Union - Other"
 SWEP.SwayScale = 3
 SWEP.BobScale = 3
 SWEP.Author = ""
 SWEP.Contact = ""
 SWEP.Purpose = ""
-SWEP.Instructions = "спиздили с кэтс хомисайда"
+SWEP.Instructions = "спиздили с кэтс хомисайда" -- Ниче не было
+SWEP.DrawWeaponInfoBox = false
 SWEP.Spawnable = true
 SWEP.AdminOnly = false
 SWEP.HoldType = "normal"

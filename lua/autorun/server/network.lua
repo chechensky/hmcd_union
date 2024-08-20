@@ -31,18 +31,19 @@ net.Receive("GiveAmmo", function(len, ply)
     if count > 0 then
         ply:RemoveAmmo(count, ammotype)
         target:GiveAmmo(count, ammotype, true)
-        ply:ChatPrint("Вы передали " .. target:Nick() .. " патроны " .. game.GetAmmoName(ammotype) .. " в количестве " .. count .. ".")
+		ply:ChatPrint("You gave " .. count .. " " .. game.GetAmmoName(ammotype) .. " ammo to " .. target:Nick())
+		-- ply:ChatPrint("Вы передали " .. target:Nick() .. " патроны " .. game.GetAmmoName(ammotype) .. " в количестве " .. count .. ".")
         ply:EmitSound("snd_jack_hmcd_ammobox.wav", 75, math.random(80,90), 1, CHAN_ITEM )
     end
 end)
 
-util.AddNetworkString( "DropAmmos" )
-net.Receive( "DropAmmos", function( len, ply )
+util.AddNetworkString("DropAmmos")
+net.Receive("DropAmmos", function(len, ply)
     if not ply:Alive() or ply.Otrub then return end
     local ammotype = net.ReadFloat()
     local count = net.ReadFloat()
-    if ply:GetAmmoCount(ammotype) - count < 0 then ply:ChatPrint("У тебя столько нет пулек") return end
-    if count < 1 then ply:ChatPrint("Ноль пулек не скинуть") return end
+    if ply:GetAmmoCount(ammotype) - count < 0 then ply:ChatPrint("You don't have that much ammo") return end
+    if count < 1 then ply:ChatPrint("You can't drop zero ammo") return end
     ply:SetAmmo(ply:GetAmmoCount(ammotype)-count,ammotype)
     ply:EmitSound("snd_jack_hmcd_ammobox.wav", 75, math.random(80,90), 1, CHAN_ITEM )
 end)
@@ -53,13 +54,13 @@ net.Receive("Use_DoorStuck", function(len,ply)
 
     if door.count_stuck == nil then door.count_stuck = 0 end
     if door:GetInternalVariable("m_bLocked") then ply:ChatPrint("This door is locked.") return end
-    if door.count_stuck >= 3 then ply:ChatPrint("They have already tried to block this door.") return end
+    if door.count_stuck >= 3 then ply:ChatPrint("Someone have already tried to block this door.") return end
 
     door.count_stuck = door.count_stuck + 1
     ply:EmitSound("Flesh.ImpactSoft")
     ply:ViewPunch(Angle(5,0,0))
     if math.random(1, 3) == 2 then
-        ply:ChatPrint("Yes! You managed to lock this door!")
+        ply:ChatPrint("You managed to lock this door.")
         door:Fire("lock", "", 0)
         ply:EmitSound("Wood_Plank.ImpactSoft")
     else
@@ -72,14 +73,14 @@ net.Receive("Use_DoorUnStuck", function(len,ply)
     local door = net.ReadEntity()
 
     if door.count_unstuck == nil then door.count_unstuck = 0 end
-    if !door:GetInternalVariable("m_bLocked") then ply:ChatPrint("This door is not locked.") return end
-    if door.count_unstuck >= 3 then ply:ChatPrint("They have already tried to unlock this door.") return end
+    if !door:GetInternalVariable("m_bLocked") then ply:ChatPrint("This door is unlocked.") return end
+    if door.count_unstuck >= 3 then ply:ChatPrint("Someone have already tried to unlock this door.") return end
 
     door.count_unstuck = door.count_unstuck + 1
     ply:EmitSound("Flesh.ImpactSoft")
     ply:ViewPunch(Angle(5,0,0))
     if math.random(1, 3) == 2 then
-        ply:ChatPrint("Yes! You managed to unlock this door!")
+        ply:ChatPrint("You managed to unlock this door.")
         door:Fire("unlock", "", 0)
         ply:EmitSound("Flesh.ImpactSoft")
         constraint.RemoveAll(door)
@@ -106,7 +107,7 @@ net.Receive("MK_CheckLeftArm", function(len,ply)
     if dude.BleedOuts["left_hand"] > 0 then
         ply:ChatPrint("Bleeding.")
     else
-         ply:ChatPrint("No bleeding.")
+        ply:ChatPrint("No bleeding.")
     end
 end)
 
@@ -117,7 +118,7 @@ net.Receive("MK_CheckRightArm", function(len,ply)
     if dude.BleedOuts["right_hand"] > 0 then
         ply:ChatPrint("Bleeding.")
     else
-         ply:ChatPrint("No bleeding.")
+        ply:ChatPrint("No bleeding.")
     end
 end)
 
@@ -128,7 +129,7 @@ net.Receive("MK_CheckRightLeg", function(len,ply)
     if dude.BleedOuts["right_leg"] > 0 then
         ply:ChatPrint("Bleeding.")
     else
-         ply:ChatPrint("No bleeding.")
+        ply:ChatPrint("No bleeding.")
     end
 end)
 
@@ -139,7 +140,7 @@ net.Receive("MK_CheckLeftLeg", function(len,ply)
     if ply.BleedOuts["left_leg"] > 0 then
         ply:ChatPrint("Bleeding.")
     else
-         ply:ChatPrint("No bleeding.")
+        ply:ChatPrint("No bleeding.")
     end
 end)
 
@@ -150,7 +151,7 @@ net.Receive("MK_CheckStomach", function(len,ply)
     if dude.BleedOuts["stomach"] > 0 then
         ply:ChatPrint("Bleeding.")
     else
-         ply:ChatPrint("No bleeding.")
+        ply:ChatPrint("No bleeding.")
     end
 end)
 
@@ -287,6 +288,7 @@ hook.Add("Player Think","Looting",function(ply)
 
 	ply.okeloot = key
 end)
+
 local function FindWeaponByClass(player, class)
     for _, weapon in pairs(player:GetWeapons()) do
         if weapon:GetClass() == class then
@@ -295,10 +297,6 @@ local function FindWeaponByClass(player, class)
     end
     return nil
 end
-local prekol = {
-	weapon_physgun = true,
-	gmod_tool = true
-}
 
 net.Receive("inventory",function(len,ply)
 	local lootEnt = net.ReadEntity()

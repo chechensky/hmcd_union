@@ -82,13 +82,12 @@ SWEP.BreakDoorChance = 3
 function SWEP:SetupDataTables()
 end
 
---
 function SWEP:Initialize()
 	self:SetHoldType(self.HoldType)
 end
 
 function SWEP:PrimaryAttack()
-
+	if self:GetOwner():IsSprinting() then return end
 
 	if not IsFirstTimePredicted() and SERVER then
 		if not self.ViewAttackAnimDelay then

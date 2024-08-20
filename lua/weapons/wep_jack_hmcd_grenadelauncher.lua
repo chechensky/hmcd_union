@@ -11,7 +11,7 @@ SWEP.IconLength = 3
 SWEP.IconHeight = 2
 SWEP.Base = "wep_cat_base"
 SWEP.PrintName = "Milkor MGL"
-SWEP.Instructions = "This is a lightweight 40 mm six-shot revolver-type grenade launcher.\n\nLMB to fire.\nRMB to aim.\nRELOAD to reload.\nShot placement counts."
+SWEP.Instructions = "This is a lightweight 40 mm six-shot revolver-type grenade launcher. На самом деле гранатами стреляет там одна секунда и алах бабах происходит\n\nLMB to fire.\nRMB to aim.\nRELOAD to reload.\nShot placement counts."
 SWEP.Primary.ClipSize = 6
 SWEP.Primary.DefaultClip = SWEP.Primary.ClipSize * 2
 SWEP.SlotPos = 2
@@ -96,6 +96,14 @@ SWEP.Sight3Pos = Vector(2.5, -6, 4.5)
 SWEP.Sight3Ang = Angle(-20, -185, 0)
 SWEP.Sight3Model = "models/weapons/tfa_ins2/upgrades/a_optic_eotech.mdl"
 SWEP.ShellAttachment = 1
+SWEP.DrawAnim = "draw"
+SWEP.FireAnim = "fire"
+SWEP.IronFireAnim = "fire"
+SWEP.StallAnim = "reload_end"
+SWEP.StallTime = .1
+SWEP.LoadAnim = "reload_loop"
+SWEP.LoadFinishAnim = "reload_end"
+SWEP.StartReloadAnim = "reload_start"
 
 SWEP.MuzzlePos = {25.7, -5.7, 2.1}
 
@@ -129,23 +137,27 @@ function SWEP:ThrowGrenade()
 	Grenade:SetAngles(VectorRand():Angle())
 	Grenade:SetPos(self:GetOwner():GetShootPos() + self:GetOwner():GetAimVector())
 	Grenade.Owner = self:GetOwner()
-	Grenade.SpoonOut = self.SpawnedSpoon
 	Grenade.TimeLeft = timer.TimeLeft(tostring(self:GetOwner()) .. "ExplodeTimer")
 	Grenade:Spawn()
 	Grenade:Activate()
-	Grenade:GetPhysicsObject():SetVelocity(self:GetOwner():GetVelocity() + self:GetOwner():GetAimVector() * 1000)
+	Grenade:GetPhysicsObject():SetVelocity(self:GetOwner():GetVelocity() + self:GetOwner():GetAimVector() * 1500)
 	Grenade:Arm()
+	Grenade.SpoonOut = false
+	Grenade.DetTime = CurTime() + 1
 	self:GetOwner():SetLagCompensated(false)
 	self.NotLoot = true
 end
 
 function SWEP:PrimaryAttack()
 	if self:Clip1() <= 0 then return end
+	if not self:GetReady() then return end
+	if self.SprintingWeapon > 10 then return end
+	if self.Reloading then return end
 	self:DoBFSAnimation(self.FireAnim)
-
-	if IsValid(self) then
-		self:EmitSound("weapons/m67/m67_pullpin.wav")
-	end
-	--self:ThrowGrenade()
+	self:EmitSound("weapons/m84/m84_detonate.wav")
+	self:ThrowGrenade()
 	self:TakePrimaryAmmo(1)
+	self:DoBFSAnimation(self.FireAnim)
+	self:SetNextPrimaryFire(CurTime() + self.TriggerDelay + self.CycleTime)
+	self:GetOwner():ViewPunch(AngleRand(-8, 8))
 end

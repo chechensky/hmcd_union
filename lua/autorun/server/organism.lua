@@ -198,7 +198,9 @@ hook.Add("Think","BleedingBodies",function()
 			local trw = util.TraceHull(tr)
 			local Pos1 = trw.HitPos + trw.HitNormal
 			local Pos2 = trw.HitPos - trw.HitNormal
-			ent:EmitSound(table.Random(blood_drop), 60, math.random(230, 240), 0.2, CHAN_AUTO)
+			if IsValid(ent) and blood_drop then
+				ent:EmitSound(table.Random(blood_drop), 60, math.random(230, 240), 0.2, CHAN_AUTO)
+			end
 			util.Decal("Blood", Pos1, Pos2, ent)
 		end
 	end

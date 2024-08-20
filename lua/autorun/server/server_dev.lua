@@ -93,7 +93,7 @@ end
 
 function GetAlivePlayerCount()
     local aliveCount = 0
-    for _, ply in ipairs(player.GetAll()) do
+    for _, ply in player.Iterator() do
         if ply:Alive() then
             aliveCount = aliveCount + 1
         end
@@ -104,7 +104,7 @@ end
 function GetLastPlayerAlive()
 	local aliveCount = GetAlivePlayerCount()
 	local lastplayer
-    for _, ply in ipairs(player.GetAll()) do
+    for _, ply in player.Iterator() do
         if ply:Alive() then
             if aliveCount == 1 then
 				lastplayer = ply
@@ -115,7 +115,7 @@ function GetLastPlayerAlive()
 end
 function GetRandomRolePlayer(role)
     local roleply = nil
-    for _, ply in ipairs(player.GetAll()) do
+    for _, ply in player.Iterator() do
         if ply:Alive() then
 			if ply.Role == role then
             	roleply = ply
@@ -127,7 +127,7 @@ end
 
 function GetAliveRoleCount(role)
     local rolealive = 0
-    for _, ply in ipairs(player.GetAll()) do
+    for _, ply in player.Iterator() do
         if ply:Alive() then
 			if ply.Role == role then
             	rolealive = rolealive + 1

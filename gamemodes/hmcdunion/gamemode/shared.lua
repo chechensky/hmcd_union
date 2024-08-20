@@ -16,8 +16,10 @@ GM.Version = "Version 0.0.4 (Still Alive)"
 GM.Traitor = nil
 GM.MVP = nil
 
+RunConsoleCommand("hostname", GM.Name)
+
 -- round types hmcd
--- 1 = Standart
+-- 1 = Standard
 -- 2 = State of Emergency
 -- 3 = Jihad
 -- 4 = Wild West
@@ -147,7 +149,7 @@ DM_LoadoutMain = {
 	"wep_jack_hmcd_mp7",
 	"wep_jack_hmcd_mp5",
 	"wep_jack_hmcd_dbarrel",
-	"wep_jack_hmcd_remington",
+	-- "wep_jack_hmcd_remington", Бараны это дробовик стреляющий бинбегом
 	"wep_jack_hmcd_shotgun",
 	"wep_jack_hmcd_spas"
 }

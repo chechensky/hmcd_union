@@ -623,17 +623,17 @@ function SWEP:PrimaryAttack()
 			return
 		end
 	else
-		local Ang,Rec=self.Owner:EyeAngles(),self.Recoil
+		local Ang,Rec=self:GetOwner():EyeAngles(),self.Recoil
 		if self:GetNWBool("Suppressor") then Rec=.5 end
 		if self:GetOwner():GetNWFloat("RightArm", 1) < 0.85 then Rec=Rec*1.5 end
 		if self:GetOwner():GetNWFloat("LeftArm", 1) < 0.85 then Rec=Rec*5 end
 		local RecoilY=math.Rand(.015,.03)*Rec
 		local RecoilX=math.Rand(-.03,.05)*Rec
 		if (SERVER and game.SinglePlayer()) or CLIENT then
-			self.Owner:SetEyeAngles((Ang:Forward()+RecoilY*Ang:Up()+Ang:Right()*RecoilX):Angle())
+			self:GetOwner():SetEyeAngles((Ang:Forward()+RecoilY*Ang:Up()+Ang:Right()*RecoilX):Angle())
 		end
-		if self.Owner:OnGround() then self.Owner:SetVelocity(-self.Owner:GetAimVector()*10) end
-		self.Owner:ViewPunch(Angle(RecoilY*-100*self.Recoil,RecoilX*-100*self.Recoil,0))
+		if self:GetOwner():OnGround() then self:GetOwner():SetVelocity(-self:GetOwner():GetAimVector()*10) end
+		self:GetOwner():ViewPunch(Angle(RecoilY*-100*self.Recoil,RecoilX*-100*self.Recoil,0))
 		if self:GetOwner():IsPlayer() then
 		else
 			if not self.BurstFire then
@@ -977,9 +977,11 @@ function SWEP:ReadyAfterAnim(anim)
 	self:DoBFSAnimation(anim)
 	local mul = 1
 	local reloadRate = self.ReloadRate * mul
-	self:GetOwner():GetViewModel():SetPlaybackRate(reloadRate)
-	local Time = (self:GetOwner():GetViewModel():SequenceDuration() / reloadRate) + .01
-	self.VReloadTime = CurTime() + Time
+	if IsValid(self:GetOwner():GetViewModel()) then
+		self:GetOwner():GetViewModel():SetPlaybackRate(reloadRate)
+		local Time = (self:GetOwner():GetViewModel():SequenceDuration() / reloadRate) + .01
+		self.VReloadTime = CurTime() + Time
+	end
 end
 
 function SWEP:Deploy()
@@ -1023,12 +1025,12 @@ function SWEP:Deploy()
 end
 
 function SWEP:EnforceHolsterRules(newWep)
-	timer.Stop(tostring(self.Owner).."ReloadTimer")
+	timer.Stop(tostring(self:GetOwner()).."ReloadTimer")
 	if(CLIENT)then return end
 	if not(newWep==self)then return end -- only enforce rules for us
-	for key,wep in pairs(self.Owner:GetWeapons())do
+	for key,wep in pairs(self:GetOwner():GetWeapons())do
 		if((wep.HolsterSlot)and(self.HolsterSlot)and(wep.HolsterSlot==self.HolsterSlot)and not(wep==self))then -- conflict
-			self.Owner:DropWeapon(wep)
+			self:GetOwner():DropWeapon(wep)
 		end
 	end
 end
@@ -1356,14 +1358,14 @@ SWEP.LaserDistance = 6000
 SWEP.LaserFOV = 1.5
 SWEP.LaserColor = Color(255, 0, 0, 255)
 function SWEP:DrawLaser()
-	if not IsValid(self.Owner) then return end
+	if not IsValid(self:GetOwner()) then return end
 	local pos, ang = self.WDrawnAttachments["Laser"]:GetPos(), self.WDrawnAttachments["Laser"]:GetAngles()
 
 	if self.WDrawnAttachments["Laser"]:GetModel() == "models/cw2/attachments/anpeq15.mdl" then
 		ang:RotateAroundAxis(ang:Right(), 180)
 	end
 
-	local ply = self.Owner
+	local ply = self:GetOwner()
 
 	if not IsValid(ply.HMCDLaserDot) then
 		local lamp = ProjectedTexture()

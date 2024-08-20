@@ -141,38 +141,32 @@ local function addElement(transCode, code)
 	table.insert(elements, t)
 end
 
-concommand.Add(
-	"+menu_use",
-	function(client, com, args, full)
-		if client:Alive() then
-			local Wep = client:GetActiveWeapon()
-			elements = {}
+concommand.Add("+menu_use", function(client, com, args, full)
+	if client:Alive() then
+		local Wep = client:GetActiveWeapon()
+		elements = {}
 
-			local distance_postoeyetrace = client:GetPos():Distance(client:GetEyeTrace().Entity:GetPos())
-			if distance_postoeyetrace <= 100 then
-				if HMCD_IsDoor(client:GetEyeTrace().Entity) then
-					addElement("Door_Stuck", "door_stuck")
-				end
-
-				if HMCD_IsDoor(client:GetEyeTrace().Entity) then
-					addElement("Door_UnStuck", "door_unstuck")
-				end
-
-				if client:GetEyeTrace().Entity:IsPlayer() then
-					addElement("Player_Push", "ply_push")
-				end
+		local distance_postoeyetrace = client:GetPos():Distance(client:GetEyeTrace().Entity:GetPos())
+		if distance_postoeyetrace <= 100 then
+			if HMCD_IsDoor(client:GetEyeTrace().Entity) then
+				addElement("Door_Stuck", "door_stuck")
 			end
-			GAMEMODE:Openmenu_useMenu(elements)
-		end
-	end
-)
 
-concommand.Add(
-	"-menu_use",
-	function(client, com, args, full)
-		GAMEMODE:menu_useMousePressed(MOUSE_LEFT)
+			if HMCD_IsDoor(client:GetEyeTrace().Entity) then
+				addElement("Door_UnStuck", "door_unstuck")
+			end
+
+			if client:GetEyeTrace().Entity:IsPlayer() then
+				addElement("Player_Push", "ply_push")
+			end
+		end
+		GAMEMODE:Openmenu_useMenu(elements)
 	end
-)
+end)
+
+concommand.Add("-menu_use", function(client, com, args, full)
+	GAMEMODE:menu_useMousePressed(MOUSE_LEFT)
+end)
 
 local tex = surface.GetTextureID("VGUI/white.vmt")
 local function drawShadow(n,f,x,y,color,pos)
@@ -274,16 +268,16 @@ function GM:Drawmenu_useMenu()
 
 			if ment.TransCode == "Door_Stuck" then
 				Main = "Stuck Door"
-				Sub = "Try stuck the door"
+				Sub = "try to stuck this door"
 			elseif ment.TransCode == "Door_UnStuck" then
 				Main = "Unstuck Door"
-				Sub = "Try unstuck the door"
+				Sub = "try to unstuck this door"
 			elseif ment.TransCode == "Player_Push" then
 				Main = "Push player"
-				Sub = "tolknut terpilu"
+				Sub = "push that jackass"
 			else
 				Main = "No actions"
-				Sub = "pizdec.."
+				Sub = "however"
 			end
 			drawShadow(Main, "Radial_QM", sx + w * 0.6 * x, sy + h * 0.6 * y - fontHeight / 3,textCol, 1)
 			drawShadow(Sub, "RadialSmall_QM", sx + w * 0.6 * x, sy + h * 0.6 * y + fontHeight / 2, textCol, 1)
