@@ -12,3 +12,5 @@ Many sub-modes were added (Riot, Zombie Mode, Team DeathMatch and etc).
 A huge amount of work was done on optimization and general code improvement.
 
 Write wishes and bugs in comments (if you find them).
+
+пикабубу шидо халуи пуло БЭНГ я постоянно с трэвисом как ди
